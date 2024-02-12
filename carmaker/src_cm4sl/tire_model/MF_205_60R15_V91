@@ -1,0 +1,199 @@
+#INFOFILE1 - Do not remove this line!
+# $Id$
+
+FileIdent	= CarMaker-Tire-MF52 2
+FileCreator	= CarMaker/es TEMPLATE
+
+MDI_Header.FILE_TYPE	= tir
+MDI_Header.FILE_VERSION	= 2.0
+MDI_Header.FILE_FORMAT	= ASCII
+
+Description:
+	MF52 205/60R15 91V, 2.2bar
+	Version 23/07/2010
+
+#--------------------------------------------------------------------------units
+# [UNITS]
+Units.LENGTH			= meter
+Units.FORCE			= newton
+Units.ANGLE			= radians
+Units.MASS			= kg
+Units.TIME			= second
+#--------------------------------------------------------------------------model
+# [MODEL]
+Model.PROPERTY_FILE_FORMAT	= MF_05		# ADAMS property file format
+Model.USE_MODE			= 14		# tire use switch
+#Model.FITTYP			= 5		# magic formula version number
+#Model.MFSAFE1			= 0		#
+#Model.MFSAFE2			= 0		#
+#Model.MFSAFE3			= 0		#
+#----------------------------------------------------------------------dimension
+# [DIMENSION]
+Dim.UNLOADED_RADIUS		= 0.3185	# free tire radius
+Dim.WIDTH			= 0.205		# nominal tire width
+Dim.RIM_RADIUS			= 0.1905	# rim radius   
+Dim.RIM_WIDTH			= 0.1524	# rim width    
+Dim.ASPECT_RATIO		= 0.60		# aspect ratio 
+#-----------------------------------------------------------------------vertical
+# [VERTICAL]
+Vertical.VERTICAL_STIFFNESS	= 236700	# tire vertical stiffnesss
+Vertical.VERTICAL_DAMPING	= 50		# tire vertical damping
+Vertical.BREFF			= 5.0		# low load stiffness eff. rolling radius
+Vertical.DREFF			= 0.3		# peak value of eff. rolling radius, 
+Vertical.FREFF			= 0.1		# high load stiffness eff. rolling radius
+Vertical.FNOMIN			= 6500		# nominal wheel load
+#----------------------------------------------------------------long_slip_range
+# [LONG_SLIP_RANGE]
+Range.KPUMIN			= -0.30		# Minimum longitudinal slip
+Range.KPUMAX			=  0.30		# Maximum longitudinal slip
+#---------------------------------------------------------------slip_angle_range
+# [SLIP_ANGLE_RANGE]
+Range.ALPMIN			= -0.1745	# Minimum side slip angle
+Range.ALPMAX			=  0.1745	# Maximum side slip angle
+#---------------------------------------------------------inclination_slip_range
+# [INCLINATION_ANGLE_RANGE]
+Range.CAMMIN 			= -0.1047	# Minimum inclination angle
+Range.CAMMAX			=  0.1047	# Maximum inclination angle
+#-----------------------------------------------------------vertical_force_range
+# [VERTICAL_FORCE_RANGE]
+Range.FZMIN			=  400.0	# Minimum wheel load
+Range.FZMAX			= 8500.0	# Maximum wheel load
+#------------------------------------------------------------------------scaling
+# [SCALING_COEFFICIENTS]
+Scale.LFZO			= 1		# scale factor of nominal load
+Scale.LCX			= 1		# scale factor of Fx shape factor
+Scale.LMUX			= 1		# scale factor of Fx peak friction coefficient
+Scale.LEX			= 1		# scale factor of Fx curvature factor
+Scale.LKX			= 1		# scale factor of Fx slip stiffness
+Scale.LHX			= 1		# scale factor of Fx horizontal shfit
+Scale.LVX			= 1		# scale factor of Fx vertical shift
+Scale.LGAX			= 1		# scale factor of camber for Fx  
+Scale.LCY			= 1		# scale factor of Fy shape factor
+Scale.LMUY			= 1		# scale factor of Fy peak friction coefficient
+Scale.LEY			= 1		# scale factor of Fy curvature factor
+Scale.LKY			= 1		# scale factor of Fy cornering stiffness
+Scale.LHY			= 1		# scale factor of Fy horizontal shift
+Scale.LVY			= 1		# scale factor of Fy vertical shift
+Scale.LGAY			= 1		# scale factor of camber for Fy
+Scale.LTR			= 1		# scale factor of peak of pneumatic trail
+Scale.LRES			= 1		# scale factor for offset of residual torque
+Scale.LGAZ			= 1		# scale factor of camber for Mz        
+Scale.LXAL			= 1		# scale factor of alpha infulence on Fx
+Scale.LYKA			= 1		# scale factor of kappa influence on Fy
+Scale.LVYKA			= 1		# scale factor of kappa induced Fy
+Scale.LS			= 1		# scale factor of Mz moment arm of Fx
+Scale.LSGKP			= 1		# scale factor of relaxation length of Fx
+Scale.LSGAL			= 1		# scale factor of relaxation length of Fy
+Scale.LGYR			= 1		# scale factor of gyroscopic torque
+Scale.LMX			= 1		# scale factor of overturning couple stiffness
+Scale.LVMX			= 1		# scale factor of Mx vertical shift  
+Scale.LMY			= 1		# scale factor of rolling resistance torque
+#-------------------------------------------------------------------------------
+# [LONGITUDINAL_COEFFICIENTS]
+Long.PCX1			=  1.6055	# shape factor Cfx for longitudinal force 
+Long.PDX1			=  1.1703	# longitudinal friction Mux at FzNom
+Long.PDX2			= -0.081328	# variation of friction Mux with load
+Long.PDX3			=  0	 	# variation of friction Mux with camber
+Long.PEX1			=  0.53409	# longitudinal curvature Efx at FzNom
+Long.PEX2			= -0.019956	# variation of curvature Efx with load
+Long.PEX3			=  0.18089	# variation of curvature Efx with squared load 
+Long.PEX4			=  2.9951e-07	# factor in curvature Efx while driving
+Long.PKX1			=  36.411	# longitudinal slip stiffness Kfx/Fz at FzNom
+Long.PKX2			=  0.12615	# variation of slip stiffness Kfx/Fz with load
+Long.PKX3			=  0.51289	# exponent in slip stiffness Kfx/Fz with load
+Long.PHX1			=  0		# horizontal shift Shx at Fznom
+Long.PHX2			=  0		# variation of shift Shx with load
+Long.PVX1			=  0		# vertical shift Svx/Fz at FzNom
+Long.PVX2			=  0		# variation of shift Svx/Fz with load
+Long.RBX1			=  18.456	# slope factor for combined slip Fx reduction
+Long.RBX2			=  16.314	# variation of slope Fx reduction with Kappa
+Long.RCX1			=  1.091	# shape factor for combined slip Fx reduction
+Long.REX1			=  0		$ curvature factor of combined Fx     
+Long.REX2			=  0		$ curvature factor of combined Fx with load   
+Long.RHX1			=  0.0058715	# shift factor for combined slip Fx reduction
+Long.PTX1			=  1.5		# relaxation length Sig_Kappa/Fz at FzNom
+Long.PTX2			=  0.180096	# variation of Sig_Kappa/Fz with load  
+Long.PTX3			= -0.15		# variation of Sig_Kappa/Fz with exponent of load
+#-------------------------------------------------------------------------------
+# [OVERTURNING_COEFFICIENTS]
+OverTurn.QSX1			=  2.3155e-04	# lateral force induced overturning couple
+OverTurn.QSX2			=  0.51574	# camber induced overturning couple
+OverTurn.QSX3			=  0.046399	# Fy induced overturning couple
+#-------------------------------------------------------------------------------
+# [LATERAL_COEFFICIENTS]
+Lat.PCY1			=  2.1322	# shape factor Cfy for lateral forces
+Lat.PDY1			=  1.0283	# lateral friction Muy at FzNom
+Lat.PDY2			= -0.16758	# variation of friction Muy with load
+Lat.PDY3			= -1.5821	# variation of friction Muy with squared camber
+Lat.PEY1			=  0.33443	# lateral curvature Efy at FzNom
+Lat.PEY2			= -1.8733	# variation of curvature Efy with load
+Lat.PEY3			= -0.13136	# zero order camber dependency of curvature Efy
+Lat.PEY4			= -11.677	# variation of curvature Efy with camber
+Lat.PKY1			= -20.505	# maximum value of stiffness Kfy/FzNom
+Lat.PKY2			=  2.0284	# load at which Kfy reaches maximum value
+Lat.PKY3			=  0.89994	# variation of Kfy/Fznom with camber
+Lat.PHY1			=  0.0031377	# horizontal shift Shy at FzNom
+Lat.PHY2			=  0.00051596	# variation of shift Shy with load
+Lat.PHY3			=  0.039251	# variation of shift Shy with camber
+Lat.PVY1			=  0.026365	# vertical shift in Svy/Fz at FzNom
+Lat.PVY2			= -0.0062119	# variation of shift Svy/Fz with load
+Lat.PVY3			= -0.41389	# variation of shift Svy/Fz with camber
+Lat.PVY4			= -0.048038	# variation of shift Svy/Fz with camber and load
+Lat.RBY1			=  22.003	# slope factor for combined Fy reduction
+Lat.RBY2			= -13.623	# variation of slope Fy reduction with Alpha
+Lat.RBY3			= -0.0093616	# shfit term for alpha in slope Fy reduction
+Lat.RCY1			=  0.98294	# shape factor for combined Fy reduction
+Lat.REY1			=  0		$ Curvature factor of combined Fy     
+Lat.REY2			=  0		$ Curvature factor of combined Fy with load   
+Lat.RHY1			= -9.1492e-11	# shift factor for combined Fy reduction
+Lat.RHY2			=  0		$ shift factor for combined Fy reduction with load  
+Lat.RVY1			=  22.965	# kappa induced side force Svyk/Muy*Fz at FzNom
+Lat.RVY2			=  0.37981	# variation of Svyk/Muy*Fz with load 
+Lat.RVY3			=  1.8552	# variation of Svyk/Muy*Fz with camber
+Lat.RVY4			=  0.08767	# variation of Svyk/Muy*Fz with alpha
+Lat.RVY5			= -8.8234e-11	# variation of Svyk/Muy*Fz with kappa
+Lat.RVY6			=  0.90374	# variation of Svyk/Muy*Fz with atan(kappa)
+Lat.PTY1			=  1.75		# peak value of relaxation length Sig_Alpha
+Lat.PTY2			=  1.35		# shape factor for Sig_alpha
+#-------------------------------------------------------------------------------
+# [ROLLING_COEFFICIENTS]
+Roll.QSY1			=  0.01		# rolling resistance torque coefficient
+Roll.QSY2			=  0.0		# rolling resistance torque depending on Fx
+Roll.QSY3			=  0.0		# rolling resistance torque depending on speed    
+Roll.QSY4			=  0.0		# rolling resistance torque depending on speed ^4   
+#-------------------------------------------------------------------------------
+# [ALIGNING_COEFFICIENTS]
+Align.QBZ1			=  19.588	# trail slope factor for trail Bpt at FzNom
+Align.QBZ2			= -4.1671	# variation of slope Bpt with load
+Align.QBZ3			= -0.34132	# variation of slope Bpt with squared load
+Align.QBZ4			= -0.023607	# variation of slope Bpt with camber
+Align.QBZ5			= -0.0793	# variation of slope Bpt with absolute camber
+Align.QBZ9			= -50.0		# slope factor Br of residual torque Mzr
+Align.QBZ10			=  0.000	# slope factor Br of residual torque Mzr
+Align.QCZ1			=  1.2012	# shape factor Cpt for pneumatic trail
+Align.QDZ1			=  0.12819	# peak trail Dpt'' = Dpt*(Fz/FzNom*R0)
+Align.QDZ2			= -0.0052433	# variation of peak Dpt'' with load
+Align.QDZ3			= -0.099544	# variation of peak Dpt'' with camber
+Align.QDZ4			= -15.0		# variation of peak Dpt'' with squared camber
+Align.QDZ6			=  6.2499e-05	# peak resisual torque Dmr'' = Dmr*(Fz*R0)
+Align.QDZ7			=  5.0135e-04	# variation of peak factor Dmr'' with load
+Align.QDZ8			= -0.28564	# variation of peak factor Dmr'' with camber
+Align.QDZ9			= -0.025056	# variation of peak factor Dmr'' with camber and load
+Align.QEZ1			= -0.0044308	# trail curvature Ept at FzNom
+Align.QEZ2			=  0.022579	# variation of curvature Ept with load
+Align.QEZ3			= -0.16199	# variation of curvature Ept with squared load
+Align.QEZ4			= -0.5576	# variation of curvature Ept with sign of Alpha-t
+Align.QEZ5			= -87.296	# variation of curvature Ept with camber and sign Alpha-t
+Align.QHZ1			=  8.2436e-04	# trail horizontal shift Sht at FzNom
+Align.QHZ2			=  0.002733	# variation of shift Sht with load
+Align.QHZ3			=  0.15		# variation of shift Sht with camber
+Align.QHZ4			=  0.11608	# variation of shift Sht with camber and load
+Align.SSZ1			= -5.3899e-10	# nominal value of s/R0 effect of Fx on Mz
+Align.SSZ2			= -2.2371e-09	# variation of distance s/R0 with Fy/FzNom
+Align.SSZ3			=  3.6029e-08	# variation of distance s/R0 with camber
+Align.SSZ4			=  3.9826e-08	# variation of distance s/R0 with camber and load
+Align.QTZ1			=  0.3		# gyroscopic torque constant
+Align.MBELT			=  7.5		# belt mass of wheel
+
+Side = left
+FLoadMax = 10000

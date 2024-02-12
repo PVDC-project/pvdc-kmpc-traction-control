@@ -1,0 +1,30 @@
+# codegen folders
+*build*
+*c_generated_code*
+*codegen*
+
+# data and testing
+data/
+*.mat
+examples/
+test/
+
+# auxiliaries
+*.asv
+*.slxc
+*slprj*
+*.json
+*.bak
+*stdout_temp*
+
+# Carmaker
+carmaker/Movie/
+carmaker/SimOutput/
+!/carmaker/Data/TestRun/ASR_AccelerateMuSuddenChange
+!/carmaker/Data/Vehicle/Demo_IPG_CompanyCar_EV
+
+# Koopman (temporary)
+*kmpc*
+functions/custom_prbs.m
+functions/lifting_function.m
+functions/rbf.m
