@@ -1,7 +1,9 @@
 # codegen folders
-*/build/*
-*/c_generated_code/*
-*/codegen/*
+build/
+c_generated_code/
+codegen/
+dig/
+{*}/
 
 # data and testing
 data/

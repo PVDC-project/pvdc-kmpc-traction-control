@@ -32,3 +32,4 @@ end
 sim('generic');
 
 %% TODO: plot the results
+get_mpc_inputs(sigsOut);

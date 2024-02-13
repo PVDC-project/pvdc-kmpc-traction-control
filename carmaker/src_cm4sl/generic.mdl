@@ -7,9 +7,9 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "4.224"
+    ComputedModelVersion    "4.225"
     NumModelReferences	    0
-    NumTestPointedSignals   19
+    NumTestPointedSignals   24
     TestPointedSignal {
       SignalName	      "mu"
       FullBlockPath	      "generic/CarMaker/Traction control/Read CM Dict1"
@@ -67,6 +67,27 @@ Model {
       Decimation	      2
     }
     TestPointedSignal {
+      SignalName	      "mpc_in_xinit"
+      FullBlockPath	      "generic/CarMaker/Traction control/ControllerFL/NMPC/From3"
+      LogSignal		      1
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      "mpc_in_x0"
+      FullBlockPath	      "generic/CarMaker/Traction control/ControllerFL/NMPC/From6"
+      LogSignal		      1
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      "mpc_in_hu"
+      FullBlockPath	      "generic/CarMaker/Traction control/ControllerFL/NMPC/MATLAB Function2"
+      LogSignal		      1
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
       SignalName	      "s_ref"
       FullBlockPath	      "generic/CarMaker/Traction control/ControllerFL/NMPC/MATLAB Function3"
       LogSignal		      1
@@ -77,6 +98,13 @@ Model {
       SignalName	      "s"
       FullBlockPath	      "generic/CarMaker/Traction control/ControllerFL/NMPC/MATLAB Function3"
       PortIndex		      2
+      LogSignal		      1
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      "mpc_in_all_params"
+      FullBlockPath	      "generic/CarMaker/Traction control/ControllerFL/NMPC/MATLAB Function4"
       LogSignal		      1
       MaxPoints		      5000
       Decimation	      2
@@ -98,6 +126,13 @@ Model {
     TestPointedSignal {
       SignalName	      "e_int"
       FullBlockPath	      "generic/CarMaker/Traction control/ControllerFL/NMPC/int_w_AW"
+      LogSignal		      1
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      "mpc_in_hl"
+      FullBlockPath	      "generic/CarMaker/Traction control/ControllerFL/NMPC/lower_bound"
       LogSignal		      1
       MaxPoints		      5000
       Decimation	      2
@@ -279,6 +314,14 @@ Model {
     OrderedModelArguments   1
   }
   LogicAnalyzerPlugin	  "on"
+  LogicAnalyzerSignalOrdering "f798a680-5f69-469c-810a-1a81482fa1b5,5d2706e0-baeb-4875-a334-da2e9979aac0,32c927e3-9f7b"
+  "-4eea-bef8-a484672b8090,aff066a0-6a3e-4eed-918b-a8b0335b3e32,3d944556-b2af-42c3-9aa4-19ca0d845bae,1354727b-0aca-4d46"
+  "-8096-9a93534c09c4,4045129d-dc3d-43a0-917d-2a6b215b7237,01d6cf11-c75e-409a-9c68-e98d419f00bd,82a89b97-81f5-433a-9594"
+  "-90366d258bba,bd2c2e96-1820-4fcf-9849-ab96014115a5,05e89bda-d514-42e1-9e17-6a1877ad2386,c64adffa-3de6-4659-baf7-d189"
+  "b1a99a82,0f8f4914-1001-4ef1-a7da-7442889f3ebf,c2c8c02d-5a41-444c-9bc7-9b292620ad4a,0e843428-effb-4285-9374-9e8f3bae7"
+  "935,10adc2bf-0d35-4908-a947-5131920ae8a3,8d6e8d1b-0ed7-4af4-a46a-4d8e632d45bc,3ba55e45-c9e4-4ee9-a103-32da2ab7191a,3"
+  "81cc913-c859-424e-89ff-98918009053e,6a2c67b0-aa62-42ee-afdf-28d12ae29edd,810f8bd4-100e-49cb-9b00-5708f9234f64,38f02c"
+  "13-4b49-4a41-a730-4a7af08632d3,8a546670-398e-4f3e-ba2d-ed4ed3e84699,69a8f3e1-83e1-4251-a5fd-8acdac532600"
   WebScopes_FoundationPlugin "on"
   SLCCPlugin		  "on"
   slcheck_filter_plugin	  "on"
@@ -330,12 +373,12 @@ Model {
 	  $ObjectID		  5
 	  IsActive		  [0]
 	  IsTabbed		  [1]
-	  ViewObjType		  "SimulinkTopLevel"
-	  LoadSaveID		  "0"
-	  Extents		  [920.0, 805.0]
-	  ZoomFactor		  [2.7633476934992012]
-	  Offset		  [25.902431334080717, -36.156661645179383]
-	  SceneRectInView	  [25.902431334080717, -36.156661645179383, 332.92951233183857, 291.31332329035877]
+	  ViewObjType		  "SimulinkSubsys"
+	  LoadSaveID		  "2406"
+	  Extents		  [920.0, 782.0]
+	  ZoomFactor		  [1.4212940114980483]
+	  Offset		  [8.7310234404270659, -98.10141943670385]
+	  SceneRectInView	  [8.7310234404270659, -98.10141943670385, 647.29745749812673, 550.2028388734077]
 	}
 	Object {
 	  $ObjectID		  6
@@ -343,32 +386,32 @@ Model {
 	  IsTabbed		  [1]
 	  ViewObjType		  "SimulinkSubsys"
 	  LoadSaveID		  "2410"
-	  Extents		  [920.0, 805.0]
-	  ZoomFactor		  [0.45453314967714192]
-	  Offset		  [-458.25395880044857, -692.6535268598916]
-	  SceneRectInView	  [-458.25395880044857, -692.6535268598916, 2024.0547926008971, 1771.0479435257848]
+	  Extents		  [920.0, 782.0]
+	  ZoomFactor		  [0.454533149677142]
+	  Offset		  [-458.25395880044846, -667.22328685538116]
+	  SceneRectInView	  [-458.25395880044846, -667.22328685538116, 2024.0547926008969, 1720.4465737107623]
 	}
 	Object {
 	  $ObjectID		  7
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
-	  LoadSaveID		  "2406"
-	  Extents		  [920.0, 805.0]
-	  ZoomFactor		  [1.4630967765421086]
-	  Offset		  [17.978129976114587, -98.10141943670385]
-	  SceneRectInView	  [17.978129976114587, -98.10141943670385, 628.80324442675169, 550.2028388734077]
+	  LoadSaveID		  "1726"
+	  Extents		  [920.0, 782.0]
+	  ZoomFactor		  [1.0764152617568765]
+	  Offset		  [15.15563175943015, -225.24271300448436]
+	  SceneRectInView	  [15.15563175943015, -225.24271300448436, 854.6887364811397, 726.48542600896872]
 	}
 	Object {
 	  $ObjectID		  8
 	  IsActive		  [0]
 	  IsTabbed		  [0]
-	  ViewObjType		  "SimulinkSubsys"
-	  LoadSaveID		  "1726"
-	  Extents		  [920.0, 805.0]
-	  ZoomFactor		  [1.1080745341614906]
-	  Offset		  [27.365470852017893, -225.24271300448436]
-	  SceneRectInView	  [27.365470852017893, -225.24271300448436, 830.26905829596421, 726.48542600896872]
+	  ViewObjType		  "SimulinkTopLevel"
+	  LoadSaveID		  "0"
+	  Extents		  [920.0, 782.0]
+	  ZoomFactor		  [2.7633476934992012]
+	  Offset		  [25.902431334080717, -36.156661645179383]
+	  SceneRectInView	  [25.902431334080717, -36.156661645179383, 332.92951233183857, 282.9900854820628]
 	}
 	Object {
 	  $ObjectID		  9
@@ -376,10 +419,10 @@ Model {
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
 	  LoadSaveID		  "2351"
-	  Extents		  [920.0, 805.0]
-	  ZoomFactor		  [1.25]
-	  Offset		  [746.33644607156248, 265.81771329643129]
-	  SceneRectInView	  [746.33644607156248, 265.81771329643129, 736.0, 644.0]
+	  Extents		  [920.0, 782.0]
+	  ZoomFactor		  [1.2142857142857142]
+	  Offset		  [735.51291665979772, 265.81771329643129]
+	  SceneRectInView	  [735.51291665979772, 265.81771329643129, 757.64705882352951, 644.0]
 	}
 	Object {
 	  $ObjectID		  10
@@ -806,19 +849,6 @@ Model {
 	Dimension		2
 	Object {
 	  $ObjectID		  48
-	  Type			  "GLUE2:PropertyInspector"
-	  ID			  "Property Inspector"
-	  Visible		  [0]
-	  CreateCallback	  ""
-	  UserData		  ""
-	  Floating		  [0]
-	  DockPosition		  "Right"
-	  Width			  [640]
-	  Height		  [480]
-	  Minimized		  "Unset"
-	}
-	Object {
-	  $ObjectID		  49
 	  Type			  "Simulink:Editor:ReferencedFiles"
 	  ID			  "Referenced Files"
 	  Visible		  [0]
@@ -830,15 +860,28 @@ Model {
 	  Height		  [480]
 	  Minimized		  "Unset"
 	}
+	Object {
+	  $ObjectID		  49
+	  Type			  "GLUE2:PropertyInspector"
+	  ID			  "Property Inspector"
+	  Visible		  [0]
+	  CreateCallback	  ""
+	  UserData		  ""
+	  Floating		  [0]
+	  DockPosition		  "Right"
+	  Width			  [640]
+	  Height		  [480]
+	  Minimized		  "Unset"
+	}
 	PropName		"DockComponentsInfo"
       }
       WindowState	      "AAAA/wAAAAD9AAAAAgAAAAAAAAC9AAAB+PwCAAAABPsAAAAWAEQAbwBjAGsAVwBpAGQAZwBlAHQAMwEAAAAxAAAB+AAAA"
       "AAAAAAA+wAAABYARABvAGMAawBXAGkAZABnAGUAdAA0AAAAAAD/////AAAAAAAAAAD7AAAAUgBHAEwAVQBFADIAIAB0AHIAZQBlACAAYwBvAG0Ac"
       "ABvAG4AZQBuAHQALwBHAEwAVQBFADIAIAB0AHIAZQBlACAAYwBvAG0AcABvAG4AZQBuAHQAAAAAAP////8AAABjAP////sAAABgAFMAaQBtAHUAb"
       "ABpAG4AawA6AEUAZABpAHQAbwByADoAUgBlAGYAZQByAGUAbgBjAGUAZABGAGkAbABlAHMALwBSAGUAZgBlAHIAZQBuAGMAZQBkACAARgBpAGwAZ"
-      "QBzAAAAAAD/////AAAAjAD///8AAAABAAABBAAAA2L8AgAAAAL7AAAAVABHAEwAVQBFADIAOgBQAHIAbwBwAGUAcgB0AHkASQBuAHMAcABlAGMAd"
-      "ABvAHIALwBQAHIAbwBwAGUAcgB0AHkAIABJAG4AcwBwAGUAYwB0AG8AcgAAAAAA/////wAAAawA////+/////8AAAAAeQAAA2IAAACHAP///wAAA"
-      "74AAANiAAAAAQAAAAIAAAABAAAAAvwAAAABAAAAAgAAAAA="
+      "QBzAAAAAAD/////AAAAjAD///8AAAABAAABBAAAA2L8AgAAAAH7AAAAVABHAEwAVQBFADIAOgBQAHIAbwBwAGUAcgB0AHkASQBuAHMAcABlAGMAd"
+      "ABvAHIALwBQAHIAbwBwAGUAcgB0AHkAIABJAG4AcwBwAGUAYwB0AG8AcgAAAAAA/////wAAAawA////AAADvgAAA0sAAAABAAAAAgAAAAEAAAAC/"
+      "AAAAAEAAAACAAAAAf////8BAAAAAP////8AAAAAAAAAAA=="
       Array {
 	Type			"Cell"
 	Dimension		0
@@ -855,11 +898,11 @@ Model {
   Creator		  "fh"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "LAMES Workstation"
+  LastModifiedBy	  "PVDC Workstation"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Feb 12 17:09:32 2024"
-  RTWModifiedTimeStamp	  629658528
-  ModelVersionFormat	  "%<AutoIncrement:4.224>"
+  LastModifiedDate	  "Tue Feb 13 16:30:58 2024"
+  RTWModifiedTimeStamp	  629741825
+  ModelVersionFormat	  "%<AutoIncrement:4.225>"
   SampleTimeColors	  on
   SampleTimeAnnotations	  off
   LibraryLinkDisplay	  "none"
@@ -938,7 +981,7 @@ Model {
     $ClassName		    "Simulink.HMI.InstrumentedSignals"
     Array {
       Type		      "Struct"
-      Dimension		      19
+      Dimension		      24
       MATStruct {
 	UUID			"0f8f4914-1001-4ef1-a7da-7442889f3ebf"
 	BlockPath_		"CarMaker/Traction control/Read CM Dict2"
@@ -1379,6 +1422,126 @@ Model {
 	OutputPortIndex_	[1.0]
 	LogicalPortIndex_	[0.0]
 	SignalName_		"skip_integration"
+	SubSysPath_		""
+	Decimation_		[1.0]
+	MaxPoints_		[1024.0]
+	TargetBufferedStreaming_ [0.0]
+	IsFrameBased_		[0.0]
+	HideInSDI_		[0.0]
+	DomainType_		""
+	Array {
+	  Type			  "Struct"
+	  Dimension		  1
+	  MATStruct {
+	  }
+	  PropName		  "DomainParams_"
+	}
+	VisualType_		""
+      }
+      MATStruct {
+	UUID			"38f02c13-4b49-4a41-a730-4a7af08632d3"
+	BlockPath_		"CarMaker/Traction control/ControllerFL/NMPC/From3"
+	SID_			"2417"
+	SubPath_		""
+	OutputPortIndex_	[1.0]
+	LogicalPortIndex_	[0.0]
+	SignalName_		"mpc_in_xinit"
+	SubSysPath_		""
+	Decimation_		[1.0]
+	MaxPoints_		[1024.0]
+	TargetBufferedStreaming_ [0.0]
+	IsFrameBased_		[0.0]
+	HideInSDI_		[0.0]
+	DomainType_		""
+	Array {
+	  Type			  "Struct"
+	  Dimension		  1
+	  MATStruct {
+	  }
+	  PropName		  "DomainParams_"
+	}
+	VisualType_		""
+      }
+      MATStruct {
+	UUID			"8a546670-398e-4f3e-ba2d-ed4ed3e84699"
+	BlockPath_		"CarMaker/Traction control/ControllerFL/NMPC/lower_bound"
+	SID_			"2436"
+	SubPath_		""
+	OutputPortIndex_	[1.0]
+	LogicalPortIndex_	[0.0]
+	SignalName_		"mpc_in_hl"
+	SubSysPath_		""
+	Decimation_		[1.0]
+	MaxPoints_		[1024.0]
+	TargetBufferedStreaming_ [0.0]
+	IsFrameBased_		[0.0]
+	HideInSDI_		[0.0]
+	DomainType_		""
+	Array {
+	  Type			  "Struct"
+	  Dimension		  1
+	  MATStruct {
+	  }
+	  PropName		  "DomainParams_"
+	}
+	VisualType_		""
+      }
+      MATStruct {
+	UUID			"69a8f3e1-83e1-4251-a5fd-8acdac532600"
+	BlockPath_		"CarMaker/Traction control/ControllerFL/NMPC/MATLAB Function2"
+	SID_			"2424"
+	SubPath_		""
+	OutputPortIndex_	[1.0]
+	LogicalPortIndex_	[0.0]
+	SignalName_		"mpc_in_hu"
+	SubSysPath_		""
+	Decimation_		[1.0]
+	MaxPoints_		[1024.0]
+	TargetBufferedStreaming_ [0.0]
+	IsFrameBased_		[0.0]
+	HideInSDI_		[0.0]
+	DomainType_		""
+	Array {
+	  Type			  "Struct"
+	  Dimension		  1
+	  MATStruct {
+	  }
+	  PropName		  "DomainParams_"
+	}
+	VisualType_		""
+      }
+      MATStruct {
+	UUID			"c2c8c02d-5a41-444c-9bc7-9b292620ad4a"
+	BlockPath_		"CarMaker/Traction control/ControllerFL/NMPC/From6"
+	SID_			"3024"
+	SubPath_		""
+	OutputPortIndex_	[1.0]
+	LogicalPortIndex_	[0.0]
+	SignalName_		"mpc_in_x0"
+	SubSysPath_		""
+	Decimation_		[1.0]
+	MaxPoints_		[1024.0]
+	TargetBufferedStreaming_ [0.0]
+	IsFrameBased_		[0.0]
+	HideInSDI_		[0.0]
+	DomainType_		""
+	Array {
+	  Type			  "Struct"
+	  Dimension		  1
+	  MATStruct {
+	  }
+	  PropName		  "DomainParams_"
+	}
+	VisualType_		""
+      }
+      MATStruct {
+	UUID			"381cc913-c859-424e-89ff-98918009053e"
+	BlockPath_		"CarMaker/Traction control/ControllerFL/NMPC/MATLAB Function4"
+	SID_			"2426"
+	SubPath_		""
+	OutputPortIndex_	[1.0]
+	LogicalPortIndex_	[0.0]
+	SignalName_		"mpc_in_all_params"
 	SubSysPath_		""
 	Decimation_		[1.0]
 	MaxPoints_		[1024.0]
@@ -3276,7 +3439,7 @@ Model {
     Name		    "generic"
     Location		    [953, 0, 1927, 1047]
     SystemRect		    [0.000000, 0.000000, 0.000000, 0.000000]
-    Open		    on
+    Open		    off
     PortBlocksUseCompactNotation off
     SetExecutionDomain	    off
     ExecutionDomainType	    "Deduce"
@@ -3328,7 +3491,7 @@ Model {
 	TiledPaperMargins	[1.270000, 1.270000, 1.270000, 1.270000]
 	TiledPageScale		1
 	ShowPageBoundaries	off
-	ZoomFactor		"111"
+	ZoomFactor		"108"
 	SimulinkSubDomain	"Simulink"
 	Block {
 	  BlockType		  SubSystem
@@ -17909,7 +18072,7 @@ Model {
 	      Ports		      [1, 1]
 	      Position		      [200, 55, 230, 85]
 	      ZOrder		      -12
-	      LibraryVersion	      "1.476"
+	      LibraryVersion	      "1.477"
 	      SourceBlock	      "simulink/Logic and Bit\nOperations/Compare\nTo Constant"
 	      SourceType	      "Compare To Constant"
 	      SourceProductBaseCode   "SL"
@@ -18071,7 +18234,7 @@ Model {
 	    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
 	    TiledPageScale	    1
 	    ShowPageBoundaries	    off
-	    ZoomFactor		    "125"
+	    ZoomFactor		    "121"
 	    SimulinkSubDomain	    "Simulink"
 	    Block {
 	      BlockType		      SubSystem
@@ -18087,7 +18250,7 @@ Model {
 		Name			"ControllerFL"
 		Location		[953, 0, 1927, 1047]
 		SystemRect		[0.000000, 0.000000, 0.000000, 0.000000]
-		Open			off
+		Open			on
 		PortBlocksUseCompactNotation off
 		SetExecutionDomain	off
 		ExecutionDomainType	"Deduce"
@@ -18101,7 +18264,7 @@ Model {
 		TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
 		TiledPageScale		1
 		ShowPageBoundaries	off
-		ZoomFactor		"146"
+		ZoomFactor		"142"
 		SimulinkSubDomain	"Simulink"
 		Block {
 		  BlockType		  Inport
@@ -18187,7 +18350,7 @@ Model {
 		    Position		    [1190, 0, 1220, 30]
 		    ZOrder		    378
 		    ForegroundColor	    "green"
-		    LibraryVersion	    "1.476"
+		    LibraryVersion	    "1.477"
 		    SourceBlock		    "simulink/Logic and Bit\nOperations/Compare\nTo Constant"
 		    SourceType		    "Compare To Constant"
 		    SourceProductBaseCode   "SL"
@@ -18281,6 +18444,11 @@ Model {
 		    Position		    [435, 180, 535, 210]
 		    ZOrder		    366
 		    GotoTag		    "current_ocp_state"
+		    Port {
+		    PortNumber		    1
+		    Name		    "mpc_in_xinit"
+		    PropagatedSignals	    "ocp_state"
+		    }
 		    }
 		    Block {
 		    BlockType		    From
@@ -18298,6 +18466,10 @@ Model {
 		    Position		    [480, 115, 575, 145]
 		    ZOrder		    387
 		    GotoTag		    "prev_solution"
+		    Port {
+		    PortNumber		    1
+		    Name		    "mpc_in_x0"
+		    }
 		    }
 		    Block {
 		    BlockType		    From
@@ -18720,6 +18892,11 @@ Model {
 		    RequestExecContextInheritance off
 		    SFBlockType		    "MATLAB Function"
 		    ContentPreviewEnabled   on
+		    Port {
+		    PortNumber		    1
+		    Name		    "mpc_in_hu"
+		    PropagatedSignals	    "y"
+		    }
 		    System {
 		    Name		    "MATLAB Function2"
 		    Location		    [223, 338, 826, 833]
@@ -18980,6 +19157,11 @@ Model {
 		    RequestExecContextInheritance off
 		    SFBlockType		    "MATLAB Function"
 		    ContentPreviewEnabled   on
+		    Port {
+		    PortNumber		    1
+		    Name		    "mpc_in_all_params"
+		    PropagatedSignals	    "y"
+		    }
 		    System {
 		    Name		    "MATLAB Function4"
 		    Location		    [223, 338, 826, 833]
@@ -19490,7 +19672,7 @@ Model {
 		    Ports		    [1, 1]
 		    Position		    [-95, 20, -65, 50]
 		    ZOrder		    419
-		    LibraryVersion	    "1.476"
+		    LibraryVersion	    "1.477"
 		    SourceBlock		    "simulink/Logic and Bit\nOperations/Compare\nTo Constant"
 		    SourceType		    "Compare To Constant"
 		    SourceProductBaseCode   "SL"
@@ -19641,13 +19823,17 @@ Model {
 		    ZOrder		    346
 		    Value		    "zeros(N,1)"
 		    SampleTime		    "Ts"
+		    Port {
+		    PortNumber		    1
+		    Name		    "mpc_in_hl"
+		    }
 		    }
 		    Block {
 		    BlockType		    S-Function
 		    Name		    "nmpc"
 		    SID			    "2437"
 		    Ports		    [5, 6]
-		    Position		    [595, -36, 1070, 291]
+		    Position		    [700, -41, 1070, 296]
 		    ZOrder		    345
 		    FunctionName	    "nmpc_simulinkBlock"
 		    SFunctionModules	    "nmpc nmpc_simulinkBlock"
@@ -19723,18 +19909,20 @@ Model {
 		    ZOrder		    2
 		    }
 		    Line {
+		    Name		    "mpc_in_xinit"
 		    ZOrder		    1
 		    SrcBlock		    "From3"
 		    SrcPort		    1
-		    Points		    [40, 0]
+		    Points		    [48, 0]
 		    Branch {
 		    ZOrder		    60
-		    Points		    [8, 0; 0, 205]
+		    Points		    [0, 205]
 		    DstBlock		    "MATLAB Function1"
 		    DstPort		    4
 		    }
 		    Branch {
 		    ZOrder		    59
+		    Labels		    [1, 1]
 		    DstBlock		    "nmpc"
 		    DstPort		    4
 		    }
@@ -19761,13 +19949,13 @@ Model {
 		    SrcPort		    2
 		    Points		    [50, 0]
 		    Branch {
-		    ZOrder		    42
+		    ZOrder		    146
 		    Points		    [0, -30]
 		    DstBlock		    "Compare\nTo Constant"
 		    DstPort		    1
 		    }
 		    Branch {
-		    ZOrder		    41
+		    ZOrder		    143
 		    Points		    [12, 0; 0, 55]
 		    Branch {
 		    ZOrder		    73
@@ -19790,7 +19978,7 @@ Model {
 		    SrcPort		    1
 		    Points		    [35, 0]
 		    Branch {
-		    ZOrder		    47
+		    ZOrder		    142
 		    Points		    [0, -45]
 		    DstBlock		    "Delay"
 		    DstPort		    1
@@ -19836,6 +20024,7 @@ Model {
 		    }
 		    }
 		    Line {
+		    Name		    "mpc_in_hl"
 		    ZOrder		    9
 		    SrcBlock		    "lower_bound"
 		    SrcPort		    1
@@ -19848,6 +20037,7 @@ Model {
 		    }
 		    Branch {
 		    ZOrder		    54
+		    Labels		    [1, 1]
 		    DstBlock		    "nmpc"
 		    DstPort		    2
 		    }
@@ -19898,18 +20088,20 @@ Model {
 		    DstPort		    1
 		    }
 		    Line {
+		    Name		    "mpc_in_hu"
 		    ZOrder		    15
 		    SrcBlock		    "MATLAB Function2"
 		    SrcPort		    1
 		    Points		    [0, 0]
 		    Branch {
-		    ZOrder		    53
+		    ZOrder		    147
 		    Points		    [0, -60; 495, 0; 0, 415]
 		    DstBlock		    "MATLAB Function1"
 		    DstPort		    1
 		    }
 		    Branch {
 		    ZOrder		    52
+		    Labels		    [1, 1]
 		    DstBlock		    "nmpc"
 		    DstPort		    1
 		    }
@@ -19922,6 +20114,7 @@ Model {
 		    DstPort		    1
 		    }
 		    Line {
+		    Name		    "mpc_in_x0"
 		    ZOrder		    49
 		    SrcBlock		    "From6"
 		    SrcPort		    1
@@ -19934,6 +20127,7 @@ Model {
 		    }
 		    Branch {
 		    ZOrder		    57
+		    Labels		    [1, 1]
 		    DstBlock		    "nmpc"
 		    DstPort		    3
 		    }
@@ -20007,7 +20201,9 @@ Model {
 		    DstPort		    1
 		    }
 		    Line {
+		    Name		    "mpc_in_all_params"
 		    ZOrder		    18
+		    Labels		    [1, 1]
 		    SrcBlock		    "MATLAB Function4"
 		    SrcPort		    1
 		    DstBlock		    "nmpc"
@@ -20781,7 +20977,7 @@ Model {
 		    Ports		    [1, 1]
 		    Position		    [1190, 0, 1220, 30]
 		    ZOrder		    378
-		    LibraryVersion	    "1.476"
+		    LibraryVersion	    "1.477"
 		    SourceBlock		    "simulink/Logic and Bit\nOperations/Compare\nTo Constant"
 		    SourceType		    "Compare To Constant"
 		    SourceProductBaseCode   "SL"
@@ -21661,7 +21857,7 @@ Model {
 		    Ports		    [1, 1]
 		    Position		    [-95, 20, -65, 50]
 		    ZOrder		    419
-		    LibraryVersion	    "1.476"
+		    LibraryVersion	    "1.477"
 		    SourceBlock		    "simulink/Logic and Bit\nOperations/Compare\nTo Constant"
 		    SourceType		    "Compare To Constant"
 		    SourceProductBaseCode   "SL"
@@ -23079,7 +23275,7 @@ Model {
 	      Ports		      [0, 1]
 	      Position		      [65, 260, 95, 290]
 	      ZOrder		      492
-	      LibraryVersion	      "1.476"
+	      LibraryVersion	      "1.477"
 	      SourceBlock	      "simulink/Sources/Ramp"
 	      SourceType	      "Ramp"
 	      SourceProductBaseCode   "SL"
@@ -26612,9 +26808,6 @@ Stateflow {
     screen		    [1 1 3600 1200 1.180555555555556]
     treeNode		    [0 3 0 0]
     viewObj		    2
-    visible		    1
-    subviewS {
-    }
     ssIdHighWaterMark	    7
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
@@ -27386,9 +27579,6 @@ Stateflow {
     screen		    [1 1 3600 1200 1.180555555555556]
     treeNode		    [0 44 0 0]
     viewObj		    43
-    visible		    1
-    subviewS {
-    }
     ssIdHighWaterMark	    7
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
@@ -27567,9 +27757,6 @@ Stateflow {
     screen		    [1 1 3600 1200 1.180555555555556]
     treeNode		    [0 53 0 0]
     viewObj		    52
-    visible		    1
-    subviewS {
-    }
     ssIdHighWaterMark	    8
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
@@ -28070,9 +28257,6 @@ Stateflow {
     screen		    [1 1 3600 1200 1.180555555555556]
     treeNode		    [0 79 0 0]
     viewObj		    78
-    visible		    1
-    subviewS {
-    }
     ssIdHighWaterMark	    13
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
