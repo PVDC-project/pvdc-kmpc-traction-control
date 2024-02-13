@@ -1,5 +1,9 @@
 %% Nonlinear MPC controller setup
-function [] = nmpc_setup(N,Ts,R,kappa_ref,compile_for_simulink)
+function [] = nmpc_setup(N,Ts,R,kappa_ref,compile_for_simulink,compile_for_dspace)
+if nargin < 6
+    compile_for_dspace = 0;
+end
+
 model = {};
 model.N = N;    % prediction horizon
 model.nvar = 4; % number of stage variables, nx+nu
@@ -49,6 +53,20 @@ end
 codeoptions.showinfo = 1;  % https://forces.embotech.com/Documentation/solver_options/index.html#solver-info-in-simulink-block
 
 % Codegen options
+if compile_for_dspace
+    codeoptions.platform = 'dSPACE-MicroLabBox';  % to specify the platform
+    codeoptions.printlevel = 0;  % on some platforms printing is not supported
+    codeoptions.cleanup = 0;  % to keep necessary files for target compile    
+    codeoptions.timing = 1;
+    codeoptions.embedded_timing = 1;    
+    
+    codeoptions.optimize_choleskydivision = 1;
+    codeoptions.optimize_registers = 1;
+    codeoptions.optimize_uselocalsheavy = 1;
+    codeoptions.optimize_operationsrearrange = 1;
+    codeoptions.optimize_loopunrolling = 1;
+    codeoptions.optimize_enableoffset = 1;
+end
 codeoptions.overwrite = 1;
 codeoptions.nohash = 1;
 solver_dir = './codegen';
