@@ -5,6 +5,10 @@ addpath('../models')             % prediction and simulation models
 addpath('../setup')              % controller and simulation setup
 addpath('../functions')          % utility functions
 
+%% Load controller inputs
+load ../data/mpc_inputs.mat
+x0 = squeeze(x0)';
+
 %% Experiment setup
 controller_type = 1;  % 0 - off, 1 - NMPC, 2 - KMPC, 3 - PID
 Ts = 2e-3;  % [s] sampling time

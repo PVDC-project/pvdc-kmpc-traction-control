@@ -12,12 +12,12 @@ examples/
 test/
 
 # auxiliaries
+slprj/
 *.asv
 *.slxc
-*slprj*
 *.json
 *.bak
-*stdout_temp*
+stdout_temp
 
 # Carmaker
 carmaker/Movie/
