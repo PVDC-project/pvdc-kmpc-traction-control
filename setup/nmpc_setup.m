@@ -27,6 +27,7 @@ model.hl = [];  % set to 0 at runtime
 
 algorithm = 'PDIP_NLP';  % https://forces.embotech.com/Documentation/solver_options/index.html#solve-methods
 codeoptions = ForcesGetDefaultOptions('nmpc',algorithm,'double');
+codeoptions.reinitialize = 0;
 codeoptions.printlevel = 0;
 codeoptions.nlp.integrator.type = 'ERK4';
 codeoptions.nlp.integrator.Ts = Ts;
@@ -107,11 +108,11 @@ end
 
 function f = LSobjective(z,p,R,kappa_ref)
     w_x1 = 1e3 / 1^2;       % wheel slip velocity tracking error weight
-    w_x3 = 7e4 / 1^2;       % integral state weight
+    w_x3 = 1e5 / 1^2;       % integral state weight
     w_u = 1e-2 / (250^2);   % torque reduction weight
-    f = [sqrt(2*w_u)*(z(1)-p(1));               % torque reduction cost
-         sqrt(2*w_x1)*(kappa_ref-z(2)/(z(3)*R));% tracking error cost  
-         sqrt(2*w_x3)*z(4)];                    % integral state cost
+    f = [sqrt(2*w_u)*(z(1)-p(1));                       % torque reduction cost
+         sqrt(2*w_x1)*(kappa_ref-z(2)/(z(3)*R));   % tracking error cost  
+         sqrt(2*w_x3)*z(4)];                            % integral state cost
 % sqrt(2*w_x1)*(z(2)-kappa_ref*z(3)*R);  % tracking error cost
 % sqrt(2*w_x1)*(kappa_ref-z(2)/(z(3)*R+1e-3));  % tracking error cost  
 end
