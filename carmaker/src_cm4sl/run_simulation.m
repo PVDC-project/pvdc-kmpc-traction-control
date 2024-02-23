@@ -14,7 +14,6 @@ Tmax = 250;  % [Nm] maximum engine torque
 R = 0.318;  % [m] wheel radius
 v0 = 2;  % [km/h] initial car speed
 w0 = v0/3.6/R;  % [rad/s] initial wheel speed
-w_min = 1;  % [rad/s] minimum wheel speed for controller enable
 
 if controller_type == 1
     N = 4;  % prediction horizon length
@@ -26,8 +25,8 @@ elseif controller_type == 2
 %     load setup/kmpc_data.mat PU  % for input scaling
 elseif controller_type == 3
     % PI(D) parameters
-    P = 3000;
-    I = 6000;   
+    P = 800;
+    I = 700;   
 end
 
 %% Run the simulation

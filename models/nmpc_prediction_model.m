@@ -34,12 +34,17 @@ w = x(2);           % rotational speed of the wheel [rad/s]
 T = gear_ratio*u;   % torque acting on the wheel [Nm]
 % T_ref = p;        % desired wheel torque [Nm]
 
+e0 = 0.1;  % for slip modification
+kappa = s*w*R / ((w*R)^2 + e0);
+% kappa = s/(w*R);
+% kappa = kappa .* 1./(1+exp(-5*(w-1.5)));
+
 % dynamics
 Fz = m*g;
-Fx = mu_x * Fz * D*sin(C*atan(B*s/(w*R)));
+Fx = mu_x * Fz * D*sin(C*atan(B*kappa));
 sdot = (-R^2/Jw-1/m) * Fx + T*R/Jw;
 w_dot = 1/Jw * (T-Fx*R);
-e_int_dot = kappa_ref - s/(w*R);
+e_int_dot = kappa_ref - kappa;
 
 xdot = [sdot; w_dot; e_int_dot];
 

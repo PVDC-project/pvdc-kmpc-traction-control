@@ -1,6 +1,7 @@
 function model = simulation_model()
 % TODO: find realistic motor torque limit and driving situation for slip
 % wet asphalt? (Fig. 4 in https://ieeexplore.ieee.org/document/6043067)
+% Burckhardt model: p.24 in https://sci-hub.st/10.1007/978-1-84996-350-3
 
 import casadi.*
 

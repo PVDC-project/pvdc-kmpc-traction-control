@@ -110,8 +110,13 @@ function f = LSobjective(z,p,R,kappa_ref)
     w_x1 = 1e3 / 1^2;       % wheel slip velocity tracking error weight
     w_x3 = 1e5 / 1^2;       % integral state weight
     w_u = 1e-2 / (250^2);   % torque reduction weight
+    s = z(2); w = z(3);
+    e0 = 0.1;  % for slip modification
+    kappa = s*w*R / ((w*R)^2 + e0);
+%     kappa = s/(w*R);
+%     kappa = kappa .* 1./(1+exp(-5*(w-1.5)));
     f = [sqrt(2*w_u)*(z(1)-p(1));                       % torque reduction cost
-         sqrt(2*w_x1)*(kappa_ref-z(2)/(z(3)*R));   % tracking error cost  
+         sqrt(2*w_x1)*(kappa_ref-kappa);   % tracking error cost  
          sqrt(2*w_x3)*z(4)];                            % integral state cost
 % sqrt(2*w_x1)*(z(2)-kappa_ref*z(3)*R);  % tracking error cost
 % sqrt(2*w_x1)*(kappa_ref-z(2)/(z(3)*R+1e-3));  % tracking error cost  
