@@ -10,7 +10,7 @@ nx = 2;  % vehicle speed, wheel speed
 nu = 1;  % wheel torque
 
 % system parameters
-m = 1600/4;     % [kg] quarter car mass
+m = 1400/4;     % [kg] quarter car mass
 g = 9.81;       % [m/s^2] gravity constant
 R = 0.318;      % [m] wheel radius
 Jw = 1.22;      % [kg*m^2] moment of inertia for one wheel and half-axle
@@ -43,7 +43,8 @@ sym_p = mu_x;
 
 % dynamics
 Fz = m*g;
-kappa = (w*R-v)/(w*R);
+e0 = 0.1;  % for slip modification
+kappa = (w*R-v)*w*R / ((w*R)^2 + e0);
 Fx = mu_x * Fz * D*sin(C*atan(B*kappa));
 expr_f_expl = vertcat(Fx/m, ...
                       1/Jw * (T-Fx*R));

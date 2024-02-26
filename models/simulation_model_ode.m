@@ -7,7 +7,7 @@ function xdot = simulation_model_ode(x,u,p)
 % nu = 1;  % wheel torque
 
 % system parameters
-m = 1600/4;     % [kg] quarter car mass
+m = 1400/4;     % [kg] quarter car mass
 g = 9.81;       % [m/s^2] gravity constant
 R = 0.318;      % [m] wheel radius
 Jw = 1.22;      % [kg*m^2] moment of inertia for one wheel and half-axle
@@ -33,7 +33,8 @@ T = min(u,T_max);   % motor torque acting on the wheel [Nm]
 
 % dynamics
 Fz = m*g;
-kappa = (w*R-v)/(w*R);
+e0 = 0.1;  % for slip modification
+kappa = s*w*R / ((w*R)^2 + e0);
 Fx = mu_x * Fz * D*sin(C*atan(B*kappa));
 vdot = Fx/m;
 wdot = 1/Jw * (T-Fx*R);

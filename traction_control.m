@@ -2,14 +2,14 @@
 clear all;close all;clc;
 
 %% Environment setup
-controller_type = 3;  % 0 - off, 1 - NMPC, 2 - KMPC, 3 - PID
-compile_for_simulink = 1;
+controller_type = 1;  % 0 - off, 1 - NMPC, 2 - KMPC, 3 - PID
+compile_for_simulink = 0;
 model_name = 'tc';
 
 addpath('./models')             % prediction and simulation models
 addpath('./setup')              % controller and simulation setup
 addpath('./functions')          % utility functions
-addpath('./postprocessing/')    % plotting
+addpath('./postprocessing')    % plotting
 
 %% Simulation setup
 Ts = 2e-3;  % [s] sampling time
@@ -25,14 +25,10 @@ T_max = sim_model.max_torque;  % [Nm] maximum wheel torque
 N = 4;      % prediction horizon length
 T = N*Ts;   % [s] horizon length time
 
-w_x1 = 1e3;  % tracking error cost
-w_x3 = 1e1;  % integral state cost
-w_u = 1e-2;  % torque reduction cost
-
 if controller_type == 1
     nmpc_setup(N,Ts,R,kappa_ref,compile_for_simulink);
 elseif controller_type == 2 
-    kmpc_setup(N,Ts,R,kappa_ref,compile_for_simulink,w_u,w_x1,w_x3);
+    kmpc_setup(N,Ts,R,kappa_ref,compile_for_simulink);
     load setup/kmpc_data.mat PU  % for input scaling
 elseif controller_type == 3
     Kp = 7500;  % Proportional gain
@@ -73,9 +69,9 @@ distance = 0;  % maximize final distance
 
 for ii=1:N_sim
     % piecewise varying friction coefficient
-    if distance >= 0; mu_x = 0.15; end
-    if distance > 4; mu_x = 0.05; end
-    if distance > 7.5; mu_x = 0.3; end
+    if distance >= 0; mu_x = 0.3; end
+    if distance > 4; mu_x = 0.15; end
+    if distance > 7.5; mu_x = 0.6; end
 
     if ~controller_type
         u_sim(:,ii) = T_ref(ii);
@@ -84,11 +80,13 @@ for ii=1:N_sim
             problem.xinit = x_ocp(:,ii);
             problem.x0 = repmat(ones(4,1), N, 1);  % solver initial guess
             warning('Fix solver initial guess')
-            warning('Fix integral state')
             problem.hu = repmat(T_ref(ii), N, 1);
             problem.hl = zeros(N, 1);
             problem.all_parameters = repmat([T_ref(ii);mu_x], N, 1);
             [output, exitflag, info] = nmpc(problem);
+            if ~isfield(output,'u0') && isfield(output,'zopt')
+                output.u0 = output.zopt(1);
+            end
         end
         
         if controller_type == 2  % KMPC
@@ -147,8 +145,11 @@ for ii=1:N_sim
     v = x_sim(1,ii+1);
     w = x_sim(2,ii+1);
     s = w*R-v;
-    if T_ref(ii)>0  % integrate only after the torque ramp starts
-        e_int = e_int + (kappa_ref*w*R-s) * Ts;
+    e0 = 0.1;  % for slip modification
+    kappa = (w*R-v)*w*R / ((w*R)^2 + e0);
+    if T_ref(ii)>0  && ...              % integrate only after the torque ramp starts
+       abs(u_sim(:,ii)-T_ref(ii))>1     % anti-windup
+        e_int = e_int + (kappa_ref-kappa) * Ts;
     end
     x_ocp(:,ii+1) = [s; w; e_int];
     

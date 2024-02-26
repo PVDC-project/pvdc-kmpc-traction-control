@@ -42,9 +42,11 @@ plot(t_sim(1:end-1), T_ref,'r--');
 ylabel('$T$ [Nm]')
 % slip
 subplot(4,1,4);
-vx = x_sim(1,:);
-omega = x_sim(2,:);
-slip = (omega*R-vx) ./ (omega*R);
+v = x_sim(1,:);
+w = x_sim(2,:);
+e0 = 0.1;  % for slip modification
+slip = (w*R-v).*w*R ./ ((w*R).^2 + e0);
+% slip = (omega*R-vx) ./ (omega*R);
 plot(t_sim,slip)
 hold on
 yline(kappa_ref,'r--')
