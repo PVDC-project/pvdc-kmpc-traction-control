@@ -49,7 +49,7 @@ end
 %% solver settings
 algorithm = 'PDIP';  % https://forces.embotech.com/Documentation/solver_options/index.html#solve-methods
 codeoptions = ForcesGetDefaultOptions('kmpc',algorithm,'double');
-codeoptions.printlevel = 1;  % summary line after each solve
+codeoptions.printlevel = 0;  % summary line after each solve
 codeoptions.overwrite = 1;  % always overwrite the solver
 % codeoptions.accuracy.ineq = 1e-4;  % infinity norm of residual for inequalities
 % codeoptions.accuracy.eq = 1e-4;    % infinity norm of residual for equalities
@@ -75,14 +75,14 @@ end
 addpath(solver_dir);
 cd(solver_dir);
 
-controller = optimizer(constraints, objective, [], params, outputs);
+% controller = optimizer(constraints, objective, [], params, outputs);
 optimizerFORCES(constraints, objective, codeoptions, params, outputs, parameter_names, output_names);
 
 cd('../');
 
 %% test call
-problem.z0 = rand(nz,1);
-problem.T_ref = 250;
+problem{1} = rand(nz,1);    % z0
+problem{2} = 250;           % T_ref
 
 [~, exitflag, ~] = kmpc(problem);
 assert(exitflag == 1, 'Some issue with FORCESPRO solver');

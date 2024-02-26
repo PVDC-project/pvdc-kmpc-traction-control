@@ -2,14 +2,13 @@
 clear all;close all;clc;
 
 %% Environment setup
-controller_type = 1;  % 0 - off, 1 - NMPC, 2 - KMPC, 3 - PID
+controller_type = 2;  % 0 - off, 1 - NMPC, 2 - KMPC, 3 - PID
 compile_for_simulink = 0;
-model_name = 'tc';
 
 addpath('./models')             % prediction and simulation models
 addpath('./setup')              % controller and simulation setup
 addpath('./functions')          % utility functions
-addpath('./postprocessing')    % plotting
+addpath('./postprocessing')     % plotting
 
 %% Simulation setup
 Ts = 2e-3;  % [s] sampling time
@@ -29,7 +28,7 @@ if controller_type == 1
     nmpc_setup(N,Ts,R,kappa_ref,compile_for_simulink);
 elseif controller_type == 2 
     kmpc_setup(N,Ts,R,kappa_ref,compile_for_simulink);
-    load setup/kmpc_data.mat PU  % for input scaling
+    load data/kmpc_data.mat PU  % for input scaling
 elseif controller_type == 3
     Kp = 7500;  % Proportional gain
     Ki = 1000;  % Integral gain
@@ -90,14 +89,16 @@ for ii=1:N_sim
         end
         
         if controller_type == 2  % KMPC
-            problem.minus_x0 = -lifting_function(x_ocp(:,ii));  % (negative) initial state
-            problem.T_ref = T_ref(ii)*ones(N,1);  % set for all stages
-            f = [-2*w_u*T_ref(ii); w_x1; -kappa_ref*w_x1*R; 0;  % linear cost term
-                 zeros(size(problem.minus_x0,1)-3,1)];  % extend for the lifted state
-            problem.linear_cost = repmat(f,N,1);  % set for all stages
-            [output, exitflag, info] = kmpc(problem);
+            problem{1} = lifting_function(x_ocp(:,ii));  % TODO: scale with PX
+            problem{2} = T_ref(ii);
+%             problem.minus_x0 = -lifting_function(x_ocp(:,ii));  % (negative) initial state
+%             problem.T_ref = T_ref(ii)*ones(N,1);  % set for all stages
+%             f = [-2*w_u*T_ref(ii); w_x1; -kappa_ref*w_x1*R; 0;  % linear cost term
+%                  zeros(size(problem.minus_x0,1)-3,1)];  % extend for the lifted state
+%             problem.linear_cost = repmat(f,N,1);  % set for all stages
+            [solout, exitflag, info] = kmpc(problem);
             info.fevalstime = 0;  % add to struct for statistics
-            output.u0 = mapminmax('reverse',output.u0,PU);  % unscale the input
+            output.u0 = mapminmax('reverse',solout{1}(:,1),PU);  % unscale the input
         end
         
         if controller_type == 3  % PID
