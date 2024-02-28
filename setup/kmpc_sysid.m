@@ -11,26 +11,27 @@ nx = simulation_model.nx;  % state size
 nu = simulation_model.nu;  % input size
 R = simulation_model.wheel_radius;   % [m] wheel radius
 T_max = simulation_model.max_torque;  % [Nm] maximum wheel torque
+mu_x = 0.3;  % [-] road-tire friction coefficient
 
 Ts = 2e-3;  % [s] sampling time
 
-sim = sim_setup(Ts);  % acados integrator setup
+sim = sim_setup(Ts,mu_x);  % acados integrator setup
 
 %% Data collection (v,w)
-rng(42)
+rng(42)  % fix seed for reproducibility
 disp('Starting data collection...')
-Ntraj = 100;    % total trajectories
-Nsim = 500;     % samples per trajectory
+Ntraj = 1000;    % total trajectories
+Nsim = 250;     % samples per trajectory
 
 % random control input forcing
-U_amplitude = 2*T_max;  % force slipping with extra torque
+U_amplitude = T_max;  % force slipping with extra torque
 U = U_amplitude * rand(1,Ntraj*Nsim);  % uniform distribution
-U = repelem(U,5);  % hold the input for a few samples (more realistic)
+U = repelem(U,10);  % hold the input for a few samples (more realistic)
 U = U(1:Ntraj*Nsim);  % trim to match the desired length
 % U = T_max*custom_prbs([nu Ntraj*Nsim], 0.5);  % PRBS
 % U = torque_ramp(0.1,0.6,0,T_max,h_sim,h_sim*Ntraj*Nsim);  % ramp
 
-% random initial condition
+% random initial condition from the given interval
 vx_low = 1/3.6;     % [m/s]
 vx_high = 20/3.6;   % [m/s]
 kappa_low = 0;      % [-] 

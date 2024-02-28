@@ -1,5 +1,5 @@
 %% Simulation model setup
-function simulation = sim_setup(h)
+function simulation = sim_setup(h,mu_x)
 sim_model = acados_sim_model();
 model = simulation_model();
 
@@ -17,7 +17,7 @@ sim_model.set('T', h_sim);
 % acados sim opts
 sim_opts = acados_sim_opts();
 sim_opts.set('num_steps', 4);
-sim_opts.set('parameter_values', 0.15);  % initial mu_x
+sim_opts.set('parameter_values', mu_x);  % initial mu_x
 
 % create sim
 simulation = acados_sim(sim_model, sim_opts);

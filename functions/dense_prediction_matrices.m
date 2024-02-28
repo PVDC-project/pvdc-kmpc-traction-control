@@ -1,7 +1,8 @@
-function [F,PHI,THETA] = dense_prediction_matrices(A, B, C, Np, Nc)
+function [F,PHI] = dense_prediction_matrices(A, B, C, Np)
 
-    % Calculation of prediction matrices of equation
-    % Y = F * X0 + PHI * U + THETA * d;
+    % Calculation of prediction matrices for dense dynamics
+    % Y = F * X0 + PHI * U
+    Nc = Np;  % same control and prediction horizon
     
     % Determine number of inputs, outputs and states
     [n_states, n_inputs] = size(B);
@@ -30,7 +31,7 @@ function [F,PHI,THETA] = dense_prediction_matrices(A, B, C, Np, Nc)
         f_row = (i * n_outputs) + 1;
         l_row = f_row + n_outputs - 1;
 
-        %Calculate matirx based on previous ca
+        %Calculate matrix based on previous ca
         F_aux = A(:,:,i+1)*F_aux;
         temp2 = C*F_aux;
         for j = f_row : n_outputs : l_row
@@ -83,7 +84,9 @@ function [F,PHI,THETA] = dense_prediction_matrices(A, B, C, Np, Nc)
             end
         end
     end
-
+    
+    %%
+    %{
     %% %%%%%% THETA matrix %%%%%%% %%
     % INIT %
     % Determine size of matrix THETA
@@ -121,6 +124,7 @@ function [F,PHI,THETA] = dense_prediction_matrices(A, B, C, Np, Nc)
             end
         end
     end
+    %}
     
 end
 
@@ -134,3 +138,37 @@ function M = MultiplyStateMatrices(A, i, n)
     end
 
 end
+
+% Korda:
+% Lifted matrices for MPC on horizon N
+% function [F, Phi] = dense_prediction_matrices(A,B,C,N,includex0)
+%     if(~exist('includex0','var'))
+%         includex0 = 0; % first block rows of Ab and Bb corresponding to x0 removed
+%     end
+%     
+%     % get system dimensions
+%     [nx,nu] = size(B);  % state and input size
+%     ny = size(C,1);  % output size
+%     
+%     % preallocate memory
+%     Ff = nan((N+1)*nx,nx);
+%     F = nan((N+1)*ny,nx);
+%     Phif = zeros((N+1)*nx, N*nu);
+%     Phi = zeros((N+1)*ny, N*nu);
+%     
+%     Ff(1:nx,:) = eye(nx,nx);  % initial state
+%     F(1:ny,:) = C;
+%     for i = 2:N+1
+%         Ff((i-1)*nx+1:i*nx,:) = Ff((i-2)*nx+1:(i-1)*nx,:)*A;
+%         F((i-1)*ny+1:i*ny,:) = C*Ff((i-1)*nx+1:i*nx,:);
+%         Phif((i-1)*nx+1:i*nx,:) = A * Phif((i-2)*nx+1:(i-1)*nx,:);
+%         Phif((i-1)*nx+1:nx*i,(i-2)*nu+1:nu*(i-1)) = B;
+%         Phi((i-1)*ny+1:ny*i,(i-2)*nu+1:nu*(i-1)) = C * 
+%     end
+%     if(includex0 == 0)  % Seems to take a lot of time if A is huge, possible to speedup
+%         % Ff = Ff(nx+1:end,:); 
+%         F = F(ny+1:end,:);
+%         % Phif = Phif(nx+1:end,:);
+%         Phi = Phi(ny+1:end,:);
+%     end
+% end

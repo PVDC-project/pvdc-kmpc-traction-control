@@ -19,6 +19,7 @@ sim_model = simulation_model();
 R = sim_model.wheel_radius;   % [m] wheel radius
 w0 = v0/R;  % [rad/s] initial wheel speed
 T_max = sim_model.max_torque;  % [Nm] maximum wheel torque
+mu_x = 0.3;  % [-] road-tire friction coefficient
 
 %% Create the controller
 N = 4;      % prediction horizon length
@@ -41,7 +42,7 @@ ocp_nu = 1;
 
 %% Create the simulation model
 % must be after FORCES controller setup, otherwise MATLAB crashes (?)
-simulation = sim_setup(Ts);
+simulation = sim_setup(Ts,mu_x);
 
 %% Closed loop simulation
 sim_x0 = [v0; w0];  % initial state
@@ -89,8 +90,8 @@ for ii=1:N_sim
         end
         
         if controller_type == 2  % KMPC
-            problem{1} = lifting_function(x_ocp(:,ii));  % TODO: scale with PX
-            problem{2} = T_ref(ii);
+            problem{1} = lifting_function(x_ocp(:,ii));  % scale and lift the state
+            problem{2} = mapminmax('apply',T_ref(ii),PU);  % scale the input reference
 %             problem.minus_x0 = -lifting_function(x_ocp(:,ii));  % (negative) initial state
 %             problem.T_ref = T_ref(ii)*ones(N,1);  % set for all stages
 %             f = [-2*w_u*T_ref(ii); w_x1; -kappa_ref*w_x1*R; 0;  % linear cost term
@@ -150,7 +151,7 @@ for ii=1:N_sim
     kappa = (w*R-v)*w*R / ((w*R)^2 + e0);
     if T_ref(ii)>0  && ...              % integrate only after the torque ramp starts
        abs(u_sim(:,ii)-T_ref(ii))>1     % anti-windup
-        e_int = e_int + (kappa_ref-kappa) * Ts;
+        e_int = e_int + (kappa_ref-kappa) * Ts;  % TODO: fix for Koopman
     end
     x_ocp(:,ii+1) = [s; w; e_int];
     
