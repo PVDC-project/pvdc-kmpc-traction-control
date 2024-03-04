@@ -55,10 +55,18 @@ algorithm = 'PDIP';  % https://forces.embotech.com/Documentation/solver_options/
 codeoptions = ForcesGetDefaultOptions('kmpc',algorithm,'double');
 codeoptions.printlevel = 0;  % summary line after each solve
 codeoptions.overwrite = 1;  % always overwrite the solver
+
+codeoptions.init = 1;  % centered start
+
+% Numerical instability debugging
+%https://forces.embotech.com/Documentation/high_level_interface/index.html#call-callback-ref
+% codeoptions.MEXinterface.dynamics = 1;
+% codeoptions.MEXinterface.inequalities = 1;
+% codeoptions.MEXinterface.objective = 1;
+
 % codeoptions.accuracy.ineq = 1e-4;  % infinity norm of residual for inequalities
 % codeoptions.accuracy.eq = 1e-4;    % infinity norm of residual for equalities
 % codeoptions.accuracy.mu = 1e-4;    % absolute duality gap
-% options.condense = 1; % enable state-elimination
 
 % Simulink block options
 if ~compile_for_simulink
@@ -79,15 +87,22 @@ end
 addpath(solver_dir);
 cd(solver_dir);
 
-% controller = optimizer(constraints, objective, [], params, outputs);
 optimizerFORCES(constraints, objective, codeoptions, params, outputs, parameter_names, output_names);
 
 cd('../');
+
+% YALMIP for comparison
+options = sdpsettings('solver','daqp','savesolverinput',1);
+controller = optimizer(constraints, objective, options, params, outputs);
 
 %% test call
 problem{1} = lifting_function([0;10;0]);  % z0
 problem{2} = 1;  % T_ref (scaled)
 
-[~, exitflag, ~] = kmpc(problem);
+[forces_sol, exitflag, info] = kmpc(problem);
+forces_sol{1}
+
+[yalmip_sol, yalmip_flag, ~, ~, ~, yalmip_struct] = controller(problem);
+
 assert(exitflag == 1, 'Test call of FORCESPRO solver failed');
 end

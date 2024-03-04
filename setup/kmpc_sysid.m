@@ -239,7 +239,7 @@ ylabel('T [Nm]')
 xlabel('time [ms]')
 
 %% save the approximated system matrices and lifting data
-save ../data/kmpc_data.mat Alift Blift Clift cent PX PU
+save ../models/kmpc_data.mat Alift Blift Clift cent PX PU
 
 %% Literature
 % Linear predictors for nonlinear dynamical systems: Koopman operator meets model predictive control
