@@ -6,25 +6,28 @@ addpath('../functions')
 addpath('../data')
 
 %% Simulation setup
-simulation_model = simulation_model();
-nx = simulation_model.nx;  % state size
-nu = simulation_model.nu;  % input size
-R = simulation_model.wheel_radius;   % [m] wheel radius
-T_max = simulation_model.max_torque;  % [Nm] maximum wheel torque
-mu_x = 0.3;  % [-] road-tire friction coefficient
-
 Ts = 2e-3;  % [s] sampling time
+mu_x = 0.3; % [-] road-tire friction coefficient
 
-sim = sim_setup(Ts,mu_x);  % acados integrator setup
+% use acados for creating the dataset (much faster)
+simulation = sim_setup_acados(Ts,mu_x);
+% simulation = @(x,u,p) simulation_model(x,u,p,Ts);
+
+VEHICLE = vehicle_parameters();
+R = VEHICLE.WHEEL_RADIUS;
+T_max = VEHICLE.MAX_MOTOR_TORQUE;
+nx = 2;
+nu = 1;
 
 %% Data collection (v,w)
 rng(42)  % fix seed for reproducibility
-disp('Starting data collection...')
-Ntraj = 1000;    % total trajectories
+disp('Collecting data...')
+Ntraj = 1000;   % total trajectories
 Nsim = 250;     % samples per trajectory
+print_step = Ntraj/10;  % print ten times
 
 % random control input forcing
-U_amplitude = T_max;  % force slipping with extra torque
+U_amplitude = 0.5 * T_max;
 U = U_amplitude * rand(1,Ntraj*Nsim);  % uniform distribution
 U = repelem(U,10);  % hold the input for a few samples (more realistic)
 U = U(1:Ntraj*Nsim);  % trim to match the desired length
@@ -33,9 +36,9 @@ U = U(1:Ntraj*Nsim);  % trim to match the desired length
 
 % random initial condition from the given interval
 vx_low = 1/3.6;     % [m/s]
-vx_high = 20/3.6;   % [m/s]
+vx_high = 5/3.6;    % [m/s]
 kappa_low = 0;      % [-] 
-kappa_high = 0.5;   % [-]
+kappa_high = 0.2;   % [-]
 vx_init = vx_low + (vx_high-vx_low) * rand(1,Ntraj);  % uniform distribution
 kappa_init = kappa_low + (kappa_high-kappa_low) * rand(1,Ntraj);  % uniform distribution
 w_init = vx_init ./ (R*(1-kappa_init));  % defined by slip and speed
@@ -48,25 +51,28 @@ Us = nan(nu,Ntraj*Nsim);
 
 % simulate Ntraj trajectories of Nsim samples
 for ii=1:Ntraj
+    if ~mod(ii,print_step)
+        disp(['Collected ',num2str(10*(ii/print_step)),'%'])
+    end
     Xcurrent = Xinit(:,ii);
     for jj=1:Nsim
         current_index = (ii-1)*Nsim + jj;  % index in the merged dataset
 
 	    % set initial state and input
-	    sim.set('x', Xcurrent);
-	    sim.set('u', U(:,current_index));
+	    simulation.set('x', Xcurrent);
+	    simulation.set('u', U(:,current_index));
 
         % initialize implicit integrator
-        if (strcmp(sim.opts_struct.method, 'irk'))
-            sim.set('xdot', zeros(nx,1));
-        elseif (strcmp(sim.opts_struct.method, 'irk_gnsf'))
-            n_out = sim.model_struct.dim_gnsf_nout;
-            sim.set('phi_guess', zeros(n_out,1));
+        if (strcmp(simulation.opts_struct.method, 'irk'))
+            simulation.set('xdot', zeros(nx,1));
+        elseif (strcmp(simulation.opts_struct.method, 'irk_gnsf'))
+            n_out = simulation.model_struct.dim_gnsf_nout;
+            simulation.set('phi_guess', zeros(n_out,1));
         end
 
 	    % simulate one step and get the next state
-	    sim.solve();
-	    Xnext = sim.get('xn');
+	    simulation.solve();
+	    Xnext = simulation.get('xn');
 
         % log states and inputs
         Xs(:,current_index) = Xcurrent;
@@ -77,7 +83,7 @@ for ii=1:Ntraj
         Xcurrent = Xnext;
     end
 end
-disp('Data collection done.')
+disp(['Data collection done.',newline])
 
 %% Visualize collected data
 figure;
@@ -110,7 +116,7 @@ end
 Xs = [Xs(2,:)*R-Xs(1,:); Xs(2,:)];
 Ys = [Ys(2,:)*R-Ys(1,:); Ys(2,:)];
 
-% TODO: handle e_int manually?
+% ----- e_int is handled manually -----
 % kappa_ref = 0.1;  % set in main
 % de_int = s - kappa_ref*w*R;  % integral state derivative
 % e_int_0 = 0;  % initial integral state
@@ -118,12 +124,16 @@ Ys = [Ys(2,:)*R-Ys(1,:); Ys(2,:)];
 % Xs = [s; w; e_int];
 
 %% Scale data for better accuracy
-% mapminmax requires the Deep Learning Toolbox; TODO: implement custom
-XY = [Xs, Ys];  % single scaling for the states
-[XY,PX] = mapminmax(XY,0,1);  % map to [0,1] (only driving forward)
-Xs = XY(:,1:Nsim*Ntraj);  % retrieve the matrices
+% mapminmax requires the Deep Learning Toolbox
+% TODO: implement custom scaling
+% https://www.mathworks.com/help/deeplearning/ref/mapminmax.html#f8-2246466
+XY = [Xs, Ys];                  % single scaling for the states
+[XY,PX] = mapminmax(XY,0,1);    % map to [0,1] (only driving forward)
+Xs = XY(:,1:Nsim*Ntraj);        % retrieve the matrices
 Ys = XY(:,Nsim*Ntraj+1:end);
-[Us,PU] = mapminmax(Us,0,1);  % scale the input
+[Us,PU] = mapminmax(Us,0,1);    % scale the input
+
+disp('Data scaled.')
 
 %{
 % MATLAB's normalize function can be shadowed by MPT toolbox
@@ -139,20 +149,21 @@ cd(current_dir)
 % later use: X = MATLAB_normalize(X,"center",CX,"scale",SX)
 %}
 
-%% Koopman operator approximation
+%% Koopman operator approximation (EDMD)
 % basis function selection and lifting
-% TODO: generic lifting function (one sample), matlabFunction
-% TODO: use monomials?
+% TODO: generic lifting function (one sample), matlabFunction?
+% TODO: try different methods
 nrbf = 50;  % number of basis functions
 cent = rand(nx,nrbf)*2 - 1;  % RBF centers, uniform in [-1,1]
 rbf_type = 'thinplate';  % gauss, invquad, invmultquad, polyharmonic
-lift_fun = @(xx)( [xx;rbf(xx,cent,rbf_type)] );  % lifted state = [original state; basis functions]
-nz = nx + nrbf;  % size of the lifted state
 
-Xlift = lift_fun(Xs);
-Ylift = lift_fun(Ys);
+save ../models/kmpc_data.mat PX PU cent rbf_type
 
-disp('Lifting done.')
+Xlift = lifting_function(Xs);
+Ylift = lifting_function(Ys);
+nz = size(Xlift,1);  % size of the lifted state
+
+disp(['Data lifted.',newline])
 
 disp('Starting regression for A,B,C...')
 % EDMD
@@ -168,39 +179,48 @@ Clift = [eye(nx), zeros(nx,nz-nx)];  % set the output matrix manually
 disp('Regression for A, B, C done.');
 
 regression_residual = norm(Ylift - Alift*Xlift - Blift*Us,'fro') / norm(Ylift,'fro');
-disp(['Regression residual: ', num2str(regression_residual)]);
+disp(['Regression residual: ', num2str(regression_residual),newline]);
 
 %% Test predictor performance 
-T_test = 0.02;  % [s] prediction horizon
-N_test = T_test / Ts;  % number of prediction steps
+N_test = 10;  % number of prediction steps for testing
 
-U = T_max*custom_prbs([nu N_test], 0.5);  % random control input
+% random control input
+U = T_max/2 * custom_prbs([nu N_test], 0.5);
 % U = torque_ramp(0,0.8*T_test,0,T_max,h_sim,T_test);  % ramp
 
-% TODO: random initial state
-vx0 = (vx_low + vx_high)/2;  % [m/s]
-kappa0 = 0.1;  % [-]
+% initial state
+% TODO: random + repeat several times?
+vx0 = (vx_low + vx_high)/2;
+kappa0 = 0.1;
 x0 = [vx0; vx0/(R*(1-kappa0))];
 
+% sanity check
+warning('remove sanity check')
+U = zeros(1,N_test);
+x0 = [vx0;vx0/R];
+
+% logs
 X_true = nan(nx,N_test);  % true system state
 Z = nan(nz,N_test);       % Koopman internal state
 
-X_true(:,1) = x0;  % [v;w]
-s0 = [x0(2)*R-x0(1); x0(2)];  % [s;w]
-Z(:,1) = lift_fun(mapminmax('apply',s0,PX));  % scale and lift the initial state
+% initialize
+X_true(:,1) = x0;               % [v;w]
+s0 = [x0(2)*R-x0(1); x0(2)];    % [s;w]
+s0 = mapminmax('apply',s0,PX);  % scale the initial state
+Z(:,1) = lifting_function(s0);  % lift the initial state
 
 for ii = 1:N_test-1
     % true dynamics
-    sim.set('x', X_true(:,ii));
-    sim.set('u', U(:,ii));
-    if (strcmp(sim.opts_struct.method, 'irk'))
-        sim.set('xdot', zeros(nx,1));
-    elseif (strcmp(sim.opts_struct.method, 'irk_gnsf'))
-        n_out = sim.model_struct.dim_gnsf_nout;
-        sim.set('phi_guess', zeros(n_out,1));
+    simulation.set('x', X_true(:,ii));
+    simulation.set('u', U(:,ii));
+    if (strcmp(simulation.opts_struct.method, 'irk'))
+        simulation.set('xdot', zeros(nx,1));
+    elseif (strcmp(simulation.opts_struct.method, 'irk_gnsf'))
+        n_out = simulation.model_struct.dim_gnsf_nout;
+        simulation.set('phi_guess', zeros(n_out,1));
     end
-    sim.solve();
-    X_true(:,ii+1) = sim.get('xn');
+    simulation.solve();
+    X_true(:,ii+1) = simulation.get('xn');
 
     % Koopman predictor
     u = mapminmax('apply',U(:,ii),PU);  % scale the input
@@ -239,7 +259,8 @@ ylabel('T [Nm]')
 xlabel('time [ms]')
 
 %% save the approximated system matrices and lifting data
-save ../models/kmpc_data.mat Alift Blift Clift cent PX PU
+save ../models/kmpc_data.mat Alift Blift Clift cent rbf_type PX PU
+disp('Koopman model saved in ../models/kmpc_data.mat')
 
 %% Literature
 % Linear predictors for nonlinear dynamical systems: Koopman operator meets model predictive control

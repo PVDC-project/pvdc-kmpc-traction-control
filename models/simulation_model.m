@@ -1,67 +1,48 @@
-function model = simulation_model()
+%% function for simulating one time step of wheel dynamics
+function xnext = simulation_model(x,u,p,Ts)
+% define function for ode45, t must be used, dim(dy)=dim(y)
+odefun = @(t,y) [simulation_model_ode(y(1:2),y(3),y(4));0;0];
+% simulate one timestep
+[~,y] = ode45(odefun,[0 Ts],[x;u;p]);
+% get the last simulated state
+xnext = y(end,1:size(x,1))';
+end
+
+function xdot = simulation_model_ode(x,u,p)
 % TODO: find realistic motor torque limit and driving situation for slip
 % wet asphalt? (Fig. 4 in https://ieeexplore.ieee.org/document/6043067)
-% Burckhardt model: p.24 in https://sci-hub.st/10.1007/978-1-84996-350-3
-
-import casadi.*
 
 % system dimensions
-nx = 2;  % vehicle speed, wheel speed
-nu = 1;  % wheel torque
+% nx = 2;  % vehicle speed, wheel speed
+% nu = 1;  % motor torque
 
-% system parameters
-m = 1400/4;     % [kg] quarter car mass
-g = 9.81;       % [m/s^2] gravity constant
-R = 0.318;      % [m] wheel radius
-Jw = 1.22;      % [kg*m^2] moment of inertia for one wheel and half-axle
-T_max = 250;    % [Nm] maximum motor torque
-gear_ratio = 3; % [-] ratio of wheel torque and engine torque
-% mu_x = 0.15;    % [-] tire-road friction coefficient
+% load vehicle parameters
+VEHICLE = vehicle_parameters();
+m = VEHICLE.MASS;
+g = VEHICLE.GRAVITY;
+R = VEHICLE.WHEEL_RADIUS;
+Jw = VEHICLE.WHEEL_INERTIA;
+T_max = VEHICLE.MAX_MOTOR_TORQUE;
+gear_ratio = VEHICLE.GEAR_RATIO;
 
-% tire model coefficients Fx=mu_x*Fz*D*sin(C*arctan(B*kappa))
-% Carmaker MF_205_60R15_V91.tir
-D = 1.2005;
-C = 1.4010;
-B = 17.1571;
+D = VEHICLE.MF_D;
+C = VEHICLE.MF_C;
+B = VEHICLE.MF_B;
 
-% Saab?
-% D = 1.2069;
-% C = 1.35;
-% K = 30;
-% B = K/(C*D);
+mu_x = p(1);    % [-] tire-road friction coefficient
 
-% named symbolic variables
-v = SX.sym('v');    % longitudinal speed of the vehicle [m/s]
-w = SX.sym('w');    % rotational speed of the wheel [rad/s]
-T = SX.sym('T');    % motor moment acting on the wheel [Nm]
-mu_x = SX.sym('mu_x');  % tire-road friction coefficient [-]
-
-% generic symbolic variables
-sym_x = vertcat(v, w);
-sym_xdot = SX.sym('xdot', nx, 1);
-sym_u = T;
-sym_p = mu_x;
+% state and input variables
+v = x(1);           % longitudinal speed of the vehicle [m/s]
+w = x(2);           % rotational speed of the wheel [rad/s]
+T = gear_ratio * min(u,T_max);   % torque acting on the wheel [Nm]
 
 % dynamics
 Fz = m*g;
 e0 = 0.1;  % for slip modification
 kappa = (w*R-v)*w*R / ((w*R)^2 + e0);
 Fx = mu_x * Fz * D*sin(C*atan(B*kappa));
-expr_f_expl = vertcat(Fx/m, ...
-                      1/Jw * (gear_ratio*T-Fx*R));
-expr_f_impl = expr_f_expl - sym_xdot;
+vdot = Fx/m;
+wdot = 1/Jw * (T-Fx*R);
 
-% populate structure
-model.nx = nx;
-model.nu = nu;
-model.sym_x = sym_x;
-model.sym_xdot = sym_xdot;
-model.sym_u = sym_u;
-model.sym_p = sym_p;
-model.expr_f_expl = expr_f_expl;
-model.expr_f_impl = expr_f_impl;
-
-model.wheel_radius = R;
-model.max_torque = T_max;
-
+xdot = [vdot;wdot];
 end

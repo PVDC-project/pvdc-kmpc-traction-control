@@ -1,5 +1,5 @@
 %% Koopman MPC controller setup
-function [] = kmpc_setup(N,Ts,Rw,kappa_ref,compile_for_simulink)
+function controller = kmpc_setup(N,Ts,Rw,kappa_ref,compile_for_simulink)
 %% system dynamics
 load kmpc_data.mat Alift Blift Clift PX;
 
@@ -22,10 +22,12 @@ ny = size(Clift,1);         % number of outputs
 
 %% MPC parameters
 % cost matrices
-w_x1 = 1e-2;           % wheel slip velocity tracking error weight (unscaled)
-w_x3 = 1e4;      % integral state weight (unscaled)
-w_u = 1e-2;         % torque reduction weight (scaled)
-w_x1 = 1e-6; w_x3 = 1e-6; w_u = 1e6;  % test MPC functionality
+w_x1 = 1e4;           % wheel slip velocity tracking error weight (unscaled)
+w_x3 = 0*1e2;      % integral state weight (unscaled)
+w_u = 1e-6;         % torque reduction weight (scaled)
+
+% w_x1 = 1e-6; w_x3 = 1e-6; w_u = 1e6;  % test MPC functionality
+
 Q = diag([w_x1 0 w_x3]);    % state cost, no penalty on wheel speed
 R = w_u;                    % input cost
 
@@ -64,9 +66,9 @@ codeoptions.init = 1;  % centered start
 % codeoptions.MEXinterface.inequalities = 1;
 % codeoptions.MEXinterface.objective = 1;
 
-% codeoptions.accuracy.ineq = 1e-4;  % infinity norm of residual for inequalities
-% codeoptions.accuracy.eq = 1e-4;    % infinity norm of residual for equalities
-% codeoptions.accuracy.mu = 1e-4;    % absolute duality gap
+% codeoptions.accuracy.ineq = 1e-8;  % infinity norm of residual for inequalities
+% codeoptions.accuracy.eq = 1e-8;    % infinity norm of residual for equalities
+% codeoptions.accuracy.mu = 1e-8;    % absolute duality gap
 
 % Simulink block options
 if ~compile_for_simulink
@@ -87,22 +89,27 @@ end
 addpath(solver_dir);
 cd(solver_dir);
 
-optimizerFORCES(constraints, objective, codeoptions, params, outputs, parameter_names, output_names);
+% optimizerFORCES(constraints, objective, codeoptions, params, outputs, parameter_names, output_names);
 
 cd('../');
 
 % YALMIP for comparison
-options = sdpsettings('solver','daqp','savesolverinput',1);
+options = sdpsettings('solver','daqp','savesolverinput',1,'savesolveroutput',1);
 controller = optimizer(constraints, objective, options, params, outputs);
 
 %% test call
-problem{1} = lifting_function([0;10;0]);  % z0
+disp([newline,'Testing the generated solver...'])
+state_to_lift = mapminmax('apply',[0;10],PX);
+problem{1} = [lifting_function(state_to_lift); 0];  % z0 (no integral state)
 problem{2} = 1;  % T_ref (scaled)
 
-[forces_sol, exitflag, info] = kmpc(problem);
-forces_sol{1}
+% [forces_sol, exitflag, info] = kmpc(problem);
+% disp(['FORCES test solution: ',num2str(forces_sol{1})])
+% assert(exitflag == 1, 'Test call of FORCESPRO solver failed');
 
 [yalmip_sol, yalmip_flag, ~, ~, ~, yalmip_struct] = controller(problem);
+disp(['YALMIP test solution: ',num2str(yalmip_sol{1})])
+assert(yalmip_flag == 0, 'Test call with YALMIP failed')
 
-assert(exitflag == 1, 'Test call of FORCESPRO solver failed');
+% assert(max(abs(yalmip_sol{1}-forces_sol{1})) < 1e-6, 'FORCES and YALMIP solutions differ too much.')
 end

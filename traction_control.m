@@ -5,6 +5,11 @@ clear all;close all;clc;
 controller_type = 2;  % 0 - off, 1 - NMPC, 2 - KMPC, 3 - PID
 compile_for_simulink = 0;
 
+if controller_type == 2
+    warning('using YALMIP, solver statistics are incorrect')
+    warning('integral state for KMPC not fixed')
+end
+
 addpath('./models')             % prediction and simulation models
 addpath('./setup')              % controller and simulation setup
 addpath('./functions')          % utility functions
@@ -12,24 +17,28 @@ addpath('./postprocessing')     % plotting
 
 %% Simulation setup
 Ts = 2e-3;  % [s] sampling time
+
+% inputs: [v;w], T, mu_x
+% output: [v;w] after Ts
+simulation = @(x,u,p) simulation_model(x,u,p,Ts);
+sim_nx = 2;
+
+VEHICLE = vehicle_parameters();
+R = VEHICLE.WHEEL_RADIUS;
+T_max = VEHICLE.MAX_MOTOR_TORQUE;
+
 kappa_ref = 0.1;  % slip reference
-v0 = 5;  % [km/Ts] initial car speed
-v0 = v0 / 3.6;  % convert to m/s
-sim_model = simulation_model();
-R = sim_model.wheel_radius;   % [m] wheel radius
-w0 = v0/R;  % [rad/s] initial wheel speed
-T_max = sim_model.max_torque;  % [Nm] maximum wheel torque
 mu_x = 0.3;  % [-] road-tire friction coefficient
 
-%% Create the controller
+%% Controller setup
 N = 4;      % prediction horizon length
 T = N*Ts;   % [s] horizon length time
 
 if controller_type == 1
     nmpc_setup(N,Ts,R,kappa_ref,compile_for_simulink);
 elseif controller_type == 2 
-    kmpc_setup(N,Ts,R,kappa_ref,compile_for_simulink);
-    load data/kmpc_data.mat PU  % for input scaling
+    controller = kmpc_setup(N,Ts,R,kappa_ref,compile_for_simulink);
+    load models/kmpc_data.mat PX PU  % for state and input scaling
 elseif controller_type == 3
     Kp = 7500;  % Proportional gain
     Ki = 1000;  % Integral gain
@@ -40,24 +49,23 @@ end
 ocp_nx = 3;
 ocp_nu = 1;
 
-%% Create the simulation model
-% must be after FORCES controller setup, otherwise MATLAB crashes (?)
-simulation = sim_setup(Ts,mu_x);
-
 %% Closed loop simulation
-sim_x0 = [v0; w0];  % initial state
-ocp_x0 = [w0*R-v0; w0; 0];  % wheel slip velocity, wheel speed, integral state
-T_sim = 3;  % [s] simulation time
-N_sim = T_sim/Ts;  % number of simulation steps
-print_step = ceil(N_sim/10);  % print stats 10 times during the simulation
+v0 = 5;         % [km/h] initial car speed
+v0 = v0 / 3.6;  % convert to m/s
+w0 = v0/R;      % [rad/s] initial wheel speed
+
+sim_x0 = [v0; w0];              % initial state
+ocp_x0 = [w0*R-v0; w0; 0];      % wheel slip velocity, wheel speed, integral state
+T_sim = 3;                      % [s] simulation time
+N_sim = T_sim/Ts;               % number of simulation steps
+print_step = ceil(N_sim/10);    % print stats 10 times during the simulation
 
 % state and input logging
-sim_nx = sim_model.nx;
 x_sim = nan(sim_nx, N_sim+1);  % simulated state log
 x_sim(:,1) = sim_x0;
 x_ocp = nan(ocp_nx, N_sim+1);  % predicted state log
 x_ocp(:,1) = ocp_x0;
-u_sim = nan(ocp_nu, N_sim);  % control input log
+u_sim = nan(ocp_nu, N_sim);    % control input log
 
 % NMPC performance logging
 solve_time_log = nan(1,N_sim);
@@ -90,16 +98,42 @@ for ii=1:N_sim
         end
         
         if controller_type == 2  % KMPC
-            problem{1} = lifting_function(x_ocp(:,ii));  % scale and lift the state
-            problem{2} = mapminmax('apply',T_ref(ii),PU);  % scale the input reference
+            % scale and lift the state
+            state_to_lift = mapminmax('apply',x_ocp(1:2,ii),PX);
+            problem{1} = [lifting_function(state_to_lift); x_ocp(3,ii)];  % add integral state manually
+
+            % scale the input reference
+            problem{2} = mapminmax('apply',T_ref(ii),PU);
+
+            % FORCES
 %             problem.minus_x0 = -lifting_function(x_ocp(:,ii));  % (negative) initial state
 %             problem.T_ref = T_ref(ii)*ones(N,1);  % set for all stages
 %             f = [-2*w_u*T_ref(ii); w_x1; -kappa_ref*w_x1*R; 0;  % linear cost term
 %                  zeros(size(problem.minus_x0,1)-3,1)];  % extend for the lifted state
 %             problem.linear_cost = repmat(f,N,1);  % set for all stages
-            [solout, exitflag, info] = kmpc(problem);
-            info.fevalstime = 0;  % add to struct for statistics
-            output.u0 = mapminmax('reverse',solout{1}(:,1),PU);  % unscale the input
+
+%             [solout, exitflag, info] = kmpc(problem);
+%             info.fevalstime = 0;  % add to struct for statistics
+%             output.u0 = mapminmax('reverse',solout{1}(:,1),PU);  % unscale the input
+
+            % YALMIP
+            [yalmip_sol, exitflag, a, b, c, yalmip_struct] = controller(problem);
+            if isfield(yalmip_struct.solveroutput,'output')
+                info.it = yalmip_struct.solveroutput.output.iterations;  % quadprog
+            elseif isfield(yalmip_struct.solveroutput,'iter')
+                info.it = yalmip_struct.solveroutput.iter;  % DAQP
+            elseif isfield(yalmip_struct.solveroutput,'info')
+                info.it = yalmip_struct.solveroutput.info.iter;  % OSQP
+            else
+                info.it = 1;  % other solvers
+            end
+            info.solvetime = yalmip_struct.solvertime;
+            info.fevalstime = 0;
+            if exitflag~=0
+                output.u0 = 0; warning('solver failed')
+            else
+                output.u0 = mapminmax('reverse',yalmip_sol{1}(:,1),PU);
+            end
         end
         
         if controller_type == 3  % PID
@@ -117,31 +151,21 @@ for ii=1:N_sim
         status = exitflag;  % https://forces.embotech.com/Documentation/exitflags/index.html#tab-exitflag-values
         status_log(ii) = status;
         solve_time_log(ii) = info.solvetime + info.fevalstime;
-        if (status==1 && ~mod(ii,print_step))
+        if ~mod(ii,print_step)
             num_iter = info.it;
             time_tot = info.solvetime + info.fevalstime;
             fprintf('\nstatus = %d, num_iter = %d, time_tot = %f [ms]\n',status, num_iter, time_tot*1e3);
         end
-        if status~=1
-            warning(['solver failed with status ',num2str(status)]);
-        end
+%         if status~=1
+%             warning(['solver failed with status ',num2str(status)]);
+%         end
 
         % get solution for sim
         u_sim(:,ii) = output.u0;        
     end
 
-	% set initial state of sim
-	simulation.set('x', x_sim(:,ii));
-	% set input in sim
-	simulation.set('u', u_sim(:,ii));
-    % set parameter
-    simulation.set('p', mu_x);
-
-	% simulate state
-	simulation.solve();
-
-	% get new sim state
-	x_sim(:,ii+1) = simulation.get('xn');
+	% simulate one timestep
+	x_sim(:,ii+1) = simulation(x_sim(:,ii),u_sim(:,ii),mu_x);
 
     % get new ocp state
     v = x_sim(1,ii+1);

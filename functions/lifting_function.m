@@ -1,15 +1,25 @@
 function lifted_state = lifting_function(original_state)
-% don't lift the integral state
-state_to_lift = original_state(1:2);
+persistent kmpc_data
+if isempty(kmpc_data)
+    kmpc_data = load('kmpc_data.mat');
+end
 
-% scale the state before lifting
-PX = load('kmpc_data.mat','PX').PX;
-state_to_lift = mapminmax('apply',state_to_lift,PX);
+% don't lift the integral state (if present)
+if size(original_state,1) == 3
+    state_to_lift = original_state(1:2,:);
+else
+    state_to_lift = original_state;
+end
 
-% basis function selection and lifting (TODO: use monomials?)
-cent = load('kmpc_data.mat','cent').cent;
-rbf_type = 'thinplate';  % gauss, invquad, invmultquad, polyharmonic
+% basis function selection
+cent = kmpc_data.cent;
+rbf_type = kmpc_data.rbf_type;
 
 % lifted state = [original state; basis functions]
-lifted_state = [state_to_lift; original_state(3); rbf(state_to_lift,cent,rbf_type)];
+if size(original_state,1) == 3
+    lifted_state = [state_to_lift; original_state(3,:); rbf(state_to_lift,cent,rbf_type)];
+else
+    lifted_state = [state_to_lift; rbf(state_to_lift,cent,rbf_type)];
+end
+
 end
