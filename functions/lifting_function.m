@@ -1,25 +1,23 @@
 function lifted_state = lifting_function(original_state)
-persistent kmpc_data
+% load parameters once for faster evaluation
+persistent kmpc_data vehicle_params R
 if isempty(kmpc_data)
     kmpc_data = load('kmpc_data.mat');
+    vehicle_params = vehicle_parameters();
+    R = vehicle_params.WHEEL_RADIUS;
 end
 
-% don't lift the integral state (if present)
-if size(original_state,1) == 3
-    state_to_lift = original_state(1:2,:);
-else
-    state_to_lift = original_state;
-end
+% calculate slip
+reversed_state = mapstd('reverse',original_state,kmpc_data.PX);
+s = reversed_state(1,:);
+w = reversed_state(2,:);
 
-% basis function selection
-cent = kmpc_data.cent;
-rbf_type = kmpc_data.rbf_type;
+e0 = 0.1;  % for slip modification
+kappa = s.*w*R ./ ((w*R).^2 + e0);
 
-% lifted state = [original state; basis functions]
-if size(original_state,1) == 3
-    lifted_state = [state_to_lift; original_state(3,:); rbf(state_to_lift,cent,rbf_type)];
-else
-    lifted_state = [state_to_lift; rbf(state_to_lift,cent,rbf_type)];
-end
+% lifted state = [original state; slip; basis functions]
+lifted_state = [original_state;
+                kappa;
+                rbf(original_state,kmpc_data.cent,kmpc_data.rbf_type)];
 
 end

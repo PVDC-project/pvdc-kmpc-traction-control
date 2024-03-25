@@ -1,5 +1,4 @@
 %% Koopman operator identification for traction control
-% function koopman_system = koopman_sysid()
 clear all;clc;close all;
 addpath('../models')
 addpath('../functions')
@@ -9,9 +8,8 @@ addpath('../data')
 Ts = 2e-3;  % [s] sampling time
 mu_x = 0.3; % [-] road-tire friction coefficient
 
-% use acados for creating the dataset (much faster)
+% use acados for creating the dataset (much faster than ode45)
 simulation = sim_setup_acados(Ts,mu_x);
-% simulation = @(x,u,p) simulation_model(x,u,p,Ts);
 
 VEHICLE = vehicle_parameters();
 R = VEHICLE.WHEEL_RADIUS;
@@ -128,10 +126,13 @@ Ys = [Ys(2,:)*R-Ys(1,:); Ys(2,:)];
 % TODO: implement custom scaling
 % https://www.mathworks.com/help/deeplearning/ref/mapminmax.html#f8-2246466
 XY = [Xs, Ys];                  % single scaling for the states
-[XY,PX] = mapminmax(XY,0,1);    % map to [0,1] (only driving forward)
+[XY,PX] = mapstd(XY);    % map to [0,1] (only driving forward)
+% [XY,PX] = mapminmax(XY,0,1);    % map to [0,1] (only driving forward)
 Xs = XY(:,1:Nsim*Ntraj);        % retrieve the matrices
 Ys = XY(:,Nsim*Ntraj+1:end);
-[Us,PU] = mapminmax(Us,0,1);    % scale the input
+
+[Us,PU] = mapstd(Us);    % scale the input
+% [Us,PU] = mapminmax(Us,0,1);    % scale the input
 
 disp('Data scaled.')
 
@@ -195,9 +196,9 @@ kappa0 = 0.1;
 x0 = [vx0; vx0/(R*(1-kappa0))];
 
 % sanity check
-warning('remove sanity check')
-U = zeros(1,N_test);
-x0 = [vx0;vx0/R];
+% warning('remove sanity check')
+% U = zeros(1,N_test);
+% x0 = [vx0;vx0/R];
 
 % logs
 X_true = nan(nx,N_test);  % true system state
@@ -206,7 +207,7 @@ Z = nan(nz,N_test);       % Koopman internal state
 % initialize
 X_true(:,1) = x0;               % [v;w]
 s0 = [x0(2)*R-x0(1); x0(2)];    % [s;w]
-s0 = mapminmax('apply',s0,PX);  % scale the initial state
+s0 = mapstd('apply',s0,PX);  % scale the initial state
 Z(:,1) = lifting_function(s0);  % lift the initial state
 
 for ii = 1:N_test-1
@@ -223,14 +224,14 @@ for ii = 1:N_test-1
     X_true(:,ii+1) = simulation.get('xn');
 
     % Koopman predictor
-    u = mapminmax('apply',U(:,ii),PU);  % scale the input
+    u = mapstd('apply',U(:,ii),PU);  % scale the input
     Z(:,ii+1) = Alift * Z(:,ii) + Blift * u;
 end
 
 % extract original state estimates from the Koopman predictor
 X_koop = Clift * Z;
 % reverse the scaling
-X_koop = mapminmax('reverse',X_koop,PX);
+X_koop = mapstd('reverse',X_koop,PX);
 
 % transform (v,w) into (s,w) for the true system
 X_true(1,:) = X_true(2,:)*R - X_true(1,:);  % s = w*R-v

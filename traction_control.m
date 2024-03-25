@@ -2,14 +2,6 @@
 clear all;close all;clc;
 
 %% Environment setup
-controller_type = 2;  % 0 - off, 1 - NMPC, 2 - KMPC, 3 - PID
-compile_for_simulink = 0;
-
-if controller_type == 2
-    warning('using YALMIP, solver statistics are incorrect')
-    warning('integral state for KMPC not fixed')
-end
-
 addpath('./models')             % prediction and simulation models
 addpath('./setup')              % controller and simulation setup
 addpath('./functions')          % utility functions
@@ -31,18 +23,28 @@ kappa_ref = 0.1;  % slip reference
 mu_x = 0.3;  % [-] road-tire friction coefficient
 
 %% Controller setup
+controller_type = 2;        % 0 - off, 1 - NMPC, 2 - KMPC, 3 - PID
+compile_for_simulink = 0;
+
+if controller_type == 2
+    warning('using YALMIP, some solver statistics are incorrect')
+end
+
 N = 4;      % prediction horizon length
 T = N*Ts;   % [s] horizon length time
 
+mpc_setup = struct('N',N,'Ts',Ts,'R',R,'kappa_ref',kappa_ref',...
+                   'compile_for_simulink',compile_for_simulink);
+
 if controller_type == 1
-    nmpc_setup(N,Ts,R,kappa_ref,compile_for_simulink);
+    nmpc_setup(mpc_setup);
 elseif controller_type == 2 
-    controller = kmpc_setup(N,Ts,R,kappa_ref,compile_for_simulink);
+    controller = kmpc_setup(mpc_setup);
     load models/kmpc_data.mat PX PU  % for state and input scaling
 elseif controller_type == 3
-    Kp = 7500;  % Proportional gain
-    Ki = 1000;  % Integral gain
-    Kd = 0;     % Derivative gain    
+    Kp = 7500;  % proportional gain
+    Ki = 1000;  % integral gain
+    Kd = 0;     % derivative gain
 end
 
 % state-space dimensions
@@ -72,14 +74,14 @@ solve_time_log = nan(1,N_sim);
 status_log = nan(1,N_sim);
 
 T_ref = torque_ramp(0.1,0.6,0,T_max,Ts,T_sim);  % motor torque reference
-e_int = 0;  % for the integral state calculation
-distance = 0;  % maximize final distance
+e_int = 0;      % for the integral state calculation
+distance = 0;   % maximize final distance
 
 for ii=1:N_sim
     % piecewise varying friction coefficient
     if distance >= 0; mu_x = 0.3; end
-    if distance > 4; mu_x = 0.15; end
-    if distance > 7.5; mu_x = 0.6; end
+%     if distance > 4; mu_x = 0.15; end
+%     if distance > 7.5; mu_x = 0.6; end
 
     if ~controller_type
         u_sim(:,ii) = T_ref(ii);
@@ -99,11 +101,11 @@ for ii=1:N_sim
         
         if controller_type == 2  % KMPC
             % scale and lift the state
-            state_to_lift = mapminmax('apply',x_ocp(1:2,ii),PX);
-            problem{1} = [lifting_function(state_to_lift); x_ocp(3,ii)];  % add integral state manually
+            state_to_lift = mapstd('apply',x_ocp(1:2,ii),PX);
+            problem{1} = [lifting_function(state_to_lift); x_ocp(3,ii); kappa_ref];
 
             % scale the input reference
-            problem{2} = mapminmax('apply',T_ref(ii),PU);
+            problem{2} = mapstd('apply',T_ref(ii),PU);
 
             % FORCES
 %             problem.minus_x0 = -lifting_function(x_ocp(:,ii));  % (negative) initial state
@@ -114,7 +116,7 @@ for ii=1:N_sim
 
 %             [solout, exitflag, info] = kmpc(problem);
 %             info.fevalstime = 0;  % add to struct for statistics
-%             output.u0 = mapminmax('reverse',solout{1}(:,1),PU);  % unscale the input
+%             output.u0 = mapstd('reverse',solout{1}(:,1),PU);  % unscale the input
 
             % YALMIP
             [yalmip_sol, exitflag, a, b, c, yalmip_struct] = controller(problem);
@@ -132,7 +134,7 @@ for ii=1:N_sim
             if exitflag~=0
                 output.u0 = 0; warning('solver failed')
             else
-                output.u0 = mapminmax('reverse',yalmip_sol{1}(:,1),PU);
+                output.u0 = mapstd('reverse',yalmip_sol{1}(:,1),PU);
             end
         end
         
@@ -175,7 +177,7 @@ for ii=1:N_sim
     kappa = (w*R-v)*w*R / ((w*R)^2 + e0);
     if T_ref(ii)>0  && ...              % integrate only after the torque ramp starts
        abs(u_sim(:,ii)-T_ref(ii))>1     % anti-windup
-        e_int = e_int + (kappa_ref-kappa) * Ts;  % TODO: fix for Koopman
+        e_int = e_int + (kappa_ref-kappa) * Ts;
     end
     x_ocp(:,ii+1) = [s; w; e_int];
     

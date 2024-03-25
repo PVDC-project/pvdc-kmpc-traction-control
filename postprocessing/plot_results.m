@@ -10,7 +10,7 @@ plot(t_sim, x_ocp(2,:) * 30/pi);
 ylabel('$\omega$ [rpm]')
 subplot(3,1,3)
 plot(t_sim,x_ocp(3,:))
-ylabel('$e_{int}$ [m]')
+ylabel('$e_{int}$ [-]')
 xlabel('Time [s]')
 
 % solver performance
@@ -46,7 +46,6 @@ v = x_sim(1,:);
 w = x_sim(2,:);
 e0 = 0.1;  % for slip modification
 slip = (w*R-v).*w*R ./ ((w*R).^2 + e0);
-% slip = (omega*R-vx) ./ (omega*R);
 plot(t_sim,slip)
 hold on
 yline(kappa_ref,'r--')

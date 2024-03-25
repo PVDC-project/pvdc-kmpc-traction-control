@@ -1,55 +1,57 @@
 %% Koopman MPC controller setup
-function controller = kmpc_setup(N,Ts,Rw,kappa_ref,compile_for_simulink)
+function controller = kmpc_setup(mpc_setup)
+N = mpc_setup.N; Ts = mpc_setup.Ts;
 %% system dynamics
-load kmpc_data.mat Alift Blift Clift PX;
+load kmpc_data.mat Alift Blift PX;
 
-% add the integral state (e_int_dot = s - kappa_ref*R*w) using Euler method
-Alift = [Alift(1:2,1:2), zeros(2,1), Alift(1:2,3:end);
-     Ts -Ts*kappa_ref*Rw 1 zeros(1,size(Alift,1)-2);
-     Alift(3:end,1:2) zeros(size(Alift,1)-2,1) Alift(3:end,3:end)];
+% add the integral state (e_int_dot = kappa_ref - kappa) using Euler method
+% also add kappa_ref to states (for easier problem formulation)
+nz = size(Alift,1);
+e_int_row = zeros(1,nz+2);
+e_int_row(3) = -Ts;         % slip is the third state
+e_int_row(end-1) = 1;       % integral state is second-to-last
+e_int_row(end) = Ts;        % slip reference is the last state
+A = [Alift, zeros(nz,2);
+     e_int_row;
+     zeros(1,nz+1), 1];     % slip reference has no dynamics
 
-Blift = [Blift(1:2,:)
-         zeros(1,size(Blift,2));
-         Blift(3:end,:)];
+B = [Blift;
+     zeros(2,size(Blift,2))];
 
-Clift = [eye(3), zeros(3,size(Clift,2)-2)];
+% kappa, e_int and kappa_ref are needed to form the cost
+kappa_row = zeros(1,nz+2); kappa_row(3) = 1;
+e_int_row = zeros(1,nz+2); e_int_row(nz+1) = 1;
+kappa_ref_row = [zeros(1,nz+1), 1];
+C = [kappa_row; e_int_row; kappa_ref_row];  % output selection matrix
 
-ny = size(Clift,1);         % number of outputs
-[nz, nu] = size(Blift);     % number of states and inputs in the Koopman model
+ny = size(C,1);         % number of outputs
+[nz, nu] = size(B);     % number of states and inputs
 
 % get dense form matrices (Nc=Np=N)
-[F,Phi] = dense_prediction_matrices(Alift,Blift,Clift,N);
+[F,Phi] = dense_prediction_matrices(A,B,C,N);
 
-%% MPC parameters
-% cost matrices
-w_x1 = 1e4;           % wheel slip velocity tracking error weight (unscaled)
-w_x3 = 0*1e2;      % integral state weight (unscaled)
-w_u = 1e-6;         % torque reduction weight (scaled)
+%% cost matrices
+w_kappa = 1e6;      % slip tracking error weight
+w_e_int = 0e6;      % integral state weight
+w_u = 1e-6;         % torque reduction weight
 
-% w_x1 = 1e-6; w_x3 = 1e-6; w_u = 1e6;  % test MPC functionality
-
-Q = diag([w_x1 0 w_x3]);    % state cost, no penalty on wheel speed
-R = w_u;                    % input cost
+w_kappa = 1e-2; w_e_int = 1e-2; w_u = 1e2;  % test basic functionality
 
 %% define problem using YALMIP
 u = sdpvar(nu,N);
 z0 = sdpvar(nz,1);
-T_ref = sdpvar;  % for online torque limiting
-Y = F*z0 + Phi*u(:);  % dense-form prediction
+T_ref = sdpvar;         % for online torque limiting
+Y = F*z0 + Phi*u(:);    % dense-form prediction
 
 constraints = [];
 objective = 0;
 
 for k = 1:N
-    y = Y((k-1)*ny+1:k*ny);  % output from k-th prediction step
-    s = (y(1)-PX.xoffset(1)) / PX.gain(1);  % unscale the first state
-    w = (y(2)-PX.xoffset(2)) / PX.gain(2);  % unscale the second state
-    es = s - kappa_ref*Rw*w;  % s tracking error (unscaled)
-    ey = [es;0;y(3)];  % state error (ignore y(2), drive y(3) to zero)
-    objective = objective + ey'*Q*ey;  % tracking cost
-    eu = T_ref-u(k);  % input torque reduction
-    objective = objective + eu'*R*eu;  % input torque reduction cost
-    constraints = [constraints, 0 <= u(k) <= T_ref];  % input constraint
+    y = Y((k-1)*ny+1:k*ny);                             % output from k-th prediction step
+    objective = objective + w_kappa * (y(3)-y(1))^2;    % slip tracking cost
+    objective = objective + w_e_int * y(2)^2;           % integral state cost
+    objective = objective + w_u * (T_ref-u(k))^2;       % input torque reduction cost
+    constraints = [constraints, 0 <= u(k) <= T_ref];    % input constraint
 end
 
 %% solver settings
@@ -71,7 +73,7 @@ codeoptions.init = 1;  % centered start
 % codeoptions.accuracy.mu = 1e-8;    % absolute duality gap
 
 % Simulink block options
-if ~compile_for_simulink
+if ~mpc_setup.compile_for_simulink
     codeoptions.BuildSimulinkBlock = 0;
 end
 codeoptions.showinfo = 1;  % https://forces.embotech.com/Documentation/solver_options/index.html#solver-info-in-simulink-block
@@ -94,13 +96,13 @@ cd(solver_dir);
 cd('../');
 
 % YALMIP for comparison
-options = sdpsettings('solver','daqp','savesolverinput',1,'savesolveroutput',1);
+options = sdpsettings('solver','quadprog','savesolverinput',1,'savesolveroutput',1);
 controller = optimizer(constraints, objective, options, params, outputs);
 
 %% test call
 disp([newline,'Testing the generated solver...'])
-state_to_lift = mapminmax('apply',[0;10],PX);
-problem{1} = [lifting_function(state_to_lift); 0];  % z0 (no integral state)
+state_to_lift = mapstd('apply',[0;10],PX);
+problem{1} = [lifting_function(state_to_lift); 0; 0.1];  % lift, e_int, kappa_ref
 problem{2} = 1;  % T_ref (scaled)
 
 % [forces_sol, exitflag, info] = kmpc(problem);

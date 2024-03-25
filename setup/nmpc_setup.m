@@ -1,6 +1,7 @@
 %% Nonlinear MPC controller setup
-function [] = nmpc_setup(N,Ts,R,kappa_ref,compile_for_simulink,compile_for_dspace)
-if nargin < 6
+function [] = nmpc_setup(mpc_setup,compile_for_dspace)
+N = mpc_setup.N; Ts = mpc_setup.Ts; R = mpc_setup.R; kappa_ref = mpc_setup.kappa_ref;
+if nargin < 2
     compile_for_dspace = 0;
 end
 
@@ -48,7 +49,7 @@ codeoptions.MEXinterface.inequalities = 1;
 codeoptions.MEXinterface.objective = 1;
 
 % Simulink block options
-if ~compile_for_simulink
+if ~mpc_setup.compile_for_simulink
     codeoptions.BuildSimulinkBlock = 0;
 end
 codeoptions.showinfo = 1;  % https://forces.embotech.com/Documentation/solver_options/index.html#solver-info-in-simulink-block
