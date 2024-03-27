@@ -2,7 +2,7 @@
 function controller = kmpc_setup(mpc_setup)
 N = mpc_setup.N; Ts = mpc_setup.Ts;
 %% system dynamics
-load kmpc_data.mat Alift Blift PX;
+load kmpc_data.mat Alift Blift PX PU;
 
 % add the integral state (e_int_dot = kappa_ref - kappa) using Euler method
 % also add kappa_ref to states (for easier problem formulation)
@@ -12,46 +12,60 @@ e_int_row(3) = -Ts;         % slip is the third state
 e_int_row(end-1) = 1;       % integral state is second-to-last
 e_int_row(end) = Ts;        % slip reference is the last state
 A = [Alift, zeros(nz,2);
-     e_int_row;
-     zeros(1,nz+1), 1];     % slip reference has no dynamics
+    e_int_row;
+    zeros(1,nz+1), 1];     % slip reference has no dynamics
 
 B = [Blift;
-     zeros(2,size(Blift,2))];
+    zeros(2,size(Blift,2))];
 
 % kappa, e_int and kappa_ref are needed to form the cost
-kappa_row = zeros(1,nz+2); kappa_row(3) = 1;
-e_int_row = zeros(1,nz+2); e_int_row(nz+1) = 1;
-kappa_ref_row = [zeros(1,nz+1), 1];
-C = [kappa_row; e_int_row; kappa_ref_row];  % output selection matrix
+C = zeros(3,nz+2);
+C(1,3) = 1;     % slip
+C(2,end-1) = 1; % integral state
+C(3,end) = 1;   % slip reference
+
+% add s and w to outputs for debugging
+% C = [C;
+%     eye(2), zeros(2,nz)];
+
+% C(1,3) = 1;     % brojnik slipa
+% C(2,2) = 1;     % brzina
+% C(3,end) = 1;   % slip reference
 
 ny = size(C,1);         % number of outputs
-[nz, nu] = size(B);     % number of states and inputs
+[nz, nu] = size(B);     % number of (extended) states and inputs
 
 % get dense form matrices (Nc=Np=N)
 [F,Phi] = dense_prediction_matrices(A,B,C,N);
 
 %% cost matrices
-w_kappa = 1e6;      % slip tracking error weight
-w_e_int = 0e6;      % integral state weight
-w_u = 1e-6;         % torque reduction weight
+w_p = 0.1;      % slip tracking error weight
+w_i = 100;      % integral state weight
+w_u = 1e-5;     % torque reduction weight
 
-w_kappa = 1e-2; w_e_int = 1e-2; w_u = 1e2;  % test basic functionality
+% w_p = 1e-2; w_i = 1e-2; w_u = 1e2;  % test input reference tracking
 
 %% define problem using YALMIP
-u = sdpvar(nu,N);
-z0 = sdpvar(nz,1);
+u = sdpvar(nu,N,'full');
+z0 = sdpvar(nz,1,'full');
 T_ref = sdpvar;         % for online torque limiting
 Y = F*z0 + Phi*u(:);    % dense-form prediction
 
+umin = mapstd('apply',0,PU);  % scale minimum motor torque
 constraints = [];
 objective = 0;
 
 for k = 1:N
     y = Y((k-1)*ny+1:k*ny);                             % output from k-th prediction step
-    objective = objective + w_kappa * (y(3)-y(1))^2;    % slip tracking cost
-    objective = objective + w_e_int * y(2)^2;           % integral state cost
+
+    objective = objective + w_p * (y(3)-y(1))^2;        % slip tracking cost
+    objective = objective + w_i * y(2)^2;               % integral state cost
     objective = objective + w_u * (T_ref-u(k))^2;       % input torque reduction cost
-    constraints = [constraints, 0 <= u(k) <= T_ref];    % input constraint
+    constraints = [constraints, umin <= u(k) <= T_ref]; % input constraint
+
+%     % alternative formulation
+%     objective = objective + (u(k)-T_ref)^2;
+%     constraints = [constraints, y(1)<=0.1];  % predikcija y (1) - ne valja!
 end
 
 %% solver settings
@@ -96,22 +110,23 @@ cd(solver_dir);
 cd('../');
 
 % YALMIP for comparison
-options = sdpsettings('solver','quadprog','savesolverinput',1,'savesolveroutput',1);
+options = sdpsettings('solver','daqp','savesolverinput',1,'savesolveroutput',1);
 controller = optimizer(constraints, objective, options, params, outputs);
 
 %% test call
 disp([newline,'Testing the generated solver...'])
 state_to_lift = mapstd('apply',[0;10],PX);
 problem{1} = [lifting_function(state_to_lift); 0; 0.1];  % lift, e_int, kappa_ref
-problem{2} = 1;  % T_ref (scaled)
+problem{2} = mapstd('apply',250,PU);  % T_ref (scaled)
 
 % [forces_sol, exitflag, info] = kmpc(problem);
 % disp(['FORCES test solution: ',num2str(forces_sol{1})])
 % assert(exitflag == 1, 'Test call of FORCESPRO solver failed');
 
 [yalmip_sol, yalmip_flag, ~, ~, ~, yalmip_struct] = controller(problem);
-disp(['YALMIP test solution: ',num2str(yalmip_sol{1})])
+disp(['YALMIP test solution: ',num2str(yalmip_sol{1})]);
 assert(yalmip_flag == 0, 'Test call with YALMIP failed')
+disp('Test ok.')
 
 % assert(max(abs(yalmip_sol{1}-forces_sol{1})) < 1e-6, 'FORCES and YALMIP solutions differ too much.')
 end

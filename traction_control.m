@@ -19,19 +19,19 @@ VEHICLE = vehicle_parameters();
 R = VEHICLE.WHEEL_RADIUS;
 T_max = VEHICLE.MAX_MOTOR_TORQUE;
 
-kappa_ref = 0.1;  % slip reference
-mu_x = 0.3;  % [-] road-tire friction coefficient
+kappa_ref = 0.1;    % slip reference
+mu_x = 0.3;         % [-] road-tire friction coefficient
 
 %% Controller setup
-controller_type = 2;        % 0 - off, 1 - NMPC, 2 - KMPC, 3 - PID
+controller_type = 2;    % 0 - off, 1 - NMPC, 2 - KMPC, 3 - PID
+N = 4;                  % prediction horizon length
 compile_for_simulink = 0;
 
 if controller_type == 2
+    load models/kmpc_data.mat Alift Blift PU PX
+    warning('remove this')
     warning('using YALMIP, some solver statistics are incorrect')
 end
-
-N = 4;      % prediction horizon length
-T = N*Ts;   % [s] horizon length time
 
 mpc_setup = struct('N',N,'Ts',Ts,'R',R,'kappa_ref',kappa_ref',...
                    'compile_for_simulink',compile_for_simulink);
@@ -54,7 +54,7 @@ ocp_nu = 1;
 %% Closed loop simulation
 v0 = 5;         % [km/h] initial car speed
 v0 = v0 / 3.6;  % convert to m/s
-w0 = v0/R;      % [rad/s] initial wheel speed
+w0 = v0/R;      % [rad/s] initial wheel speed (no slip)
 
 sim_x0 = [v0; w0];              % initial state
 ocp_x0 = [w0*R-v0; w0; 0];      % wheel slip velocity, wheel speed, integral state
@@ -65,31 +65,38 @@ print_step = ceil(N_sim/10);    % print stats 10 times during the simulation
 % state and input logging
 x_sim = nan(sim_nx, N_sim+1);  % simulated state log
 x_sim(:,1) = sim_x0;
-x_ocp = nan(ocp_nx, N_sim+1);  % predicted state log
+x_ocp = nan(ocp_nx, N_sim+1);  % controller state log
 x_ocp(:,1) = ocp_x0;
 u_sim = nan(ocp_nu, N_sim);    % control input log
 
-% NMPC performance logging
+% MPC performance logging
 solve_time_log = nan(1,N_sim);
 status_log = nan(1,N_sim);
 
-T_ref = torque_ramp(0.1,0.6,0,T_max,Ts,T_sim);  % motor torque reference
+% motor torque reference
+T_ref = torque_ramp(0.1,0.6,0,T_max,Ts,T_sim);
+% T_ref = T_max/2 * custom_prbs([1 T_sim/Ts], 0.5);
+% T_ref = repelem(T_ref,50);  % hold the input for a few samples (more realistic)
+% T_ref = T_ref(1:T_sim/Ts);  % trim to match the desired length
+
 e_int = 0;      % for the integral state calculation
-distance = 0;   % maximize final distance
+distance = 0;   % compare final distances
+
+e = [];
 
 for ii=1:N_sim
     % piecewise varying friction coefficient
     if distance >= 0; mu_x = 0.3; end
-%     if distance > 4; mu_x = 0.15; end
-%     if distance > 7.5; mu_x = 0.6; end
+    if distance > 4; mu_x = 0.15; end
+    if distance > 7.5; mu_x = 0.6; end
 
     if ~controller_type
-        u_sim(:,ii) = T_ref(ii);
+        u_sim(:,ii) = T_ref(ii);  % no torque reduction
     else
         if controller_type == 1  % NMPC
             problem.xinit = x_ocp(:,ii);
             problem.x0 = repmat(ones(4,1), N, 1);  % solver initial guess
-            warning('Fix solver initial guess')
+            warning('Fix solver initial guess'); keyboard
             problem.hu = repmat(T_ref(ii), N, 1);
             problem.hl = zeros(N, 1);
             problem.all_parameters = repmat([T_ref(ii);mu_x], N, 1);
@@ -101,7 +108,7 @@ for ii=1:N_sim
         
         if controller_type == 2  % KMPC
             % scale and lift the state
-            state_to_lift = mapstd('apply',x_ocp(1:2,ii),PX);
+            state_to_lift = mapstd('apply',x_ocp(1:2,ii),PX);  % don't scale e_int
             problem{1} = [lifting_function(state_to_lift); x_ocp(3,ii); kappa_ref];
 
             % scale the input reference
@@ -121,18 +128,18 @@ for ii=1:N_sim
             % YALMIP
             [yalmip_sol, exitflag, a, b, c, yalmip_struct] = controller(problem);
             if isfield(yalmip_struct.solveroutput,'output')
-                info.it = yalmip_struct.solveroutput.output.iterations;  % quadprog
+                info.it = yalmip_struct.solveroutput.output.iterations; % quadprog
             elseif isfield(yalmip_struct.solveroutput,'iter')
-                info.it = yalmip_struct.solveroutput.iter;  % DAQP
+                info.it = yalmip_struct.solveroutput.iter;              % DAQP
             elseif isfield(yalmip_struct.solveroutput,'info')
-                info.it = yalmip_struct.solveroutput.info.iter;  % OSQP
+                info.it = yalmip_struct.solveroutput.info.iter;         % OSQP
             else
-                info.it = 1;  % other solvers
+                info.it = 1;                                            % other solvers
             end
             info.solvetime = yalmip_struct.solvertime;
             info.fevalstime = 0;
             if exitflag~=0
-                output.u0 = 0; warning('solver failed')
+                output.u0 = 0; warning(['solver failed - ', a{1}])
             else
                 output.u0 = mapstd('reverse',yalmip_sol{1}(:,1),PU);
             end
@@ -154,9 +161,10 @@ for ii=1:N_sim
         status_log(ii) = status;
         solve_time_log(ii) = info.solvetime + info.fevalstime;
         if ~mod(ii,print_step)
+            disp(['Simulated ',num2str(10*(ii/print_step)),'%'])
             num_iter = info.it;
             time_tot = info.solvetime + info.fevalstime;
-            fprintf('\nstatus = %d, num_iter = %d, time_tot = %f [ms]\n',status, num_iter, time_tot*1e3);
+            fprintf('status = %d, num_iter = %d, time_tot = %f [ms]\n\n',status, num_iter, time_tot*1e3);
         end
 %         if status~=1
 %             warning(['solver failed with status ',num2str(status)]);
@@ -167,7 +175,21 @@ for ii=1:N_sim
     end
 
 	% simulate one timestep
+%     load data/u_sim.mat
 	x_sim(:,ii+1) = simulation(x_sim(:,ii),u_sim(:,ii),mu_x);
+
+%     % simulate using the Koopman model
+%     u = mapstd('apply',output.u0,PU);  % scale input
+%     x = [x_sim(2,ii)*R - x_sim(1,ii); x_sim(2,ii)];  % [w*R-v;w]
+%     x = mapstd('apply',x,PX);  % scale state
+%     x = lifting_function(x);  % lift state
+%     xnext = Alift*x + Blift*u;  % simulate one step
+%     xnext = xnext(1:2);  % get [s;w]
+%     xnext = mapstd('reverse',xnext,PX);  % reverse scaling
+%     xnext = [xnext(2)*R-xnext(1); xnext(2)];  % get [v;w]
+%     x_sim(:,ii+1) = xnext;
+
+%     e = [e x_sim(:,ii+1)-xnext];
 
     % get new ocp state
     v = x_sim(1,ii+1);

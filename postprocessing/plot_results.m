@@ -49,5 +49,5 @@ slip = (w*R-v).*w*R ./ ((w*R).^2 + e0);
 plot(t_sim,slip)
 hold on
 yline(kappa_ref,'r--')
-ylabel('$\sigma_x$ [-]')
+ylabel('$\kappa$ [-]')
 xlabel('Time [s]')

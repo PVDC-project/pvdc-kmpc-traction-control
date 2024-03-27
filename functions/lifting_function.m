@@ -13,11 +13,11 @@ s = reversed_state(1,:);
 w = reversed_state(2,:);
 
 e0 = 0.1;  % for slip modification
-kappa = s.*w*R ./ ((w*R).^2 + e0);
+slip = s.*w*R ./ ((w*R).^2 + e0);
 
 % lifted state = [original state; slip; basis functions]
 lifted_state = [original_state;
-                kappa;
+                slip;
                 rbf(original_state,kmpc_data.cent,kmpc_data.rbf_type)];
 
 end

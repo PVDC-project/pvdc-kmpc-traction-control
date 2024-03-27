@@ -1,5 +1,10 @@
 %% Koopman operator identification for traction control
+if (~contains(pwd, 'setup'))
+    cd setup
+end
+
 clear all;clc;close all;
+
 addpath('../models')
 addpath('../functions')
 addpath('../data')
@@ -26,21 +31,21 @@ print_step = Ntraj/10;  % print ten times
 
 % random control input forcing
 U_amplitude = 0.5 * T_max;
-U = U_amplitude * rand(1,Ntraj*Nsim);  % uniform distribution
-U = repelem(U,10);  % hold the input for a few samples (more realistic)
-U = U(1:Ntraj*Nsim);  % trim to match the desired length
+U = U_amplitude * rand(1,Ntraj*Nsim);   % uniform distribution
+U = repelem(U,10);                      % hold the input for a few samples (more realistic)
+U = U(1:Ntraj*Nsim);                    % trim to match the desired length
 % U = T_max*custom_prbs([nu Ntraj*Nsim], 0.5);  % PRBS
 % U = torque_ramp(0.1,0.6,0,T_max,h_sim,h_sim*Ntraj*Nsim);  % ramp
 
 % random initial condition from the given interval
 vx_low = 1/3.6;     % [m/s]
-vx_high = 5/3.6;    % [m/s]
+vx_high = 20/3.6;   % [m/s]
 kappa_low = 0;      % [-] 
 kappa_high = 0.2;   % [-]
-vx_init = vx_low + (vx_high-vx_low) * rand(1,Ntraj);  % uniform distribution
-kappa_init = kappa_low + (kappa_high-kappa_low) * rand(1,Ntraj);  % uniform distribution
-w_init = vx_init ./ (R*(1-kappa_init));  % defined by slip and speed
-Xinit = [vx_init; w_init];  % simulation model uses [v;w]
+vx_init = vx_low + (vx_high-vx_low) * rand(1,Ntraj);                % uniform distribution
+kappa_init = kappa_low + (kappa_high-kappa_low) * rand(1,Ntraj);    % uniform distribution
+w_init = vx_init ./ (R*(1-kappa_init));                             % defined by slip and speed
+Xinit = [vx_init; w_init];                                          % simulation model uses [v;w]
 
 % logs
 Xs = nan(nx,Ntraj*Nsim);
@@ -126,7 +131,7 @@ Ys = [Ys(2,:)*R-Ys(1,:); Ys(2,:)];
 % TODO: implement custom scaling
 % https://www.mathworks.com/help/deeplearning/ref/mapminmax.html#f8-2246466
 XY = [Xs, Ys];                  % single scaling for the states
-[XY,PX] = mapstd(XY);    % map to [0,1] (only driving forward)
+[XY,PX] = mapstd(XY);           % map to zero mean and unit covariance
 % [XY,PX] = mapminmax(XY,0,1);    % map to [0,1] (only driving forward)
 Xs = XY(:,1:Nsim*Ntraj);        % retrieve the matrices
 Ys = XY(:,Nsim*Ntraj+1:end);
@@ -153,10 +158,9 @@ cd(current_dir)
 %% Koopman operator approximation (EDMD)
 % basis function selection and lifting
 % TODO: generic lifting function (one sample), matlabFunction?
-% TODO: try different methods
-nrbf = 50;  % number of basis functions
-cent = rand(nx,nrbf)*2 - 1;  % RBF centers, uniform in [-1,1]
-rbf_type = 'thinplate';  % gauss, invquad, invmultquad, polyharmonic
+nrbf = 10;                  % number of basis functions
+cent = rand(nx,nrbf)*2 - 1; % RBF centers, uniform in [-1,1]
+rbf_type = 'thinplate';     % gauss, invquad, invmultquad, polyharmonic
 
 save ../models/kmpc_data.mat PX PU cent rbf_type
 
@@ -183,14 +187,15 @@ regression_residual = norm(Ylift - Alift*Xlift - Blift*Us,'fro') / norm(Ylift,'f
 disp(['Regression residual: ', num2str(regression_residual),newline]);
 
 %% Test predictor performance 
-N_test = 10;  % number of prediction steps for testing
+N_test = 100;  % number of prediction steps for testing
 
 % random control input
 U = T_max/2 * custom_prbs([nu N_test], 0.5);
-% U = torque_ramp(0,0.8*T_test,0,T_max,h_sim,T_test);  % ramp
+% U = torque_ramp(0,0.8*N_test*Ts,0,T_max,Ts,N_test*Ts);  % ramp
 
 % initial state
-% TODO: random + repeat several times?
+% TODO: random + repeat several times? low, mid and high speed
+
 vx0 = (vx_low + vx_high)/2;
 kappa0 = 0.1;
 x0 = [vx0; vx0/(R*(1-kappa0))];
@@ -207,7 +212,7 @@ Z = nan(nz,N_test);       % Koopman internal state
 % initialize
 X_true(:,1) = x0;               % [v;w]
 s0 = [x0(2)*R-x0(1); x0(2)];    % [s;w]
-s0 = mapstd('apply',s0,PX);  % scale the initial state
+s0 = mapstd('apply',s0,PX);     % scale the initial state
 Z(:,1) = lifting_function(s0);  % lift the initial state
 
 for ii = 1:N_test-1
@@ -241,20 +246,27 @@ t_test = 1e3 * (0:Ts:(N_test-1)*Ts);  % time vector
 lw_koop = 2;  % line width for plots
 
 figure
-subplot(3,1,1)
+subplot(4,1,1)
 plot(t_test,X_true(1,:)*3.6,'-b','linewidth', lw_koop); hold on
 plot(t_test,X_koop(1,:)*3.6, '--r','linewidth',lw_koop)
 legend('True','Koopman');
 ylabel('$s$ [km/h]')
 title('Prediction accuracy')
 
-subplot(3,1,2)
+subplot(4,1,2)
 plot(t_test,X_true(2,:)*30/pi,'-b','linewidth', lw_koop); hold on
 plot(t_test,X_koop(2,:)*30/pi, '--r','linewidth',lw_koop)
 legend('True','Koopman');
 ylabel('$\omega$ [rpm]')
 
-subplot(3,1,3)
+subplot(4,1,3)
+plot(t_test,X_true(1,:)./R./X_true(2,:),'linewidth',lw_koop)
+hold on
+plot(t_test,X_koop(1,:)./R./X_koop(2,:),'linewidth',lw_koop)
+legend('True','Koopman')
+ylabel('$\kappa$ [-]')
+
+subplot(4,1,4)
 stairs(t_test,U,'linewidth',lw_koop);
 ylabel('T [Nm]')
 xlabel('time [ms]')
