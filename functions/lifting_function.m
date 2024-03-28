@@ -8,7 +8,7 @@ if isempty(kmpc_data)
 end
 
 % calculate slip
-reversed_state = mapstd('reverse',original_state,kmpc_data.PX);
+reversed_state = mapstd_custom('reverse',original_state,kmpc_data.PX);
 s = reversed_state(1,:);
 w = reversed_state(2,:);
 

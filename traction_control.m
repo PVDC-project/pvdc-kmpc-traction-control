@@ -27,11 +27,11 @@ controller_type = 2;    % 0 - off, 1 - NMPC, 2 - KMPC, 3 - PID
 N = 4;                  % prediction horizon length
 compile_for_simulink = 0;
 
-if controller_type == 2
-    load models/kmpc_data.mat Alift Blift PU PX
-    warning('remove this')
-    warning('using YALMIP, some solver statistics are incorrect')
-end
+% if controller_type == 2
+%     load models/kmpc_data.mat Alift Blift PU PX
+%     warning('remove this')
+%     warning('using YALMIP, some solver statistics are incorrect')
+% end
 
 mpc_setup = struct('N',N,'Ts',Ts,'R',R,'kappa_ref',kappa_ref',...
                    'compile_for_simulink',compile_for_simulink);
@@ -39,7 +39,9 @@ mpc_setup = struct('N',N,'Ts',Ts,'R',R,'kappa_ref',kappa_ref',...
 if controller_type == 1
     nmpc_setup(mpc_setup);
 elseif controller_type == 2 
-    controller = kmpc_setup(mpc_setup);
+    kmpc_setup_low_level_interface(mpc_setup);
+    load models/dense_Fwu.mat F w_u  % for low-level interface formulation
+%     controller = kmpc_setup(mpc_setup);
     load models/kmpc_data.mat PX PU  % for state and input scaling
 elseif controller_type == 3
     Kp = 7500;  % proportional gain
@@ -96,7 +98,7 @@ for ii=1:N_sim
         if controller_type == 1  % NMPC
             problem.xinit = x_ocp(:,ii);
             problem.x0 = repmat(ones(4,1), N, 1);  % solver initial guess
-            warning('Fix solver initial guess'); keyboard
+            warning('Fix solver initial guess'); input('Continue?')
             problem.hu = repmat(T_ref(ii), N, 1);
             problem.hl = zeros(N, 1);
             problem.all_parameters = repmat([T_ref(ii);mu_x], N, 1);
@@ -107,14 +109,21 @@ for ii=1:N_sim
         end
         
         if controller_type == 2  % KMPC
-            % scale and lift the state
-            state_to_lift = mapstd('apply',x_ocp(1:2,ii),PX);  % don't scale e_int
-            problem{1} = [lifting_function(state_to_lift); x_ocp(3,ii); kappa_ref];
 
-            % scale the input reference
-            problem{2} = mapstd('apply',T_ref(ii),PU);
+            % FORCES (low-level interface)
+            state_to_lift = mapstd_custom('apply',x_ocp(1:2,ii),PX);  % don't scale e_int
+            z0 = [lifting_function(state_to_lift); x_ocp(3,ii); kappa_ref];
+            problem.F_times_z0 = F*z0;
+            T = mapstd_custom('apply',T_ref(ii),PU);
+            problem.T_ref = T*ones(4,1);
+            f = [-2*w_u*T; 0; 0; 0];
+            problem.linear_cost = repmat(f,N,1);
 
-            % FORCES
+            [forces_sol, exitflag, info] = kmpc(problem);
+            info.fevalstime = 0;
+            output.u0 = mapstd_custom('reverse',forces_sol.u0,PU);  % unscale the input
+
+            % FORCES (Y2F)
 %             problem.minus_x0 = -lifting_function(x_ocp(:,ii));  % (negative) initial state
 %             problem.T_ref = T_ref(ii)*ones(N,1);  % set for all stages
 %             f = [-2*w_u*T_ref(ii); w_x1; -kappa_ref*w_x1*R; 0;  % linear cost term
@@ -123,26 +132,34 @@ for ii=1:N_sim
 
 %             [solout, exitflag, info] = kmpc(problem);
 %             info.fevalstime = 0;  % add to struct for statistics
-%             output.u0 = mapstd('reverse',solout{1}(:,1),PU);  % unscale the input
+%             output.u0 = mapstd_custom('reverse',solout{1}(:,1),PU);  % unscale the input
 
             % YALMIP
-            [yalmip_sol, exitflag, a, b, c, yalmip_struct] = controller(problem);
-            if isfield(yalmip_struct.solveroutput,'output')
-                info.it = yalmip_struct.solveroutput.output.iterations; % quadprog
-            elseif isfield(yalmip_struct.solveroutput,'iter')
-                info.it = yalmip_struct.solveroutput.iter;              % DAQP
-            elseif isfield(yalmip_struct.solveroutput,'info')
-                info.it = yalmip_struct.solveroutput.info.iter;         % OSQP
-            else
-                info.it = 1;                                            % other solvers
-            end
-            info.solvetime = yalmip_struct.solvertime;
-            info.fevalstime = 0;
-            if exitflag~=0
-                output.u0 = 0; warning(['solver failed - ', a{1}])
-            else
-                output.u0 = mapstd('reverse',yalmip_sol{1}(:,1),PU);
-            end
+%             % scale and lift the state
+%             state_to_lift = mapstd_custom('apply',x_ocp(1:2,ii),PX);  % don't scale e_int
+%             problem{1} = [lifting_function(state_to_lift); x_ocp(3,ii); kappa_ref];
+%
+%             % scale the input reference
+%             problem{2} = mapstd_custom('apply',T_ref(ii),PU);
+
+%             [yalmip_sol, exitflag, a, b, c, yalmip_info] = controller(problem);
+%             if isfield(yalmip_info.solveroutput,'output')
+%                 info.it = yalmip_info.solveroutput.output.iterations; % quadprog
+%             elseif isfield(yalmip_info.solveroutput,'iter')
+%                 info.it = yalmip_info.solveroutput.iter;              % DAQP
+%             elseif isfield(yalmip_info.solveroutput,'info')
+%                 info.it = yalmip_info.solveroutput.info.iter;         % OSQP
+%             else
+%                 info.it = 1;                                            % other solvers
+%             end
+%             info.solvetime = yalmip_info.solvertime;
+%             info.fevalstime = 0;
+
+%             if exitflag ~= (~exist('controller','var'))
+%                 output.u0 = 0; warning(['solver failed - ', a{1}])
+%             else
+%                 output.u0 = mapstd_custom('reverse',yalmip_sol{1}(:,1),PU);
+%             end
         end
         
         if controller_type == 3  % PID
@@ -164,11 +181,11 @@ for ii=1:N_sim
             disp(['Simulated ',num2str(10*(ii/print_step)),'%'])
             num_iter = info.it;
             time_tot = info.solvetime + info.fevalstime;
-            fprintf('status = %d, num_iter = %d, time_tot = %f [ms]\n\n',status, num_iter, time_tot*1e3);
+            fprintf('status = %d, num_iter = %d, time_tot = %f [ms]\n',status, num_iter, time_tot*1e3);
         end
-%         if status~=1
-%             warning(['solver failed with status ',num2str(status)]);
-%         end
+        if status~=1
+            warning(['solver failed with status ',num2str(status)]);
+        end
 
         % get solution for sim
         u_sim(:,ii) = output.u0;        
@@ -179,13 +196,13 @@ for ii=1:N_sim
 	x_sim(:,ii+1) = simulation(x_sim(:,ii),u_sim(:,ii),mu_x);
 
 %     % simulate using the Koopman model
-%     u = mapstd('apply',output.u0,PU);  % scale input
+%     u = mapstd_custom('apply',output.u0,PU);  % scale input
 %     x = [x_sim(2,ii)*R - x_sim(1,ii); x_sim(2,ii)];  % [w*R-v;w]
-%     x = mapstd('apply',x,PX);  % scale state
+%     x = mapstd_custom('apply',x,PX);  % scale state
 %     x = lifting_function(x);  % lift state
 %     xnext = Alift*x + Blift*u;  % simulate one step
 %     xnext = xnext(1:2);  % get [s;w]
-%     xnext = mapstd('reverse',xnext,PX);  % reverse scaling
+%     xnext = mapstd_custom('reverse',xnext,PX);  % reverse scaling
 %     xnext = [xnext(2)*R-xnext(1); xnext(2)];  % get [v;w]
 %     x_sim(:,ii+1) = xnext;
 
@@ -207,7 +224,7 @@ for ii=1:N_sim
     distance = distance + v*Ts;
 end
 
-disp([newline,newline,'Simulation done.'])
+disp([newline,'Simulation done.'])
 disp(['Covered distance: ',num2str(distance),' m'])
 disp(['Average solve time: ',num2str(1e3*mean(solve_time_log)),' ms'])
 disp(['Maximum solve time: ',num2str(1e3*max(solve_time_log)),' ms'])

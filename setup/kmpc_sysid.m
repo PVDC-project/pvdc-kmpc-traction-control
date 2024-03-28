@@ -127,17 +127,12 @@ Ys = [Ys(2,:)*R-Ys(1,:); Ys(2,:)];
 % Xs = [s; w; e_int];
 
 %% Scale data for better accuracy
-% mapminmax requires the Deep Learning Toolbox
-% TODO: implement custom scaling
-% https://www.mathworks.com/help/deeplearning/ref/mapminmax.html#f8-2246466
 XY = [Xs, Ys];                  % single scaling for the states
-[XY,PX] = mapstd(XY);           % map to zero mean and unit covariance
-% [XY,PX] = mapminmax(XY,0,1);    % map to [0,1] (only driving forward)
+[XY,PX] = mapstd_custom(XY);    % map to zero mean and unit covariance
 Xs = XY(:,1:Nsim*Ntraj);        % retrieve the matrices
 Ys = XY(:,Nsim*Ntraj+1:end);
 
-[Us,PU] = mapstd(Us);    % scale the input
-% [Us,PU] = mapminmax(Us,0,1);    % scale the input
+[Us,PU] = mapstd_custom(Us);    % scale the input
 
 disp('Data scaled.')
 
@@ -194,82 +189,90 @@ U = T_max/2 * custom_prbs([nu N_test], 0.5);
 % U = torque_ramp(0,0.8*N_test*Ts,0,T_max,Ts,N_test*Ts);  % ramp
 
 % initial state
-% TODO: random + repeat several times? low, mid and high speed
+% TODO: random?
+vx0s = [vx_low; (vx_low + vx_high)/2; vx_high];
+figure
+plot_ids = reshape(1:12, 3, 4).';  % subplot expects row-first indices
 
-vx0 = (vx_low + vx_high)/2;
-kappa0 = 0.1;
-x0 = [vx0; vx0/(R*(1-kappa0))];
+for jj = 1:3
+    vx0 = vx0s(jj);
+    kappa0 = 0.1;
+    x0 = [vx0; vx0/(R*(1-kappa0))];
 
-% sanity check
-% warning('remove sanity check')
-% U = zeros(1,N_test);
-% x0 = [vx0;vx0/R];
+    % sanity check
+    % warning('remove sanity check')
+    % U = zeros(1,N_test);
+    % x0 = [vx0;vx0/R];
 
-% logs
-X_true = nan(nx,N_test);  % true system state
-Z = nan(nz,N_test);       % Koopman internal state
+    % logs
+    X_true = nan(nx,N_test);  % true system state
+    Z = nan(nz,N_test);       % Koopman internal state
 
-% initialize
-X_true(:,1) = x0;               % [v;w]
-s0 = [x0(2)*R-x0(1); x0(2)];    % [s;w]
-s0 = mapstd('apply',s0,PX);     % scale the initial state
-Z(:,1) = lifting_function(s0);  % lift the initial state
+    % initialize
+    X_true(:,1) = x0;               % [v;w]
+    s0 = [x0(2)*R-x0(1); x0(2)];    % [s;w]
+    s0 = mapstd_custom('apply',s0,PX);     % scale the initial state
+    Z(:,1) = lifting_function(s0);  % lift the initial state
 
-for ii = 1:N_test-1
-    % true dynamics
-    simulation.set('x', X_true(:,ii));
-    simulation.set('u', U(:,ii));
-    if (strcmp(simulation.opts_struct.method, 'irk'))
-        simulation.set('xdot', zeros(nx,1));
-    elseif (strcmp(simulation.opts_struct.method, 'irk_gnsf'))
-        n_out = simulation.model_struct.dim_gnsf_nout;
-        simulation.set('phi_guess', zeros(n_out,1));
+    for ii = 1:N_test-1
+        % true dynamics
+        simulation.set('x', X_true(:,ii));
+        simulation.set('u', U(:,ii));
+        if (strcmp(simulation.opts_struct.method, 'irk'))
+            simulation.set('xdot', zeros(nx,1));
+        elseif (strcmp(simulation.opts_struct.method, 'irk_gnsf'))
+            n_out = simulation.model_struct.dim_gnsf_nout;
+            simulation.set('phi_guess', zeros(n_out,1));
+        end
+        simulation.solve();
+        X_true(:,ii+1) = simulation.get('xn');
+
+        % Koopman predictor
+        u = mapstd_custom('apply',U(:,ii),PU);  % scale the input
+        Z(:,ii+1) = Alift * Z(:,ii) + Blift * u;
     end
-    simulation.solve();
-    X_true(:,ii+1) = simulation.get('xn');
 
-    % Koopman predictor
-    u = mapstd('apply',U(:,ii),PU);  % scale the input
-    Z(:,ii+1) = Alift * Z(:,ii) + Blift * u;
+    % extract original state estimates from the Koopman predictor
+    X_koop = Clift * Z;
+    % reverse the scaling
+    X_koop = mapstd_custom('reverse',X_koop,PX);
+
+    % transform (v,w) into (s,w) for the true system
+    X_true(1,:) = X_true(2,:)*R - X_true(1,:);  % s = w*R-v
+
+    % plot the results
+    t_test = 1e3 * (0:Ts:(N_test-1)*Ts);  % time vector
+    lw_koop = 2;  % line width for plots
+    
+    subplot(4,3,plot_ids((jj-1)*4+1))
+    plot(t_test,X_true(1,:)*3.6,'-b','linewidth', lw_koop); hold on
+    plot(t_test,X_koop(1,:)*3.6, '--r','linewidth',lw_koop)
+    legend('True','Koopman');
+    ylabel('$s$ [km/h]')
+    title(['Prediction accuracy with $v_{x0}$ = ',num2str(3.6*vx0),' km/h'])
+
+    subplot(4,3,plot_ids((jj-1)*4+2))
+    plot(t_test,X_true(2,:)*30/pi,'-b','linewidth', lw_koop); hold on
+    plot(t_test,X_koop(2,:)*30/pi, '--r','linewidth',lw_koop)
+    legend('True','Koopman');
+    ylabel('$\omega$ [rpm]')
+
+    subplot(4,3,plot_ids((jj-1)*4+3))
+    plot(t_test,X_true(1,:)./R./X_true(2,:),'linewidth',lw_koop)
+    hold on
+    plot(t_test,X_koop(1,:)./R./X_koop(2,:),'linewidth',lw_koop)
+    legend('True','Koopman')
+    ylabel('$\kappa$ [-]')
+
+    subplot(4,3,plot_ids((jj-1)*4+4))
+    stairs(t_test,U,'linewidth',lw_koop);
+    ylabel('T [Nm]')
+    xlabel('time [ms]')
 end
 
-% extract original state estimates from the Koopman predictor
-X_koop = Clift * Z;
-% reverse the scaling
-X_koop = mapstd('reverse',X_koop,PX);
-
-% transform (v,w) into (s,w) for the true system
-X_true(1,:) = X_true(2,:)*R - X_true(1,:);  % s = w*R-v
-
-% plot the results
-t_test = 1e3 * (0:Ts:(N_test-1)*Ts);  % time vector
-lw_koop = 2;  % line width for plots
-
-figure
-subplot(4,1,1)
-plot(t_test,X_true(1,:)*3.6,'-b','linewidth', lw_koop); hold on
-plot(t_test,X_koop(1,:)*3.6, '--r','linewidth',lw_koop)
-legend('True','Koopman');
-ylabel('$s$ [km/h]')
-title('Prediction accuracy')
-
-subplot(4,1,2)
-plot(t_test,X_true(2,:)*30/pi,'-b','linewidth', lw_koop); hold on
-plot(t_test,X_koop(2,:)*30/pi, '--r','linewidth',lw_koop)
-legend('True','Koopman');
-ylabel('$\omega$ [rpm]')
-
-subplot(4,1,3)
-plot(t_test,X_true(1,:)./R./X_true(2,:),'linewidth',lw_koop)
-hold on
-plot(t_test,X_koop(1,:)./R./X_koop(2,:),'linewidth',lw_koop)
-legend('True','Koopman')
-ylabel('$\kappa$ [-]')
-
-subplot(4,1,4)
-stairs(t_test,U,'linewidth',lw_koop);
-ylabel('T [Nm]')
-xlabel('time [ms]')
+% maximize the created figure (requires MATLAB R2018a)
+hFig = gcf;
+hFig.WindowState = 'maximized';
 
 %% save the approximated system matrices and lifting data
 save ../models/kmpc_data.mat Alift Blift Clift cent rbf_type PX PU

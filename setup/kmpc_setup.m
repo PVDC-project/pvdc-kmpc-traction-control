@@ -39,8 +39,8 @@ ny = size(C,1);         % number of outputs
 [F,Phi] = dense_prediction_matrices(A,B,C,N);
 
 %% cost matrices
-w_p = 0.1;      % slip tracking error weight
-w_i = 100;      % integral state weight
+w_p = 1e-1;     % slip tracking error weight
+w_i = 1e3;      % integral state weight
 w_u = 1e-5;     % torque reduction weight
 
 % w_p = 1e-2; w_i = 1e-2; w_u = 1e2;  % test input reference tracking
@@ -48,10 +48,12 @@ w_u = 1e-5;     % torque reduction weight
 %% define problem using YALMIP
 u = sdpvar(nu,N,'full');
 z0 = sdpvar(nz,1,'full');
-T_ref = sdpvar;         % for online torque limiting
+T_ref = sdpvar;         % for online torque limiting (should be scaled)
 Y = F*z0 + Phi*u(:);    % dense-form prediction
 
-umin = mapstd('apply',0,PU);  % scale minimum motor torque
+umin = mapstd_custom('apply',0,PU);  % scale minimum motor torque
+% umax = mapstd_custom('apply',250,PU);  % parametric bound doesn't work
+% with y2f
 constraints = [];
 objective = 0;
 
@@ -115,18 +117,18 @@ controller = optimizer(constraints, objective, options, params, outputs);
 
 %% test call
 disp([newline,'Testing the generated solver...'])
-state_to_lift = mapstd('apply',[0;10],PX);
+state_to_lift = mapstd_custom('apply',[0;10],PX);
 problem{1} = [lifting_function(state_to_lift); 0; 0.1];  % lift, e_int, kappa_ref
-problem{2} = mapstd('apply',250,PU);  % T_ref (scaled)
+problem{2} = mapstd_custom('apply',250,PU);  % T_ref (scaled)
 
-% [forces_sol, exitflag, info] = kmpc(problem);
+% [forces_sol, forces_flag, forces_info] = kmpc(problem);
 % disp(['FORCES test solution: ',num2str(forces_sol{1})])
-% assert(exitflag == 1, 'Test call of FORCESPRO solver failed');
+% assert(forces_flag == 1, 'Test call of FORCESPRO solver failed');
 
-[yalmip_sol, yalmip_flag, ~, ~, ~, yalmip_struct] = controller(problem);
+[yalmip_sol, yalmip_flag, ~, ~, ~, yalmip_info] = controller(problem);
 disp(['YALMIP test solution: ',num2str(yalmip_sol{1})]);
 assert(yalmip_flag == 0, 'Test call with YALMIP failed')
-disp('Test ok.')
+disp(['Test ok.',newline])
 
 % assert(max(abs(yalmip_sol{1}-forces_sol{1})) < 1e-6, 'FORCES and YALMIP solutions differ too much.')
 end

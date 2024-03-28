@@ -24,9 +24,3 @@ carmaker/Movie/
 carmaker/SimOutput/
 !/carmaker/Data/TestRun/ASR_AccelerateMuSuddenChange
 !/carmaker/Data/Vehicle/Demo_IPG_CompanyCar_EV
-
-# Koopman (temporary)
-setup/kmpc_setup_low_level_interface.m
-# functions/custom_prbs.m
-# functions/lifting_function.m
-# functions/rbf.m
