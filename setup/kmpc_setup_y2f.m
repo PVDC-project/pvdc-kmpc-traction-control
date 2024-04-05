@@ -1,5 +1,5 @@
 %% Koopman MPC controller setup
-function controller = kmpc_setup(mpc_setup)
+function controller = kmpc_setup_y2f(mpc_setup)
 N = mpc_setup.N; Ts = mpc_setup.Ts;
 %% system dynamics
 load kmpc_data.mat Alift Blift PX PU;

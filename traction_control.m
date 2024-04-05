@@ -1,5 +1,5 @@
 %% Traction control using NMPC and KMPC
-clear all;close all;clc;
+clear;close all;clc;
 
 %% Environment setup
 addpath('./models')             % prediction and simulation models
@@ -23,30 +23,40 @@ kappa_ref = 0.1;    % slip reference
 mu_x = 0.3;         % [-] road-tire friction coefficient
 
 %% Controller setup
-controller_type = 2;    % 0 - off, 1 - NMPC, 2 - KMPC, 3 - PID
-N = 4;                  % prediction horizon length
-compile_for_simulink = 0;
-
-% if controller_type == 2
-%     load models/kmpc_data.mat Alift Blift PU PX
-%     warning('remove this')
-%     warning('using YALMIP, some solver statistics are incorrect')
-% end
+% 0 - off
+% 1 - NMPC FORCES high-level interface
+% 2 - KMPC FORCES low-level interface
+% 3 - PID
+% 4 - KMPC YALMIP
+% 5 - KMPC FORCES Y2F interface
+controller_type = 2;
+N = 5;                      % prediction horizon length
+compile_for_simulink = 0;   % create the S-function block?
 
 mpc_setup = struct('N',N,'Ts',Ts,'R',R,'kappa_ref',kappa_ref',...
                    'compile_for_simulink',compile_for_simulink);
 
-if controller_type == 1
-    nmpc_setup(mpc_setup);
-elseif controller_type == 2 
-    kmpc_setup_low_level_interface(mpc_setup);
-    load models/dense_Fwu.mat F w_u  % for low-level interface formulation
-%     controller = kmpc_setup(mpc_setup);
-    load models/kmpc_data.mat PX PU  % for state and input scaling
-elseif controller_type == 3
-    Kp = 7500;  % proportional gain
-    Ki = 1000;  % integral gain
-    Kd = 0;     % derivative gain
+switch controller_type
+    case 1
+        nmpc_setup(mpc_setup);
+        warning('Fix solver initial guess'); input('Continue?')
+    case 2
+        kmpc_setup_low_level_interface(mpc_setup);
+        load models/dense_Fwu.mat F w_u  % for low-level interface formulation
+        load models/kmpc_data.mat PX PU  % for state and input scaling
+    case 3
+        Kp = 750;  % proportional gain
+        Ki = 100;  % integral gain
+        Kd = 0;     % derivative gain
+    case 4
+        controller = kmpc_setup_y2f(mpc_setup);
+        load models/kmpc_data.mat PX PU  % for state and input scaling
+    case 5
+        kmpc_setup_y2f(mpc_setup);
+        error('y2f bug not fixed yet')
+    otherwise
+        disp('controller type not recognized, running without control')
+        controller_type = 0;
 end
 
 % state-space dimensions
@@ -54,7 +64,7 @@ ocp_nx = 3;
 ocp_nu = 1;
 
 %% Closed loop simulation
-v0 = 5;         % [km/h] initial car speed
+v0 = 2;         % [km/h] initial car speed
 v0 = v0 / 3.6;  % convert to m/s
 w0 = v0/R;      % [rad/s] initial wheel speed (no slip)
 
@@ -87,43 +97,88 @@ distance = 0;   % compare final distances
 e = [];
 
 for ii=1:N_sim
-    % piecewise varying friction coefficient
+    % varying friction coefficient
     if distance >= 0; mu_x = 0.3; end
     if distance > 4; mu_x = 0.15; end
     if distance > 7.5; mu_x = 0.6; end
 
-    if ~controller_type
-        u_sim(:,ii) = T_ref(ii);  % no torque reduction
-    else
-        if controller_type == 1  % NMPC
+    % get the control input
+    switch controller_type
+        case 0  % no control
+            u_sim(:,ii) = T_ref(ii);
+        case 1  % NMPC FORCES high-level interface
+            tic
             problem.xinit = x_ocp(:,ii);
-            problem.x0 = repmat(ones(4,1), N, 1);  % solver initial guess
-            warning('Fix solver initial guess'); input('Continue?')
+            problem.x0 = repmat(ones(4,1), N, 1);  % TODO: fix solver initial guess
             problem.hu = repmat(T_ref(ii), N, 1);
             problem.hl = zeros(N, 1);
-            problem.all_parameters = repmat([T_ref(ii);mu_x], N, 1);
+            problem.all_parameters = repmat([T_ref(ii);0.3], N, 1);  % TODO: use mu_x info?
             [output, exitflag, info] = nmpc(problem);
-            if ~isfield(output,'u0') && isfield(output,'zopt')
+            info.totaltime = toc;
+            if exitflag~=1
+                warning(['solver failed with status ',num2str(exitflag)]);
+                output.u0 = T_ref(ii);  % don't modify the torque if failed
+            else
                 output.u0 = output.zopt(1);
             end
-        end
-        
-        if controller_type == 2  % KMPC
-
-            % FORCES (low-level interface)
+        case 2  % KMPC FORCES low-level interface
+            tic
             state_to_lift = mapstd_custom('apply',x_ocp(1:2,ii),PX);  % don't scale e_int
             z0 = [lifting_function(state_to_lift); x_ocp(3,ii); kappa_ref];
             problem.F_times_z0 = F*z0;
             T = mapstd_custom('apply',T_ref(ii),PU);
-            problem.T_ref = T*ones(4,1);
+            problem.T_ref = T*ones(N,1);
             f = [-2*w_u*T; 0; 0; 0];
             problem.linear_cost = repmat(f,N,1);
 
-            [forces_sol, exitflag, info] = kmpc(problem);
+            [output, exitflag, info] = kmpc(problem);
+            info.totaltime = toc;
             info.fevalstime = 0;
-            output.u0 = mapstd_custom('reverse',forces_sol.u0,PU);  % unscale the input
+            if exitflag~=1
+                warning(['solver failed with status ',num2str(status)]);
+                output.u0 = T_ref(ii);  % don't modify the torque if failed
+            else
+                output.u0 = mapstd_custom('reverse',output.u0,PU);  % unscale the input
+            end
+        case 3  % PID
+            tic
+            v = x_sim(1,ii);
+            w = x_sim(2,ii);
+            e0 = 0.1;  % for slip modification
+            kappa = (w*R-v)*w*R / ((w*R)^2 + e0);
+            output.u0 = pid_controller(kappa_ref, kappa, Kp, Ki, Kd, T_ref(ii));
+            info.totaltime = toc;
+            info.it = 0;
+            info.solvetime = 0;
+            info.fevalstime = 0;
+            exitflag = 1;
+        case 4  % KMPC YALMIP
+            tic
+            state_to_lift = mapstd_custom('apply',x_ocp(1:2,ii),PX);  % don't scale e_int
+            problem{1} = [lifting_function(state_to_lift); x_ocp(3,ii); kappa_ref];
+            problem{2} = mapstd_custom('apply',T_ref(ii),PU);
 
-            % FORCES (Y2F)
+            [yalmip_output, exitflag, a, b, c, info] = controller(problem);
+            info.totaltime = toc;
+            if isfield(info.solveroutput,'output')
+                info.it = info.solveroutput.output.iterations; % quadprog
+            elseif isfield(info.solveroutput,'iter')
+                info.it = info.solveroutput.iter;              % DAQP
+            elseif isfield(info.solveroutput,'info')
+                info.it = info.solveroutput.info.iter;         % OSQP
+            else
+                info.it = 1;                                   % other solvers
+            end
+            info.solvetime = info.solvertime;   % FORCES stats
+            info.fevalstime = 0;                % FORCES stats
+
+            if exitflag  % with YALMIP 0 means OK
+                warning(['solver failed with flag ',num2str(exitflag),' - ', a{1}])
+                output.u0 = T_ref(ii);
+            else
+                output.u0 = mapstd_custom('reverse',yalmip_output{1}(:,1),PU);
+            end
+        case 5  % KMPC FORCES Y2F interface
 %             problem.minus_x0 = -lifting_function(x_ocp(:,ii));  % (negative) initial state
 %             problem.T_ref = T_ref(ii)*ones(N,1);  % set for all stages
 %             f = [-2*w_u*T_ref(ii); w_x1; -kappa_ref*w_x1*R; 0;  % linear cost term
@@ -133,66 +188,20 @@ for ii=1:N_sim
 %             [solout, exitflag, info] = kmpc(problem);
 %             info.fevalstime = 0;  % add to struct for statistics
 %             output.u0 = mapstd_custom('reverse',solout{1}(:,1),PU);  % unscale the input
-
-            % YALMIP
-%             % scale and lift the state
-%             state_to_lift = mapstd_custom('apply',x_ocp(1:2,ii),PX);  % don't scale e_int
-%             problem{1} = [lifting_function(state_to_lift); x_ocp(3,ii); kappa_ref];
-%
-%             % scale the input reference
-%             problem{2} = mapstd_custom('apply',T_ref(ii),PU);
-
-%             [yalmip_sol, exitflag, a, b, c, yalmip_info] = controller(problem);
-%             if isfield(yalmip_info.solveroutput,'output')
-%                 info.it = yalmip_info.solveroutput.output.iterations; % quadprog
-%             elseif isfield(yalmip_info.solveroutput,'iter')
-%                 info.it = yalmip_info.solveroutput.iter;              % DAQP
-%             elseif isfield(yalmip_info.solveroutput,'info')
-%                 info.it = yalmip_info.solveroutput.info.iter;         % OSQP
-%             else
-%                 info.it = 1;                                            % other solvers
-%             end
-%             info.solvetime = yalmip_info.solvertime;
-%             info.fevalstime = 0;
-
-%             if exitflag ~= (~exist('controller','var'))
-%                 output.u0 = 0; warning(['solver failed - ', a{1}])
-%             else
-%                 output.u0 = mapstd_custom('reverse',yalmip_sol{1}(:,1),PU);
-%             end
-        end
-        
-        if controller_type == 3  % PID
-            v = x_sim(1,ii);
-            w = x_sim(2,ii);
-            kappa = 1 - v / (w*R);
-            output.u0 = pid_controller(kappa_ref, kappa, Kp, Ki, Kd, T_ref(ii));
-            info.it = 0;
-            info.solvetime = 0;
-            info.fevalstime = 0;
-            exitflag = 1;
-        end
-
-        % check for failure and display some statistics
-        status = exitflag;  % https://forces.embotech.com/Documentation/exitflags/index.html#tab-exitflag-values
-        status_log(ii) = status;
-        solve_time_log(ii) = info.solvetime + info.fevalstime;
-        if ~mod(ii,print_step)
-            disp(['Simulated ',num2str(10*(ii/print_step)),'%'])
-            num_iter = info.it;
-            time_tot = info.solvetime + info.fevalstime;
-            fprintf('status = %d, num_iter = %d, time_tot = %f [ms]\n',status, num_iter, time_tot*1e3);
-        end
-        if status~=1
-            warning(['solver failed with status ',num2str(status)]);
-        end
-
-        % get solution for sim
-        u_sim(:,ii) = output.u0;        
     end
 
-	% simulate one timestep
-%     load data/u_sim.mat
+    % check for failure and display some statistics
+    status_log(ii) = exitflag;
+    solve_time_log(ii) = info.totaltime;  % info.solvetime + info.fevalstime;
+    if ~mod(ii,print_step)
+        disp(['Simulated ',num2str(10*(ii/print_step)),'%'])
+        num_iter = info.it;
+        time_tot = info.totaltime;  % info.solvetime + info.fevalstime;
+        fprintf('status = %d, num_iter = %d, time_tot = %f [ms]\n',exitflag, num_iter, time_tot*1e3);
+    end
+
+	% simulate one closed-loop timestep
+    u_sim(:,ii) = output.u0;
 	x_sim(:,ii+1) = simulation(x_sim(:,ii),u_sim(:,ii),mu_x);
 
 %     % simulate using the Koopman model
@@ -208,12 +217,12 @@ for ii=1:N_sim
 
 %     e = [e x_sim(:,ii+1)-xnext];
 
-    % get new ocp state
+    % get new controller state
     v = x_sim(1,ii+1);
     w = x_sim(2,ii+1);
     s = w*R-v;
     e0 = 0.1;  % for slip modification
-    kappa = (w*R-v)*w*R / ((w*R)^2 + e0);
+    kappa = s*w*R / ((w*R)^2 + e0);
     if T_ref(ii)>0  && ...              % integrate only after the torque ramp starts
        abs(u_sim(:,ii)-T_ref(ii))>1     % anti-windup
         e_int = e_int + (kappa_ref-kappa) * Ts;
@@ -228,7 +237,7 @@ disp([newline,'Simulation done.'])
 disp(['Covered distance: ',num2str(distance),' m'])
 disp(['Average solve time: ',num2str(1e3*mean(solve_time_log)),' ms'])
 disp(['Maximum solve time: ',num2str(1e3*max(solve_time_log)),' ms'])
-disp(['Solver error rate: ',num2str(round(100*sum(status_log~=1)/N_sim)),'%'])
+disp(['Solver error rate: ',num2str(round(100*sum(status_log~=(~exist('controller','var')))/N_sim)),'%'])
 disp(['Real time feasible: ',num2str(round(100*sum(solve_time_log<Ts)/N_sim)),'%'])
 
 %% plot the results

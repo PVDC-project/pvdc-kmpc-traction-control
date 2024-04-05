@@ -93,7 +93,7 @@ codeoptions.overwrite = 1;
 if ~compile_for_simulink
     codeoptions.BuildSimulinkBlock = 0;
 end
-% codeoptions.showinfo = 1;  % https://forces.embotech.com/Documentation/solver_options/index.html#solver-info-in-simulink-block
+codeoptions.showinfo = 1;  % https://forces.embotech.com/Documentation/solver_options/index.html#solver-info-in-simulink-block
 
 %% generate code
 solver_dir = './codegen';

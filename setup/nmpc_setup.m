@@ -78,8 +78,8 @@ end
 addpath(solver_dir);
 cd(solver_dir);
 
-% output = newOutput('u0', 1, 1);
-output = newOutput('zopt');
+% output = newOutput('u0', 1, 1);  % return only the first input
+output = newOutput('zopt');  % return the full solution vector
 FORCES_NLP(model, codeoptions, output);
 
 cd('../');

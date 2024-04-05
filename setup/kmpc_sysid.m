@@ -23,11 +23,11 @@ nx = 2;
 nu = 1;
 
 %% Data collection (v,w)
-rng(42)  % fix seed for reproducibility
 disp('Collecting data...')
-Ntraj = 1000;   % total trajectories
-Nsim = 250;     % samples per trajectory
-print_step = Ntraj/10;  % print ten times
+rng(42)                 % fix  the seed for reproducibility
+Ntraj = 1000;           % total trajectories
+Nsim = 250;             % samples per trajectory
+print_step = Ntraj/10;  % print ten times during data collection
 
 % random control input forcing
 U_amplitude = 0.5 * T_max;
@@ -38,7 +38,7 @@ U = U(1:Ntraj*Nsim);                    % trim to match the desired length
 % U = torque_ramp(0.1,0.6,0,T_max,h_sim,h_sim*Ntraj*Nsim);  % ramp
 
 % random initial condition from the given interval
-vx_low = 1/3.6;     % [m/s]
+vx_low = 0/3.6;     % [m/s]
 vx_high = 20/3.6;   % [m/s]
 kappa_low = 0;      % [-] 
 kappa_high = 0.2;   % [-]
@@ -116,15 +116,9 @@ for ii=1:plot_traj_no
 end
 
 %% Transform states from (v,w) to (s,w); s = w*R-v
+% the integral state is handled manually
 Xs = [Xs(2,:)*R-Xs(1,:); Xs(2,:)];
 Ys = [Ys(2,:)*R-Ys(1,:); Ys(2,:)];
-
-% ----- e_int is handled manually -----
-% kappa_ref = 0.1;  % set in main
-% de_int = s - kappa_ref*w*R;  % integral state derivative
-% e_int_0 = 0;  % initial integral state
-% e_int = e_int_0 + h * cumtrapz(de_int);  % approximate integration
-% Xs = [s; w; e_int];
 
 %% Scale data for better accuracy
 XY = [Xs, Ys];                  % single scaling for the states
@@ -152,8 +146,7 @@ cd(current_dir)
 
 %% Koopman operator approximation (EDMD)
 % basis function selection and lifting
-% TODO: generic lifting function (one sample), matlabFunction?
-nrbf = 10;                  % number of basis functions
+nrbf = 50;                  % number of basis functions
 cent = rand(nx,nrbf)*2 - 1; % RBF centers, uniform in [-1,1]
 rbf_type = 'thinplate';     % gauss, invquad, invmultquad, polyharmonic
 
