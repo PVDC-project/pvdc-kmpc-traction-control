@@ -38,6 +38,12 @@ nu = size(B,2);     % number of inputs
 w_p = 1e-1;     % slip tracking error weight
 w_i = 1e3;      % integral state weight
 w_u = 1e-5;     % torque reduction weight
+
+if isfield(mpc_setup,'w_p')  % cost weights set outside
+    w_p = mpc_setup.w_p;
+    w_i = mpc_setup.w_i;
+    w_u = mpc_setup.w_u;
+end
  
 H = [w_u 0 0 0;
      0 w_p 0 -w_p;
@@ -118,7 +124,14 @@ problem.T_ref = T_ref*ones(N,1);
 f = [-2*w_u*T_ref; 0; 0; 0];
 problem.linear_cost = repmat(f,N,1);
 
-[~, exitflag, ~] = kmpc(problem);
-assert(exitflag == 1, 'Some issue with FORCESPRO solver');
+[~, exitflag, info] = kmpc(problem);
+if exitflag~=1
+    warning(['solver failed with status ',num2str(exitflag)]);
+    disp(info)
+end
+
+running_carmaker = contains(pwd,'cm4sl');
+if running_carmaker; cd ..\..; end
 save models/dense_Fwu.mat F w_u
+if running_carmaker; cd carmaker\src_cm4sl; end
 end

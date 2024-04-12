@@ -21,7 +21,6 @@ gear_ratio = VEHICLE.GEAR_RATIO;
 D = VEHICLE.MF_D;
 C = VEHICLE.MF_C;
 B = VEHICLE.MF_B;
-T_max = 250;    % [Nm] maximum motor torque
 
 % named symbolic variables
 v = SX.sym('v');        % longitudinal speed of the vehicle [m/s]

@@ -39,7 +39,7 @@ U = U(1:Ntraj*Nsim);                    % trim to match the desired length
 
 % random initial condition from the given interval
 vx_low = 0/3.6;     % [m/s]
-vx_high = 20/3.6;   % [m/s]
+vx_high = 40/3.6;   % [m/s]
 kappa_low = 0;      % [-] 
 kappa_high = 0.2;   % [-]
 vx_init = vx_low + (vx_high-vx_low) * rand(1,Ntraj);                % uniform distribution
@@ -146,7 +146,7 @@ cd(current_dir)
 
 %% Koopman operator approximation (EDMD)
 % basis function selection and lifting
-nrbf = 50;                  % number of basis functions
+nrbf = 100;                  % number of basis functions
 cent = rand(nx,nrbf)*2 - 1; % RBF centers, uniform in [-1,1]
 rbf_type = 'thinplate';     % gauss, invquad, invmultquad, polyharmonic
 
@@ -270,6 +270,10 @@ hFig.WindowState = 'maximized';
 %% save the approximated system matrices and lifting data
 save ../models/kmpc_data.mat Alift Blift Clift cent rbf_type PX PU
 disp('Koopman model saved in ../models/kmpc_data.mat')
+
+%% remove unnecessary files
+delete *.json
+disp('Deleted acados .json file(s).')
 
 %% Literature
 % Linear predictors for nonlinear dynamical systems: Koopman operator meets model predictive control

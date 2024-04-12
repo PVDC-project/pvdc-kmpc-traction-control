@@ -7,4 +7,5 @@ xinit = get_sim_data(sigsOut,'mpc_in_xinit');
 all_parameters = get_sim_data(sigsOut,'mpc_in_all_params');
 
 save('../../data/mpc_inputs.mat','hu','hl','x0','xinit','all_parameters')
+disp('MPC inputs saved to data/mpc_inputs.mat')
 end

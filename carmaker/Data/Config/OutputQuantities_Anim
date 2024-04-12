@@ -2,12 +2,12 @@
 FileIdent = CarMaker-OutputQuantities 1
 
 DStore.Format = erg
+DStore.Compression = none
 DStore.dt.fast = 0.001
 DStore.dt.normal = 0.01
 DStore.dt.slow = 0.1
 
 DStore.Quantities.fast:
-
 DStore.Quantities.normal:
 	AccelCtrl.ACC.DesiredSpd
 	AccelCtrl.ACC.IsActive
@@ -117,7 +117,7 @@ DStore.Quantities.normal:
 	Sensor.Camera.*.Obj.*.MBR.TR_X
 	Sensor.Camera.*.Obj.*.MBR.TR_Y
 	Sensor.Camera.*.Obj.*.MBR.TR_Z
-	Sensor.Camera.*.Obj.*.ObjID
+	Sensor.Camera.*.Obj.*.ObjId
 	Sensor.Camera.*.Obj.*.Type
 	Sensor.Collision.Vhcl.Fr1.ObjId
 	Sensor.Collision.Vhcl.WFL.ObjId
@@ -303,5 +303,4 @@ DStore.Quantities.normal:
 	Vhcl.Yaw
 	Vhcl.sRoad
 	Vhcl.v
-
 DStore.Quantities.slow:

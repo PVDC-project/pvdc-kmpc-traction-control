@@ -47,13 +47,13 @@ switch controller_type
     case 3
         Kp = 750;  % proportional gain
         Ki = 100;  % integral gain
-        Kd = 0;     % derivative gain
+        Kd = 0;    % derivative gain
     case 4
         controller = kmpc_setup_y2f(mpc_setup);
         load models/kmpc_data.mat PX PU  % for state and input scaling
     case 5
         kmpc_setup_y2f(mpc_setup);
-        error('y2f bug not fixed yet')
+        load models/kmpc_data.mat PX PU  % for state and input scaling
     otherwise
         disp('controller type not recognized, running without control')
         controller_type = 0;
@@ -179,15 +179,20 @@ for ii=1:N_sim
                 output.u0 = mapstd_custom('reverse',yalmip_output{1}(:,1),PU);
             end
         case 5  % KMPC FORCES Y2F interface
-%             problem.minus_x0 = -lifting_function(x_ocp(:,ii));  % (negative) initial state
-%             problem.T_ref = T_ref(ii)*ones(N,1);  % set for all stages
-%             f = [-2*w_u*T_ref(ii); w_x1; -kappa_ref*w_x1*R; 0;  % linear cost term
-%                  zeros(size(problem.minus_x0,1)-3,1)];  % extend for the lifted state
-%             problem.linear_cost = repmat(f,N,1);  % set for all stages
+            tic
+            state_to_lift = mapstd_custom('apply',x_ocp(1:2,ii),PX);  % don't scale e_int
+            problem{1} = [lifting_function(state_to_lift); x_ocp(3,ii); kappa_ref];
+            problem{2} = mapstd_custom('apply',T_ref(ii),PU);
 
-%             [solout, exitflag, info] = kmpc(problem);
-%             info.fevalstime = 0;  % add to struct for statistics
-%             output.u0 = mapstd_custom('reverse',solout{1}(:,1),PU);  % unscale the input
+            [forces_output, exitflag, info] = kmpc(problem);
+            info.totaltime = toc;
+            info.fevalstime = 0;  % add to struct for statistics
+            if exitflag~=1
+                warning(['solver failed with status ',num2str(status)]);
+                output.u0 = T_ref(ii);  % don't modify the torque if failed
+            else
+                output.u0 = mapstd_custom('reverse',forces_output{1}(:,1),PU);  % unscale the input
+            end
     end
 
     % check for failure and display some statistics

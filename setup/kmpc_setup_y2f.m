@@ -43,6 +43,12 @@ w_p = 1e-1;     % slip tracking error weight
 w_i = 1e3;      % integral state weight
 w_u = 1e-5;     % torque reduction weight
 
+if isfield(mpc_setup,'w_p')  % cost weights set outside
+    w_p = mpc_setup.w_p;
+    w_i = mpc_setup.w_i;
+    w_u = mpc_setup.w_u;
+end
+
 % w_p = 1e-2; w_i = 1e-2; w_u = 1e2;  % test input reference tracking
 
 %% define problem using YALMIP
@@ -107,7 +113,7 @@ end
 addpath(solver_dir);
 cd(solver_dir);
 
-% optimizerFORCES(constraints, objective, codeoptions, params, outputs, parameter_names, output_names);
+optimizerFORCES(constraints, objective, codeoptions, params, outputs, parameter_names, output_names);
 
 cd('../');
 
@@ -121,9 +127,9 @@ state_to_lift = mapstd_custom('apply',[0;10],PX);
 problem{1} = [lifting_function(state_to_lift); 0; 0.1];  % lift, e_int, kappa_ref
 problem{2} = mapstd_custom('apply',250,PU);  % T_ref (scaled)
 
-% [forces_sol, forces_flag, forces_info] = kmpc(problem);
-% disp(['FORCES test solution: ',num2str(forces_sol{1})])
-% assert(forces_flag == 1, 'Test call of FORCESPRO solver failed');
+[forces_sol, forces_flag, forces_info] = kmpc(problem);
+disp(['FORCES test solution: ',num2str(forces_sol{1})])
+assert(forces_flag == 1, 'Test call of FORCESPRO solver failed');
 
 [yalmip_sol, yalmip_flag, ~, ~, ~, yalmip_info] = controller(problem);
 disp(['YALMIP test solution: ',num2str(yalmip_sol{1})]);
