@@ -13,7 +13,7 @@ e_int_row(end-1) = 1;       % integral state is second-to-last
 e_int_row(end) = Ts;        % slip reference is the last state
 A = [Alift, zeros(nz,2);
     e_int_row;
-    zeros(1,nz+1), 1];     % slip reference has no dynamics
+    zeros(1,nz+1), 1];      % slip reference has no dynamics
 
 B = [Blift;
     zeros(2,size(Blift,2))];
@@ -23,14 +23,6 @@ C = zeros(3,nz+2);
 C(1,3) = 1;     % slip
 C(2,end-1) = 1; % integral state
 C(3,end) = 1;   % slip reference
-
-% add s and w to outputs for debugging
-% C = [C;
-%     eye(2), zeros(2,nz)];
-
-% C(1,3) = 1;     % brojnik slipa
-% C(2,2) = 1;     % brzina
-% C(3,end) = 1;   % slip reference
 
 ny = size(C,1);         % number of outputs
 [nz, nu] = size(B);     % number of (extended) states and inputs
@@ -58,8 +50,7 @@ T_ref = sdpvar;         % for online torque limiting (should be scaled)
 Y = F*z0 + Phi*u(:);    % dense-form prediction
 
 umin = mapstd_custom('apply',0,PU);  % scale minimum motor torque
-% umax = mapstd_custom('apply',250,PU);  % parametric bound doesn't work
-% with y2f
+
 constraints = [];
 objective = 0;
 
@@ -70,10 +61,6 @@ for k = 1:N
     objective = objective + w_i * y(2)^2;               % integral state cost
     objective = objective + w_u * (T_ref-u(k))^2;       % input torque reduction cost
     constraints = [constraints, umin <= u(k) <= T_ref]; % input constraint
-
-%     % alternative formulation
-%     objective = objective + (u(k)-T_ref)^2;
-%     constraints = [constraints, y(1)<=0.1];  % predikcija y (1) - ne valja!
 end
 
 %% solver settings
@@ -113,12 +100,14 @@ end
 addpath(solver_dir);
 cd(solver_dir);
 
-optimizerFORCES(constraints, objective, codeoptions, params, outputs, parameter_names, output_names);
+if ~mpc_setup.use_yalmip  % skip codegen if not needed
+    optimizerFORCES(constraints, objective, codeoptions, params, outputs, parameter_names, output_names);
+end
 
 cd('../');
 
 % YALMIP for comparison
-options = sdpsettings('solver','daqp','savesolverinput',1,'savesolveroutput',1);
+options = sdpsettings('solver','quadprog','savesolverinput',1,'savesolveroutput',1);
 controller = optimizer(constraints, objective, options, params, outputs);
 
 %% test call
@@ -127,9 +116,11 @@ state_to_lift = mapstd_custom('apply',[0;10],PX);
 problem{1} = [lifting_function(state_to_lift); 0; 0.1];  % lift, e_int, kappa_ref
 problem{2} = mapstd_custom('apply',250,PU);  % T_ref (scaled)
 
-[forces_sol, forces_flag, forces_info] = kmpc(problem);
-disp(['FORCES test solution: ',num2str(forces_sol{1})])
-assert(forces_flag == 1, 'Test call of FORCESPRO solver failed');
+if ~mpc_setup.use_yalmip
+    [forces_sol, forces_flag, forces_info] = kmpc(problem);
+    disp(['FORCES test solution: ',num2str(forces_sol{1})])
+    assert(forces_flag == 1, 'Test call of FORCESPRO solver failed');
+end
 
 [yalmip_sol, yalmip_flag, ~, ~, ~, yalmip_info] = controller(problem);
 disp(['YALMIP test solution: ',num2str(yalmip_sol{1})]);

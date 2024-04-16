@@ -19,8 +19,9 @@ VEHICLE = vehicle_parameters();
 R = VEHICLE.WHEEL_RADIUS;
 T_max = VEHICLE.MAX_MOTOR_TORQUE;
 
-kappa_ref = 0.1;    % slip reference
-mu_x = 0.3;         % [-] road-tire friction coefficient
+kappa_ref = 0.1;        % slip reference
+mu_x = 0.3;             % [-] road-tire friction coefficient
+change_friction = 1;    % test the controller on different surfaces
 
 %% Controller setup
 % 0 - off
@@ -29,12 +30,16 @@ mu_x = 0.3;         % [-] road-tire friction coefficient
 % 3 - PID
 % 4 - KMPC YALMIP
 % 5 - KMPC FORCES Y2F interface
-controller_type = 2;
+% 6 - adaptive KMPC Y2F (prediction model changes with vehicle speed)
+% 7 - adaptive KMPC YALMIP (quadprog, DAQP or OSQP)
+controller_type = 1;
 N = 5;                      % prediction horizon length
 compile_for_simulink = 0;   % create the S-function block?
-
+use_yalmip = controller_type == 4 || controller_type == 7;
+is_adaptive = controller_type == 6 || 7;
 mpc_setup = struct('N',N,'Ts',Ts,'R',R,'kappa_ref',kappa_ref',...
-                   'compile_for_simulink',compile_for_simulink);
+                   'compile_for_simulink',compile_for_simulink,...
+                   'use_yalmip',use_yalmip);
 
 switch controller_type
     case 1
@@ -54,6 +59,13 @@ switch controller_type
     case 5
         kmpc_setup_y2f(mpc_setup);
         load models/kmpc_data.mat PX PU  % for state and input scaling
+    case {6,7}
+        controllers = kmpc_setup_y2f_adaptive(mpc_setup);
+        d10 = load('models/kmpc_data10.mat');
+        d20 = load('models/kmpc_data20.mat');
+        d30 = load('models/kmpc_data30.mat');
+        d40 = load('models/kmpc_data40.mat');
+        warning('remove vid?')
     otherwise
         disp('controller type not recognized, running without control')
         controller_type = 0;
@@ -65,7 +77,7 @@ ocp_nu = 1;
 
 %% Closed loop simulation
 v0 = 2;         % [km/h] initial car speed
-v0 = v0 / 3.6;  % convert to m/s
+v0 = v0/3.6;    % convert to m/s
 w0 = v0/R;      % [rad/s] initial wheel speed (no slip)
 
 sim_x0 = [v0; w0];              % initial state
@@ -93,14 +105,19 @@ T_ref = torque_ramp(0.1,0.6,0,T_max,Ts,T_sim);
 
 e_int = 0;      % for the integral state calculation
 distance = 0;   % compare final distances
+mu_x_log = nan(1,N_sim);
 
 e = [];
 
+vid = zeros(1,N_sim);
+
 for ii=1:N_sim
-    % varying friction coefficient
-    if distance >= 0; mu_x = 0.3; end
-    if distance > 4; mu_x = 0.15; end
-    if distance > 7.5; mu_x = 0.6; end
+    if change_friction  % varying friction coefficient
+        if distance >= 0; mu_x = 0.3; end
+        if distance > 4; mu_x = 0.15; end
+        if distance > 7.5; mu_x = 0.6; end
+    end
+    mu_x_log(ii) = mu_x;
 
     % get the control input
     switch controller_type
@@ -192,6 +209,62 @@ for ii=1:N_sim
                 output.u0 = T_ref(ii);  % don't modify the torque if failed
             else
                 output.u0 = mapstd_custom('reverse',forces_output{1}(:,1),PU);  % unscale the input
+            end
+        case 6  % adaptive KMPC Y2F
+            v = x_sim(1,ii)*3.6;  % [km/h]
+            PX = d10.PX; PU = d10.PU; vid(ii) = 1;
+            if v >= 10 && v < 20; PX = d20.PX; PU = d20.PU; vid(ii) = 2; end
+            if v >= 20 && v < 30; PX = d30.PX; PU = d30.PU; vid(ii) = 3; end
+            if v >= 30; PX = d40.PX; PU = d40.PU; vid(ii) = 4; end
+            tic
+            state_to_lift = mapstd_custom('apply',x_ocp(1:2,ii),PX);  % don't scale e_int
+            problem{1} = [lifting_function(state_to_lift); x_ocp(3,ii); kappa_ref];
+            problem{2} = mapstd_custom('apply',T_ref(ii),PU);
+            if v < 10; [forces_output, exitflag, info] = kmpc10(problem); end
+            if v >= 10 && v < 20; [forces_output, exitflag, info] = kmpc20(problem); end
+            if v >= 20 && v < 30; [forces_output, exitflag, info] = kmpc30(problem); end
+            if v >= 30; [forces_output, exitflag, info] = kmpc40(problem); end
+            info.totaltime = toc;
+            info.fevalstime = 0;  % add to struct for statistics
+            if exitflag~=1
+                warning(['solver failed with status ',num2str(status)]);
+                output.u0 = T_ref(ii);  % don't modify the torque if failed
+            else
+                output.u0 = mapstd_custom('reverse',forces_output{1}(:,1),PU);  % unscale the input
+            end
+        case 7  % adaptive KMPC YALMIP
+            v = x_sim(1,ii)*3.6;  % [km/h]
+            PX = d10.PX; PU = d10.PU; vid(ii) = 1;
+            if v >= 10 && v < 20; PX = d20.PX; PU = d20.PU; vid(ii) = 2; end
+            if v >= 20 && v < 30; PX = d30.PX; PU = d30.PU; vid(ii) = 3; end
+            if v >= 30; PX = d40.PX; PU = d40.PU; vid(ii) = 4; end
+            tic
+            state_to_lift = mapstd_custom('apply',x_ocp(1:2,ii),PX);  % don't scale e_int
+            problem{1} = [lifting_function(state_to_lift); x_ocp(3,ii); kappa_ref];
+            problem{2} = mapstd_custom('apply',T_ref(ii),PU);
+            if v < 10; controller = controllers{1}; end
+            if v >= 10 && v < 20; controller = controllers{2}; end
+            if v >= 20 && v < 30; controller = controllers{3}; end
+            if v >= 30; controller = controllers{4}; end
+            [yalmip_output, exitflag, a, b, c, info] = controller(problem);
+            info.totaltime = toc;
+            if isfield(info.solveroutput,'output')
+                info.it = info.solveroutput.output.iterations; % quadprog
+            elseif isfield(info.solveroutput,'iter')
+                info.it = info.solveroutput.iter;              % DAQP
+            elseif isfield(info.solveroutput,'info')
+                info.it = info.solveroutput.info.iter;         % OSQP
+            else
+                info.it = 1;                                   % other solvers
+            end
+            info.solvetime = info.solvertime;   % FORCES stats
+            info.fevalstime = 0;                % FORCES stats
+
+            if exitflag  % with YALMIP 0 means OK
+                warning(['solver failed with flag ',num2str(exitflag),' - ', a{1}])
+                output.u0 = T_ref(ii);
+            else
+                output.u0 = mapstd_custom('reverse',yalmip_output{1}(:,1),PU);
             end
     end
 

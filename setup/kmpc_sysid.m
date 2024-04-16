@@ -9,6 +9,8 @@ addpath('../models')
 addpath('../functions')
 addpath('../data')
 
+data_filename = '../models/kmpc_data.mat';
+
 %% Simulation setup
 Ts = 2e-3;  % [s] sampling time
 mu_x = 0.3; % [-] road-tire friction coefficient
@@ -39,7 +41,7 @@ U = U(1:Ntraj*Nsim);                    % trim to match the desired length
 
 % random initial condition from the given interval
 vx_low = 0/3.6;     % [m/s]
-vx_high = 40/3.6;   % [m/s]
+vx_high = 20/3.6;   % [m/s]
 kappa_low = 0;      % [-] 
 kappa_high = 0.2;   % [-]
 vx_init = vx_low + (vx_high-vx_low) * rand(1,Ntraj);                % uniform distribution
@@ -146,11 +148,11 @@ cd(current_dir)
 
 %% Koopman operator approximation (EDMD)
 % basis function selection and lifting
-nrbf = 100;                  % number of basis functions
+nrbf = 20;                  % number of basis functions
 cent = rand(nx,nrbf)*2 - 1; % RBF centers, uniform in [-1,1]
 rbf_type = 'thinplate';     % gauss, invquad, invmultquad, polyharmonic
 
-save ../models/kmpc_data.mat PX PU cent rbf_type
+save(data_filename,'PX','PU','cent','rbf_type');
 
 Xlift = lifting_function(Xs);
 Ylift = lifting_function(Ys);
@@ -268,8 +270,8 @@ hFig = gcf;
 hFig.WindowState = 'maximized';
 
 %% save the approximated system matrices and lifting data
-save ../models/kmpc_data.mat Alift Blift Clift cent rbf_type PX PU
-disp('Koopman model saved in ../models/kmpc_data.mat')
+save(data_filename,'Alift','Blift','Clift','PX','PU','cent','rbf_type');
+disp(['Koopman model saved in ',data_filename])
 
 %% remove unnecessary files
 delete *.json

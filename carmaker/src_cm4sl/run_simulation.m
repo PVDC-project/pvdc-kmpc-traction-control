@@ -16,7 +16,12 @@ v0 = 2;  % [km/h] initial car speed
 w0 = v0/3.6/R;  % [rad/s] initial wheel speed
 
 %% Controller setup
-% 0 - off, 1 - NMPC, 2 - KMPC, 3 - PID, 4 - PID + random (data collection)
+% 0 - off
+% 1 - NMPC
+% 2 - KMPC
+% 3 - PID
+% 4 - PID + random (data collection)
+% 5 - adaptive (prediction model varies with vehicle speed)
 controller_type = 2;
 N = 5;                      % prediction horizon length
 compile_for_simulink = 1;   % create the S-function block?
