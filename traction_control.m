@@ -30,9 +30,9 @@ change_friction = 1;    % test the controller on different surfaces
 % 3 - PID
 % 4 - KMPC YALMIP
 % 5 - KMPC FORCES Y2F interface
-% 6 - adaptive KMPC Y2F (prediction model changes with vehicle speed)
+% 6 - adaptive KMPC FORCES Y2F (prediction model changes with vehicle speed)
 % 7 - adaptive KMPC YALMIP (quadprog, DAQP or OSQP)
-controller_type = 1;
+controller_type = 2;
 N = 5;                      % prediction horizon length
 compile_for_simulink = 0;   % create the S-function block?
 use_yalmip = controller_type == 4 || controller_type == 7;

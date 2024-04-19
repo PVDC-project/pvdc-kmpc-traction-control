@@ -7,13 +7,13 @@ addpath('../../functions')          % utility functions
 addpath('../../postprocessing/')    % plotting
 
 %% Simulation setup
-Ts = 2e-3;  % [s] sampling time
+Ts = 2e-3;          % [s] sampling time
 VEHICLE = vehicle_parameters();
 R = VEHICLE.WHEEL_RADIUS;
 Tmax = VEHICLE.MAX_MOTOR_TORQUE;
-kappa_ref = 0.1;  % slip reference
-v0 = 2;  % [km/h] initial car speed
-w0 = v0/3.6/R;  % [rad/s] initial wheel speed
+kappa_ref = 0.1;    % slip reference
+v0 = 2;             % [km/h] initial car speed
+w0 = v0/3.6/R;      % [rad/s] initial wheel speed
 
 %% Controller setup
 % 0 - off
@@ -21,13 +21,15 @@ w0 = v0/3.6/R;  % [rad/s] initial wheel speed
 % 2 - KMPC
 % 3 - PID
 % 4 - PID + random (data collection)
-% 5 - adaptive (prediction model varies with vehicle speed)
-controller_type = 2;
+% 5 - KMPC YALMIP
+controller_type = 5;
 N = 5;                      % prediction horizon length
 compile_for_simulink = 1;   % create the S-function block?
+use_yalmip = controller_type == 5;
 
 mpc_setup = struct('N',N,'Ts',Ts,'R',R,'kappa_ref',kappa_ref',...
-                   'compile_for_simulink',compile_for_simulink);
+                   'compile_for_simulink',compile_for_simulink,...
+                   'use_yalmip',use_yalmip);
 
 % cost function weights
 mpc_setup.w_p = 1e4;      % slip tracking error weight
@@ -45,6 +47,15 @@ switch controller_type
         % discrete PI(D) parameters
         P = 750;
         I = 50000;
+    case 5
+%       controller = kmpc_setup_y2f(mpc_setup);  
+%       loading/saving with optimizer doesn't always work
+%       https://groups.google.com/g/yalmip/c/qK_uFt942Yo/m/IoD234uC22oJ
+        save ../../data/kmpc_yalmip.mat mpc_setup   % for KMPC setup within the MATLAB System block
+        load ../../models/kmpc_data.mat PX PU       % for state and input scaling
+    otherwise
+        disp('controller type not recognized, running without control')
+        controller_type = 0;
 end
 
 %% Run the simulation
