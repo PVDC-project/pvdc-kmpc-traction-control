@@ -7,7 +7,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "4.315"
+    ComputedModelVersion    "4.327"
     NumModelReferences	    0
     NumTestPointedSignals   58
     TestPointedSignal {
@@ -535,13 +535,13 @@ Model {
     ExternalFileReference {
       Reference		      "simulink/Logic and Bit\nOperations/Compare\nTo Constant"
       Path		      "generic/CarMaker/Traction control/ControllerFL1/KMPC_yalmip/Compare To Constant1"
-      SID		      "4314"
+      SID		      "4438"
       Type		      "LIBRARY_BLOCK"
     }
     ExternalFileReference {
       Reference		      "simulink/Logic and Bit\nOperations/Compare\nTo Constant"
       Path		      "generic/CarMaker/Traction control/ControllerFL1/KMPC_yalmip/int_w_AW/Compare To Constant"
-      SID		      "4339"
+      SID		      "4464"
       Type		      "LIBRARY_BLOCK"
     }
     ExternalFileReference {
@@ -666,7 +666,7 @@ Model {
       }
       Array {
 	Type			"Simulink.EditorInfo"
-	Dimension		68
+	Dimension		69
 	Object {
 	  $ObjectID		  5
 	  IsActive		  [1]
@@ -675,8 +675,8 @@ Model {
 	  LoadSaveID		  "4211"
 	  Extents		  [920.0, 805.0]
 	  ZoomFactor		  [0.47259451807578]
-	  Offset		  [-457.07682875560545, -796.68148297365474]
-	  SceneRectInView	  [-457.07682875560545, -796.68148297365474, 1946.7005325112109, 1703.3629659473095]
+	  Offset		  [-457.07682875560545, -886.55446009898492]
+	  SceneRectInView	  [-457.07682875560545, -886.55446009898492, 1946.7005325112109, 1703.3629659473095]
 	}
 	Object {
 	  $ObjectID		  6
@@ -718,9 +718,9 @@ Model {
 	  ViewObjType		  "SimulinkSubsys"
 	  LoadSaveID		  "2406"
 	  Extents		  [920.0, 805.0]
-	  ZoomFactor		  [1.7944572748267895]
-	  Offset		  [-21.238455907994496, 168.66981118857578]
-	  SceneRectInView	  [-21.238455907994496, 168.66981118857578, 512.68983268983277, 448.60360360360369]
+	  ZoomFactor		  [1.4715909090909092]
+	  Offset		  [-70.426716336872573, -1.5135135135134874]
+	  SceneRectInView	  [-70.426716336872573, -1.5135135135134874, 625.17374517374515, 547.027027027027]
 	}
 	Object {
 	  $ObjectID		  10
@@ -760,7 +760,7 @@ Model {
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
-	  LoadSaveID		  "4310"
+	  LoadSaveID		  "4434"
 	  Extents		  [920.0, 805.0]
 	  ZoomFactor		  [0.47259451807578]
 	  Offset		  [-457.07682875560545, -796.68148297365474]
@@ -771,6 +771,17 @@ Model {
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
+	  LoadSaveID		  "4310"
+	  Extents		  [920.0, 805.0]
+	  ZoomFactor		  [0.47259451807578]
+	  Offset		  [-457.07682875560545, -796.68148297365474]
+	  SceneRectInView	  [-457.07682875560545, -796.68148297365474, 1946.7005325112109, 1703.3629659473095]
+	}
+	Object {
+	  $ObjectID		  15
+	  IsActive		  [0]
+	  IsTabbed		  [0]
+	  ViewObjType		  "SimulinkSubsys"
 	  LoadSaveID		  "4059"
 	  Extents		  [920.0, 805.0]
 	  ZoomFactor		  [1.7944572748267895]
@@ -778,7 +789,7 @@ Model {
 	  SceneRectInView	  [-14.184760094916385, 0.19819819819815621, 512.68983268983277, 448.60360360360369]
 	}
 	Object {
-	  $ObjectID		  15
+	  $ObjectID		  16
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -789,7 +800,7 @@ Model {
 	  SceneRectInView	  [-458.25395880044857, -692.02397176289242, 2024.0547926008971, 1771.0479435257848]
 	}
 	Object {
-	  $ObjectID		  16
+	  $ObjectID		  17
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -800,7 +811,7 @@ Model {
 	  SceneRectInView	  [-458.72481081838555, -824.06096727858744, 2054.9964966367711, 1798.1219345571749]
 	}
 	Object {
-	  $ObjectID		  17
+	  $ObjectID		  18
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -811,7 +822,7 @@ Model {
 	  SceneRectInView	  [-426.89164438502672, -244.46631016042778, 736.0, 644.0]
 	}
 	Object {
-	  $ObjectID		  18
+	  $ObjectID		  19
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -822,7 +833,7 @@ Model {
 	  SceneRectInView	  [32.456803531390136, -39.86689847253362, 495.69576793721973, 433.73379694506724]
 	}
 	Object {
-	  $ObjectID		  19
+	  $ObjectID		  20
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -833,7 +844,7 @@ Model {
 	  SceneRectInView	  [-233.50960738976093, -293.32408153494015, 736.0, 644.0]
 	}
 	Object {
-	  $ObjectID		  20
+	  $ObjectID		  21
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -844,7 +855,7 @@ Model {
 	  SceneRectInView	  [-7.1719275504484017, -263.91557332539236, 638.6641676008968, 558.83114665078472]
 	}
 	Object {
-	  $ObjectID		  21
+	  $ObjectID		  22
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -855,7 +866,7 @@ Model {
 	  SceneRectInView	  [-0.10914728139012198, -9.8606405899663656, 174.53860706278024, 152.72128117993273]
 	}
 	Object {
-	  $ObjectID		  22
+	  $ObjectID		  23
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -866,7 +877,7 @@ Model {
 	  SceneRectInView	  [-3.797488088565018, -152.6738544002242, 416.91528867713004, 364.80087759248875]
 	}
 	Object {
-	  $ObjectID		  23
+	  $ObjectID		  24
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -877,7 +888,7 @@ Model {
 	  SceneRectInView	  [-458.25395880044857, -692.6535268598916, 2024.0547926008971, 1771.0479435257848]
 	}
 	Object {
-	  $ObjectID		  24
+	  $ObjectID		  25
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -888,7 +899,7 @@ Model {
 	  SceneRectInView	  [20.810135229820645, -16.44067054372195, 442.70004204035871, 387.36253678531386]
 	}
 	Object {
-	  $ObjectID		  25
+	  $ObjectID		  26
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -899,7 +910,7 @@ Model {
 	  SceneRectInView	  [54.0, 12.25, 92.0, 80.5]
 	}
 	Object {
-	  $ObjectID		  26
+	  $ObjectID		  27
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -910,7 +921,7 @@ Model {
 	  SceneRectInView	  [18.820604647783711, 49.331310316810743, 434.67129070443258, 380.33737936637851]
 	}
 	Object {
-	  $ObjectID		  27
+	  $ObjectID		  28
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -921,7 +932,7 @@ Model {
 	  SceneRectInView	  [-32.093452214125534, -224.81511000560533, 633.50721692825107, 554.31881481221967]
 	}
 	Object {
-	  $ObjectID		  28
+	  $ObjectID		  29
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -932,7 +943,7 @@ Model {
 	  SceneRectInView	  [-295.12135650224218, -175.52024943946188, 492.6177130044843, 431.04049887892376]
 	}
 	Object {
-	  $ObjectID		  29
+	  $ObjectID		  30
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -943,7 +954,7 @@ Model {
 	  SceneRectInView	  [-32.093452214125534, -225.15940740610984, 633.50721692825107, 554.31881481221967]
 	}
 	Object {
-	  $ObjectID		  30
+	  $ObjectID		  31
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -954,7 +965,7 @@ Model {
 	  SceneRectInView	  [-14.425290779147957, 88.550233849495527, 458.17089405829591, 400.89953230100895]
 	}
 	Object {
-	  $ObjectID		  31
+	  $ObjectID		  32
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -965,7 +976,7 @@ Model {
 	  SceneRectInView	  [0.0, 0.0, 0.0, 0.0]
 	}
 	Object {
-	  $ObjectID		  32
+	  $ObjectID		  33
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -976,7 +987,7 @@ Model {
 	  SceneRectInView	  [140.7421875, -72.000000000000028, 460.0, 402.5]
 	}
 	Object {
-	  $ObjectID		  33
+	  $ObjectID		  34
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -987,7 +998,7 @@ Model {
 	  SceneRectInView	  [159.06814041479822, -122.79096307455154, 718.37934417040356, 628.58192614910308]
 	}
 	Object {
-	  $ObjectID		  34
+	  $ObjectID		  35
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -998,7 +1009,7 @@ Model {
 	  SceneRectInView	  [202.11711044524822, 304.49284101771252, 460.0, 402.5]
 	}
 	Object {
-	  $ObjectID		  35
+	  $ObjectID		  36
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1009,7 +1020,7 @@ Model {
 	  SceneRectInView	  [-217.7734375, -298.5, 920.0, 805.0]
 	}
 	Object {
-	  $ObjectID		  36
+	  $ObjectID		  37
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1020,7 +1031,7 @@ Model {
 	  SceneRectInView	  [-139.04352678571428, -212.5, 525.71428571428567, 460.0]
 	}
 	Object {
-	  $ObjectID		  37
+	  $ObjectID		  38
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1031,7 +1042,7 @@ Model {
 	  SceneRectInView	  [400.26479344615484, 139.82577549579625, 736.0, 644.0]
 	}
 	Object {
-	  $ObjectID		  38
+	  $ObjectID		  39
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1042,7 +1053,7 @@ Model {
 	  SceneRectInView	  [33.187535033632287, -91.784149033071742, 348.07805493273543, 304.56829806614348]
 	}
 	Object {
-	  $ObjectID		  39
+	  $ObjectID		  40
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1053,7 +1064,7 @@ Model {
 	  SceneRectInView	  [-210.0, -333.5, 920.0, 805.0]
 	}
 	Object {
-	  $ObjectID		  40
+	  $ObjectID		  41
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1064,7 +1075,7 @@ Model {
 	  SceneRectInView	  [-384.67149292149281, 3.6936936936937173, 1465.8429858429856, 1282.6126126126126]
 	}
 	Object {
-	  $ObjectID		  41
+	  $ObjectID		  42
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1075,7 +1086,7 @@ Model {
 	  SceneRectInView	  [-112.484375, -140.5, 920.0, 805.0]
 	}
 	Object {
-	  $ObjectID		  42
+	  $ObjectID		  43
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1086,7 +1097,7 @@ Model {
 	  SceneRectInView	  [-295.12135650224218, -175.52024943946188, 492.6177130044843, 431.04049887892376]
 	}
 	Object {
-	  $ObjectID		  43
+	  $ObjectID		  44
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1097,7 +1108,7 @@ Model {
 	  SceneRectInView	  [-72.241465963375845, -97.75967854299364, 628.80324442675169, 550.2028388734077]
 	}
 	Object {
-	  $ObjectID		  44
+	  $ObjectID		  45
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1108,7 +1119,7 @@ Model {
 	  SceneRectInView	  [-453.44347673766822, -212.00175693665918, 736.0, 644.0]
 	}
 	Object {
-	  $ObjectID		  45
+	  $ObjectID		  46
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1119,7 +1130,7 @@ Model {
 	  SceneRectInView	  [-42.70769688901342, -16.44067054372195, 442.70004204035871, 387.36253678531386]
 	}
 	Object {
-	  $ObjectID		  46
+	  $ObjectID		  47
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1130,7 +1141,7 @@ Model {
 	  SceneRectInView	  [-368.32985040639011, -479.25636298346404, 1150.0, 1006.25]
 	}
 	Object {
-	  $ObjectID		  47
+	  $ObjectID		  48
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1141,7 +1152,7 @@ Model {
 	  SceneRectInView	  [982.202729345971, -168.58887364715503, 525.71428571428578, 460.00000000000006]
 	}
 	Object {
-	  $ObjectID		  48
+	  $ObjectID		  49
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1152,7 +1163,7 @@ Model {
 	  SceneRectInView	  [20.810135229820645, -16.44067054372195, 442.70004204035871, 387.36253678531386]
 	}
 	Object {
-	  $ObjectID		  49
+	  $ObjectID		  50
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1163,7 +1174,7 @@ Model {
 	  SceneRectInView	  [20.810135229820645, -16.44067054372195, 442.70004204035871, 387.36253678531386]
 	}
 	Object {
-	  $ObjectID		  50
+	  $ObjectID		  51
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1174,7 +1185,7 @@ Model {
 	  SceneRectInView	  [-3.797488088565018, -150.1738544002242, 416.91528867713004, 364.80087759248875]
 	}
 	Object {
-	  $ObjectID		  51
+	  $ObjectID		  52
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1185,7 +1196,7 @@ Model {
 	  SceneRectInView	  [20.810135229820645, -16.44067054372195, 442.70004204035871, 387.36253678531386]
 	}
 	Object {
-	  $ObjectID		  52
+	  $ObjectID		  53
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1196,7 +1207,7 @@ Model {
 	  SceneRectInView	  [-483.49479750560533, -628.19808453615462, 1711.3099075112107, 1497.3961690723092]
 	}
 	Object {
-	  $ObjectID		  53
+	  $ObjectID		  54
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1207,7 +1218,7 @@ Model {
 	  SceneRectInView	  [-3.797488088565018, -150.40043879624437, 416.91528867713004, 364.80087759248875]
 	}
 	Object {
-	  $ObjectID		  54
+	  $ObjectID		  55
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1218,7 +1229,7 @@ Model {
 	  SceneRectInView	  [20.810135229820645, -16.681268392656932, 442.70004204035871, 387.36253678531386]
 	}
 	Object {
-	  $ObjectID		  55
+	  $ObjectID		  56
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1229,7 +1240,7 @@ Model {
 	  SceneRectInView	  [-67.313540850313473, -93.453100509404351, 618.947394200627, 541.57896992554856]
 	}
 	Object {
-	  $ObjectID		  56
+	  $ObjectID		  57
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1240,7 +1251,7 @@ Model {
 	  SceneRectInView	  [-66.564675964765115, -92.798657718120808, 617.44966442953023, 540.26845637583892]
 	}
 	Object {
-	  $ObjectID		  57
+	  $ObjectID		  58
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1251,7 +1262,7 @@ Model {
 	  SceneRectInView	  [-2.1656390134529033, -220.4867310117713, 537.11252802690581, 469.9734620235426]
 	}
 	Object {
-	  $ObjectID		  58
+	  $ObjectID		  59
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1262,7 +1273,7 @@ Model {
 	  SceneRectInView	  [-2.1656390134529033, -220.4867310117713, 537.11252802690581, 469.9734620235426]
 	}
 	Object {
-	  $ObjectID		  59
+	  $ObjectID		  60
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1273,7 +1284,7 @@ Model {
 	  SceneRectInView	  [106.1705437219731, 125.58477263172645, 260.37766255605379, 227.8304547365471]
 	}
 	Object {
-	  $ObjectID		  60
+	  $ObjectID		  61
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1284,7 +1295,7 @@ Model {
 	  SceneRectInView	  [111.31165919282512, 133.46020179372198, 242.37668161434976, 212.07959641255604]
 	}
 	Object {
-	  $ObjectID		  61
+	  $ObjectID		  62
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1295,7 +1306,7 @@ Model {
 	  SceneRectInView	  [23.015695067264602, -100.79876681614348, 458.9686098654708, 401.59753363228697]
 	}
 	Object {
-	  $ObjectID		  62
+	  $ObjectID		  63
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1306,7 +1317,7 @@ Model {
 	  SceneRectInView	  [34.024774774774812, 50.880741877498878, 523.32239382239379, 457.40990990990991]
 	}
 	Object {
-	  $ObjectID		  63
+	  $ObjectID		  64
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1317,7 +1328,7 @@ Model {
 	  SceneRectInView	  [16.415654745240829, -79.731566699328084, 884.91869050951834, 773.46313339865617]
 	}
 	Object {
-	  $ObjectID		  64
+	  $ObjectID		  65
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1328,7 +1339,7 @@ Model {
 	  SceneRectInView	  [23.495533211883355, -145.67334203335207, 894.11049607623329, 782.34668406670414]
 	}
 	Object {
-	  $ObjectID		  65
+	  $ObjectID		  66
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1339,7 +1350,7 @@ Model {
 	  SceneRectInView	  [4.0894758968610176, -305.34944296524662, 1148.227298206278, 1004.6988859304932]
 	}
 	Object {
-	  $ObjectID		  66
+	  $ObjectID		  67
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1350,7 +1361,7 @@ Model {
 	  SceneRectInView	  [-151.29296875, -171.5, 920.0, 805.0]
 	}
 	Object {
-	  $ObjectID		  67
+	  $ObjectID		  68
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1361,7 +1372,7 @@ Model {
 	  SceneRectInView	  [-10.205417471042466, 25.837837837837839, 404.94208494208493, 354.32432432432432]
 	}
 	Object {
-	  $ObjectID		  68
+	  $ObjectID		  69
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1372,7 +1383,7 @@ Model {
 	  SceneRectInView	  [12.675861687580436, 11.882882882882882, 599.12483912483913, 524.23423423423424]
 	}
 	Object {
-	  $ObjectID		  69
+	  $ObjectID		  70
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1383,7 +1394,7 @@ Model {
 	  SceneRectInView	  [17.390585241730292, -103.29324525559949, 505.21882951653942, 441.586490511199]
 	}
 	Object {
-	  $ObjectID		  70
+	  $ObjectID		  71
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1394,7 +1405,7 @@ Model {
 	  SceneRectInView	  [-75.426844783715012, -43.412443051998451, 575.85368956743, 503.3248861039969]
 	}
 	Object {
-	  $ObjectID		  71
+	  $ObjectID		  72
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1405,7 +1416,7 @@ Model {
 	  SceneRectInView	  [55.688689809630461, 41.049832026875691, 283.62262038073908, 247.90033594624862]
 	}
 	Object {
-	  $ObjectID		  72
+	  $ObjectID		  73
 	  IsActive		  [0]
 	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkSubsys"
@@ -1421,7 +1432,7 @@ Model {
 	Type			"Simulink.DockComponentInfo"
 	Dimension		2
 	Object {
-	  $ObjectID		  73
+	  $ObjectID		  74
 	  Type			  "Simulink:Editor:ReferencedFiles"
 	  ID			  "Referenced Files"
 	  Visible		  [0]
@@ -1434,7 +1445,7 @@ Model {
 	  Minimized		  "Unset"
 	}
 	Object {
-	  $ObjectID		  74
+	  $ObjectID		  75
 	  Type			  "GLUE2:PropertyInspector"
 	  ID			  "Property Inspector"
 	  Visible		  [0]
@@ -1476,9 +1487,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "LAMES Workstation"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Apr 19 17:15:00 2024"
-  RTWModifiedTimeStamp	  635447698
-  ModelVersionFormat	  "%<AutoIncrement:4.315>"
+  LastModifiedDate	  "Mon Apr 22 13:08:33 2024"
+  RTWModifiedTimeStamp	  635692110
+  ModelVersionFormat	  "%<AutoIncrement:4.327>"
   SampleTimeColors	  on
   SampleTimeAnnotations	  off
   LibraryLinkDisplay	  "none"
@@ -1535,7 +1546,7 @@ Model {
   TryForcingSFcnDF	  off
   Object {
     $PropName		    "DataLoggingOverride"
-    $ObjectID		    75
+    $ObjectID		    76
     $ClassName		    "Simulink.SimulationData.ModelLoggingInfo"
     model_		    "generic"
     Array {
@@ -1553,7 +1564,7 @@ Model {
   }
   Object {
     $PropName		    "InstrumentedSignals"
-    $ObjectID		    76
+    $ObjectID		    77
     $ClassName		    "Simulink.HMI.InstrumentedSignals"
     Array {
       Type		      "Struct"
@@ -2983,7 +2994,7 @@ Model {
     Type		    "Handle"
     Dimension		    2
     Simulink.ConfigSet {
-      $ObjectID		      77
+      $ObjectID		      78
       Version		      "20.1.0"
       DisabledProps	      []
       Description	      ""
@@ -2991,7 +3002,7 @@ Model {
 	Type			"Handle"
 	Dimension		10
 	Simulink.SolverCC {
-	  $ObjectID		  78
+	  $ObjectID		  79
 	  Version		  "20.1.0"
 	  DisabledProps		  []
 	  Description		  ""
@@ -3033,7 +3044,7 @@ Model {
 	  ODENIntegrationMethod	  "ode3"
 	}
 	Simulink.DataIOCC {
-	  $ObjectID		  79
+	  $ObjectID		  80
 	  Version		  "20.1.0"
 	  DisabledProps		  []
 	  Description		  ""
@@ -3075,7 +3086,7 @@ Model {
 	  LoggingIntervals	  "[-inf, inf]"
 	}
 	Simulink.OptimizationCC {
-	  $ObjectID		  80
+	  $ObjectID		  81
 	  Version		  "20.1.0"
 	  Array {
 	    Type		    "Cell"
@@ -3149,7 +3160,7 @@ Model {
 	  EfficientTunableParamExpr off
 	}
 	Simulink.DebuggingCC {
-	  $ObjectID		  81
+	  $ObjectID		  82
 	  Version		  "20.1.0"
 	  Array {
 	    Type		    "Cell"
@@ -3272,7 +3283,7 @@ Model {
 	  VariantConditionMismatch "none"
 	}
 	Simulink.HardwareCC {
-	  $ObjectID		  82
+	  $ObjectID		  83
 	  Version		  "20.1.0"
 	  DisabledProps		  []
 	  Description		  ""
@@ -3322,7 +3333,7 @@ Model {
 	  HardwareBoardFeatureSet "EmbeddedCoderHSP"
 	}
 	Simulink.ModelReferenceCC {
-	  $ObjectID		  83
+	  $ObjectID		  84
 	  Version		  "20.1.0"
 	  DisabledProps		  []
 	  Description		  ""
@@ -3342,7 +3353,7 @@ Model {
 	  SupportModelReferenceSimTargetCustomCode off
 	}
 	Simulink.SFSimCC {
-	  $ObjectID		  84
+	  $ObjectID		  85
 	  Version		  "20.1.0"
 	  DisabledProps		  []
 	  Description		  ""
@@ -3386,7 +3397,7 @@ Model {
 	}
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
-	  $ObjectID		  85
+	  $ObjectID		  86
 	  Version		  "20.1.0"
 	  Array {
 	    Type		    "Cell"
@@ -3492,7 +3503,7 @@ Model {
 	    Type		    "Handle"
 	    Dimension		    2
 	    Simulink.CodeAppCC {
-	      $ObjectID		      86
+	      $ObjectID		      87
 	      Version		      "20.1.0"
 	      Array {
 		Type			"Cell"
@@ -3582,7 +3593,7 @@ Model {
 	    }
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
-	      $ObjectID		      87
+	      $ObjectID		      88
 	      Version		      "20.1.0"
 	      Array {
 		Type			"Cell"
@@ -3686,7 +3697,7 @@ Model {
 	  }
 	}
 	SlCovCC.ConfigComp {
-	  $ObjectID		  88
+	  $ObjectID		  89
 	  Version		  "20.1.0"
 	  DisabledProps		  []
 	  Description		  "Simulink Coverage Configuration Component"
@@ -3725,7 +3736,7 @@ Model {
 	  CovMcdcMode		  "Masking"
 	}
 	SSC.SimscapeCC {
-	  $ObjectID		  89
+	  $ObjectID		  90
 	  Version		  "1.0"
 	  DisabledProps		  []
 	  Description		  ""
@@ -3759,7 +3770,7 @@ Model {
       ExtraOptions	      ""
     }
     Simulink.ConfigSet {
-      $ObjectID		      90
+      $ObjectID		      91
       Version		      "20.1.0"
       DisabledProps	      []
       Description	      ""
@@ -3767,7 +3778,7 @@ Model {
 	Type			"Handle"
 	Dimension		10
 	Simulink.SolverCC {
-	  $ObjectID		  91
+	  $ObjectID		  92
 	  Version		  "20.1.0"
 	  DisabledProps		  []
 	  Description		  ""
@@ -3809,7 +3820,7 @@ Model {
 	  ODENIntegrationMethod	  "ode3"
 	}
 	Simulink.DataIOCC {
-	  $ObjectID		  92
+	  $ObjectID		  93
 	  Version		  "20.1.0"
 	  DisabledProps		  []
 	  Description		  ""
@@ -3851,7 +3862,7 @@ Model {
 	  LoggingIntervals	  "[-inf, inf]"
 	}
 	Simulink.OptimizationCC {
-	  $ObjectID		  93
+	  $ObjectID		  94
 	  Version		  "20.1.0"
 	  Array {
 	    Type		    "Cell"
@@ -3925,7 +3936,7 @@ Model {
 	  EfficientTunableParamExpr off
 	}
 	Simulink.DebuggingCC {
-	  $ObjectID		  94
+	  $ObjectID		  95
 	  Version		  "20.1.0"
 	  Array {
 	    Type		    "Cell"
@@ -4048,7 +4059,7 @@ Model {
 	  VariantConditionMismatch "none"
 	}
 	Simulink.HardwareCC {
-	  $ObjectID		  95
+	  $ObjectID		  96
 	  Version		  "20.1.0"
 	  DisabledProps		  []
 	  Description		  ""
@@ -4098,7 +4109,7 @@ Model {
 	  HardwareBoardFeatureSet "EmbeddedCoderHSP"
 	}
 	Simulink.ModelReferenceCC {
-	  $ObjectID		  96
+	  $ObjectID		  97
 	  Version		  "20.1.0"
 	  DisabledProps		  []
 	  Description		  ""
@@ -4118,7 +4129,7 @@ Model {
 	  SupportModelReferenceSimTargetCustomCode off
 	}
 	Simulink.SFSimCC {
-	  $ObjectID		  97
+	  $ObjectID		  98
 	  Version		  "20.1.0"
 	  DisabledProps		  []
 	  Description		  ""
@@ -4162,7 +4173,7 @@ Model {
 	}
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
-	  $ObjectID		  98
+	  $ObjectID		  99
 	  Version		  "20.1.0"
 	  Array {
 	    Type		    "Cell"
@@ -4268,7 +4279,7 @@ Model {
 	    Type		    "Handle"
 	    Dimension		    2
 	    Simulink.CodeAppCC {
-	      $ObjectID		      99
+	      $ObjectID		      100
 	      Version		      "20.1.0"
 	      Array {
 		Type			"Cell"
@@ -4358,7 +4369,7 @@ Model {
 	    }
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
-	      $ObjectID		      100
+	      $ObjectID		      101
 	      Version		      "20.1.0"
 	      Array {
 		Type			"Cell"
@@ -4462,7 +4473,7 @@ Model {
 	  }
 	}
 	SlCovCC.ConfigComp {
-	  $ObjectID		  101
+	  $ObjectID		  102
 	  Version		  "20.1.0"
 	  DisabledProps		  []
 	  Description		  "Simulink Coverage Configuration Component"
@@ -4501,7 +4512,7 @@ Model {
 	  CovMcdcMode		  "Masking"
 	}
 	SSC.SimscapeCC {
-	  $ObjectID		  102
+	  $ObjectID		  103
 	  Version		  "1.0"
 	  DisabledProps		  []
 	  Description		  ""
@@ -4538,11 +4549,11 @@ Model {
   }
   Simulink.ConfigSet {
     $PropName		    "ActiveConfigurationSet"
-    $ObjectID		    90
+    $ObjectID		    91
   }
   Object {
     $PropName		    "DataTransfer"
-    $ObjectID		    103
+    $ObjectID		    104
     $ClassName		    "Simulink.GlobalDataTransfer"
     DefaultTransitionBetweenSyncTasks "Ensure deterministic transfer (maximum delay)"
     DefaultTransitionBetweenAsyncTasks "Ensure data integrity only"
@@ -4817,6 +4828,15 @@ Model {
       VectorParams1D	      on
     }
     Block {
+      BlockType		      RateTransition
+      Integrity		      on
+      Deterministic	      on
+      InitialCondition	      "0"
+      OutPortSampleTimeOpt    "Specify"
+      OutPortSampleTimeMultiple	"1"
+      OutPortSampleTime	      "-1"
+    }
+    Block {
       BlockType		      S-Function
       FunctionName	      "system"
       SFunctionModules	      "''"
@@ -4950,7 +4970,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "276"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "4431"
+    SIDHighWatermark	    "4485"
     SimulinkSubDomain	    "Simulink"
     Block {
       BlockType		      SubSystem
@@ -4964,7 +4984,7 @@ Model {
       RequestExecContextInheritance off
       Object {
 	$PropName		"MaskObject"
-	$ObjectID		104
+	$ObjectID		105
 	$ClassName		"Simulink.Mask"
 	Display			"image(imread('CarMakerSys.png'));"
       }
@@ -19772,7 +19792,7 @@ Model {
 		TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
 		TiledPageScale		1
 		ShowPageBoundaries	off
-		ZoomFactor		"179"
+		ZoomFactor		"147"
 		SimulinkSubDomain	"Simulink"
 		Block {
 		  BlockType		  Inport
@@ -20593,7 +20613,6 @@ Model {
 		    Ports		    [1, 1]
 		    Position		    [-95, 20, -65, 50]
 		    ZOrder		    419
-		    ForegroundColor	    "green"
 		    LibraryVersion	    "1.476"
 		    SourceBlock		    "simulink/Logic and Bit\nOperations/Compare\nTo Constant"
 		    SourceType		    "Compare To Constant"
@@ -20751,7 +20770,7 @@ Model {
 		    SFcnIsStateOwnerBlock   off
 		    Object {
 		    $PropName		    "MaskObject"
-		    $ObjectID		    105
+		    $ObjectID		    106
 		    $ClassName		    "Simulink.Mask"
 		    Type		    "kmpc_simulinkBlock"
 		    Description		    " ---- Simulink block encapsulating your customized solver kmpc ---- \n\nkmpc : A fast customiz"
@@ -21417,6 +21436,151 @@ Model {
 		    }
 		    }
 		    Block {
+		    BlockType		    SubSystem
+		    Name		    "MATLAB Function1"
+		    SID			    "4479"
+		    Ports		    [4]
+		    Position		    [1100, -309, 1170, -256]
+		    ZOrder		    470
+		    ErrorFcn		    "Stateflow.Translate.translate"
+		    PermitHierarchicalResolution "ExplicitOnly"
+		    TreatAsAtomicUnit	    on
+		    RequestExecContextInheritance off
+		    SFBlockType		    "MATLAB Function"
+		    ContentPreviewEnabled   on
+		    System {
+		    Name		    "MATLAB Function1"
+		    Location		    [223, 338, 826, 833]
+		    SystemRect		    [0.000000, 0.000000, 0.000000, 0.000000]
+		    Open		    off
+		    PortBlocksUseCompactNotation off
+		    SetExecutionDomain	    off
+		    ExecutionDomainType	    "Deduce"
+		    ModelBrowserVisibility  off
+		    ModelBrowserWidth	    200
+		    ScreenColor		    "white"
+		    PaperOrientation	    "landscape"
+		    PaperPositionMode	    "auto"
+		    PaperType		    "usletter"
+		    PaperUnits		    "inches"
+		    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+		    TiledPageScale	    1
+		    ShowPageBoundaries	    off
+		    ZoomFactor		    "100"
+		    SIDHighWatermark	    "29"
+		    SimulinkSubDomain	    "Simulink"
+		    Block {
+		    BlockType		    Inport
+		    Name		    "uopt"
+		    SID			    "4479::1"
+		    Position		    [20, 101, 40, 119]
+		    ZOrder		    -1
+		    }
+		    Block {
+		    BlockType		    Inport
+		    Name		    "yopt"
+		    SID			    "4479::25"
+		    Position		    [20, 136, 40, 154]
+		    ZOrder		    16
+		    Port		    "2"
+		    }
+		    Block {
+		    BlockType		    Inport
+		    Name		    "z0"
+		    SID			    "4479::28"
+		    Position		    [20, 171, 40, 189]
+		    ZOrder		    19
+		    Port		    "3"
+		    }
+		    Block {
+		    BlockType		    Inport
+		    Name		    "T_ref"
+		    SID			    "4479::29"
+		    Position		    [20, 206, 40, 224]
+		    ZOrder		    20
+		    Port		    "4"
+		    }
+		    Block {
+		    BlockType		    Demux
+		    Name		    " Demux "
+		    SID			    "4479::23"
+		    Ports		    [1, 1]
+		    Position		    [270, 100, 320, 140]
+		    ZOrder		    14
+		    Outputs		    "1"
+		    }
+		    Block {
+		    BlockType		    S-Function
+		    Name		    " SFunction "
+		    SID			    "4479::22"
+		    Tag			    "Stateflow S-Function 30"
+		    Ports		    [4, 1]
+		    Position		    [180, 102, 230, 203]
+		    ZOrder		    13
+		    FunctionName	    "sf_sfun"
+		    Parameters		    "PU"
+		    PortCounts		    "[4 1]"
+		    SFunctionDeploymentMode off
+		    EnableBusSupport	    on
+		    SFcnIsStateOwnerBlock   off
+		    }
+		    Block {
+		    BlockType		    Terminator
+		    Name		    " Terminator "
+		    SID			    "4479::24"
+		    Position		    [460, 111, 480, 129]
+		    ZOrder		    15
+		    }
+		    Line {
+		    ZOrder		    42
+		    SrcBlock		    "uopt"
+		    SrcPort		    1
+		    Points		    [60, 0; 0, 5]
+		    DstBlock		    " SFunction "
+		    DstPort		    1
+		    }
+		    Line {
+		    ZOrder		    43
+		    SrcBlock		    "yopt"
+		    SrcPort		    1
+		    Points		    [35, 0; 0, -5]
+		    DstBlock		    " SFunction "
+		    DstPort		    2
+		    }
+		    Line {
+		    ZOrder		    44
+		    SrcBlock		    "z0"
+		    SrcPort		    1
+		    Points		    [60, 0; 0, -15]
+		    DstBlock		    " SFunction "
+		    DstPort		    3
+		    }
+		    Line {
+		    ZOrder		    45
+		    SrcBlock		    "T_ref"
+		    SrcPort		    1
+		    Points		    [85, 0; 0, -25]
+		    DstBlock		    " SFunction "
+		    DstPort		    4
+		    }
+		    Line {
+		    ZOrder		    46
+		    SrcBlock		    " Demux "
+		    SrcPort		    1
+		    DstBlock		    " Terminator "
+		    DstPort		    1
+		    }
+		    Line {
+		    ZOrder		    47
+		    SrcBlock		    " SFunction "
+		    SrcPort		    1
+		    Points		    [15, 0; 0, -35]
+		    DstBlock		    " Demux "
+		    DstPort		    1
+		    }
+		    }
+		    }
+		    Block {
 		    BlockType		    MATLABSystem
 		    Name		    "MATLAB System"
 		    SID			    "4258"
@@ -21436,6 +21600,52 @@ Model {
 		    PortNumber		    3
 		    Name		    "mpc_exitflag"
 		    }
+		    }
+		    Block {
+		    BlockType		    RateTransition
+		    Name		    "Rate Transition"
+		    SID			    "4482"
+		    Position		    [985, -326, 1025, -284]
+		    ZOrder		    473
+		    OutPortSampleTime	    "0.2"
+		    }
+		    Block {
+		    BlockType		    RateTransition
+		    Name		    "Rate Transition1"
+		    SID			    "4483"
+		    Position		    [985, -281, 1025, -239]
+		    ZOrder		    474
+		    OutPortSampleTime	    "0.2"
+		    }
+		    Block {
+		    BlockType		    RateTransition
+		    Name		    "Rate Transition2"
+		    SID			    "4484"
+		    Position		    [985, -201, 1025, -159]
+		    ZOrder		    475
+		    OutPortSampleTime	    "0.2"
+		    }
+		    Block {
+		    BlockType		    RateTransition
+		    Name		    "Rate Transition3"
+		    SID			    "4485"
+		    Position		    [1054, -155, 1096, -115]
+		    ZOrder		    476
+		    BlockRotation	    270
+		    NameLocation	    "right"
+		    OutPortSampleTime	    "0.2"
+		    }
+		    Block {
+		    BlockType		    Selector
+		    Name		    "Selector"
+		    SID			    "4433"
+		    Ports		    [1, 1]
+		    Position		    [995, -99, 1035, -61]
+		    ZOrder		    467
+		    InputPortWidth	    "N"
+		    IndexOptions	    "Index vector (dialog)"
+		    Indices		    "1"
+		    OutputSizes		    "1"
 		    }
 		    Block {
 		    BlockType		    Selector
@@ -22019,38 +22229,52 @@ Model {
 		    ZOrder		    41
 		    SrcBlock		    "Vector\nConcatenate1"
 		    SrcPort		    1
-		    Points		    [10, 0]
+		    Points		    [9, 0]
+		    Branch {
+		    ZOrder		    68
+		    Points		    [0, -151; 0, 1]
+		    DstBlock		    "Rate Transition2"
+		    DstPort		    1
+		    }
+		    Branch {
+		    ZOrder		    67
 		    DstBlock		    "MATLAB System"
 		    DstPort		    1
+		    }
 		    }
 		    Line {
 		    ZOrder		    21
 		    SrcBlock		    "From9"
 		    SrcPort		    1
+		    Points		    [5, 0]
+		    Branch {
+		    ZOrder		    76
+		    Points		    [3, 0; 0, 111; 442, 0]
+		    DstBlock		    "Rate Transition3"
+		    DstPort		    1
+		    }
+		    Branch {
+		    ZOrder		    75
 		    DstBlock		    "normalize_input"
 		    DstPort		    1
 		    }
-		    Line {
-		    ZOrder		    44
-		    SrcBlock		    "MATLAB System"
-		    SrcPort		    1
-		    Points		    [83, 0; 0, 20]
-		    DstBlock		    "unnormalize"
-		    DstPort		    1
-		    }
-		    Line {
-		    ZOrder		    42
-		    SrcBlock		    "normalize_input"
-		    SrcPort		    1
-		    DstBlock		    "MATLAB System"
-		    DstPort		    2
 		    }
 		    Line {
 		    ZOrder		    47
 		    SrcBlock		    "MATLAB System"
 		    SrcPort		    2
+		    Points		    [0, 0]
+		    Branch {
+		    ZOrder		    64
+		    Points		    [0, -270]
+		    DstBlock		    "Rate Transition1"
+		    DstPort		    1
+		    }
+		    Branch {
+		    ZOrder		    53
 		    DstBlock		    "Terminator3"
 		    DstPort		    1
+		    }
 		    }
 		    Line {
 		    ZOrder		    31
@@ -22124,6 +22348,69 @@ Model {
 		    SrcPort		    1
 		    DstBlock		    "Goto4"
 		    DstPort		    1
+		    }
+		    Line {
+		    ZOrder		    48
+		    SrcBlock		    "Selector"
+		    SrcPort		    1
+		    Points		    [40, 0; 0, 20]
+		    DstBlock		    "unnormalize"
+		    DstPort		    1
+		    }
+		    Line {
+		    ZOrder		    44
+		    SrcBlock		    "MATLAB System"
+		    SrcPort		    1
+		    Points		    [19, 0]
+		    Branch {
+		    ZOrder		    63
+		    Points		    [0, -16; -9, 0; 0, -209]
+		    DstBlock		    "Rate Transition"
+		    DstPort		    1
+		    }
+		    Branch {
+		    ZOrder		    55
+		    DstBlock		    "Selector"
+		    DstPort		    1
+		    }
+		    }
+		    Line {
+		    ZOrder		    65
+		    SrcBlock		    "Rate Transition"
+		    SrcPort		    1
+		    DstBlock		    "MATLAB Function1"
+		    DstPort		    1
+		    }
+		    Line {
+		    ZOrder		    66
+		    SrcBlock		    "Rate Transition1"
+		    SrcPort		    1
+		    Points		    [37, 0; 0, -30]
+		    DstBlock		    "MATLAB Function1"
+		    DstPort		    2
+		    }
+		    Line {
+		    ZOrder		    71
+		    SrcBlock		    "Rate Transition2"
+		    SrcPort		    1
+		    Points		    [54, 0; 0, -95]
+		    DstBlock		    "MATLAB Function1"
+		    DstPort		    3
+		    }
+		    Line {
+		    ZOrder		    72
+		    SrcBlock		    "Rate Transition3"
+		    SrcPort		    1
+		    Points		    [0, -100; -1, 0]
+		    DstBlock		    "MATLAB Function1"
+		    DstPort		    4
+		    }
+		    Line {
+		    ZOrder		    74
+		    SrcBlock		    "normalize_input"
+		    SrcPort		    1
+		    DstBlock		    "MATLAB System"
+		    DstPort		    2
 		    }
 		  }
 		}
@@ -23524,7 +23811,7 @@ Model {
 		    SFcnIsStateOwnerBlock   off
 		    Object {
 		    $PropName		    "MaskObject"
-		    $ObjectID		    106
+		    $ObjectID		    107
 		    $ClassName		    "Simulink.Mask"
 		    Type		    "nmpc_simulinkBlock"
 		    Description		    " ---- Simulink block encapsulating your customized solver nmpc ---- \n\nnmpc : A fast customiz"
@@ -25621,7 +25908,7 @@ Model {
 		    SFcnIsStateOwnerBlock   off
 		    Object {
 		    $PropName		    "MaskObject"
-		    $ObjectID		    107
+		    $ObjectID		    108
 		    $ClassName		    "Simulink.Mask"
 		    Type		    "kmpc_simulinkBlock"
 		    Description		    " ---- Simulink block encapsulating your customized solver kmpc ---- \n\nkmpc : A fast customiz"
@@ -25996,10 +26283,10 @@ Model {
 		Block {
 		  BlockType		  SubSystem
 		  Name			  "KMPC_yalmip"
-		  SID			  "4310"
+		  SID			  "4434"
 		  Ports			  [3, 1]
-		  Position		  [170, 470, 325, 520]
-		  ZOrder		  8
+		  Position		  [170, 460, 325, 510]
+		  ZOrder		  9
 		  ForegroundColor	  "green"
 		  RequestExecContextInheritance	off
 		  VariantControl	  "controller_type == 5"
@@ -26026,14 +26313,14 @@ Model {
 		    Block {
 		    BlockType		    Inport
 		    Name		    "current_state"
-		    SID			    "4311"
+		    SID			    "4435"
 		    Position		    [-400, 28, -370, 42]
 		    ZOrder		    8
 		    }
 		    Block {
 		    BlockType		    Inport
 		    Name		    "torque_reference"
-		    SID			    "4312"
+		    SID			    "4436"
 		    Position		    [-400, 83, -370, 97]
 		    ZOrder		    9
 		    Port		    "2"
@@ -26041,7 +26328,7 @@ Model {
 		    Block {
 		    BlockType		    Inport
 		    Name		    "road_friction_coeff"
-		    SID			    "4313"
+		    SID			    "4437"
 		    Position		    [-400, 123, -370, 137]
 		    ZOrder		    10
 		    Port		    "3"
@@ -26049,7 +26336,7 @@ Model {
 		    Block {
 		    BlockType		    Reference
 		    Name		    "Compare\nTo Constant1"
-		    SID			    "4314"
+		    SID			    "4438"
 		    Ports		    [1, 1]
 		    Position		    [1125, -20, 1155, 10]
 		    ZOrder		    456
@@ -26068,15 +26355,11 @@ Model {
 		    const		    "0"
 		    OutDataTypeStr	    "boolean"
 		    ZeroCross		    on
-		    Port {
-		    PortNumber		    1
-		    Name		    "mpc_exitflag"
-		    }
 		    }
 		    Block {
 		    BlockType		    Constant
 		    Name		    "Constant"
-		    SID			    "4315"
+		    SID			    "4439"
 		    Position		    [455, 7, 550, 33]
 		    ZOrder		    433
 		    Value		    "kappa_ref"
@@ -26085,7 +26368,7 @@ Model {
 		    Block {
 		    BlockType		    Delay
 		    Name		    "Delay2"
-		    SID			    "4316"
+		    SID			    "4440"
 		    Ports		    [1, 1]
 		    Position		    [1335, -82, 1370, -48]
 		    ZOrder		    463
@@ -26097,7 +26380,7 @@ Model {
 		    Block {
 		    BlockType		    From
 		    Name		    "From10"
-		    SID			    "4317"
+		    SID			    "4441"
 		    Position		    [1140, 42, 1240, 58]
 		    ZOrder		    458
 		    GotoTag		    "torque_reference"
@@ -26105,7 +26388,7 @@ Model {
 		    Block {
 		    BlockType		    From
 		    Name		    "From4"
-		    SID			    "4318"
+		    SID			    "4442"
 		    Position		    [-235, 7, -130, 23]
 		    ZOrder		    425
 		    ForegroundColor	    "green"
@@ -26114,7 +26397,7 @@ Model {
 		    Block {
 		    BlockType		    From
 		    Name		    "From7"
-		    SID			    "4319"
+		    SID			    "4443"
 		    Position		    [-185, -35, -110, -5]
 		    ZOrder		    421
 		    GotoTag		    "prev_torque"
@@ -26122,7 +26405,7 @@ Model {
 		    Block {
 		    BlockType		    From
 		    Name		    "From8"
-		    SID			    "4320"
+		    SID			    "4444"
 		    Position		    [335, -95, 435, -65]
 		    ZOrder		    429
 		    ForegroundColor	    "green"
@@ -26131,7 +26414,7 @@ Model {
 		    Block {
 		    BlockType		    From
 		    Name		    "From9"
-		    SID			    "4321"
+		    SID			    "4445"
 		    Position		    [515, 127, 620, 163]
 		    ZOrder		    443
 		    GotoTag		    "torque_reference"
@@ -26139,7 +26422,7 @@ Model {
 		    Block {
 		    BlockType		    Goto
 		    Name		    "Goto"
-		    SID			    "4322"
+		    SID			    "4446"
 		    Position		    [-350, 82, -245, 98]
 		    ZOrder		    362
 		    GotoTag		    "torque_reference"
@@ -26147,7 +26430,7 @@ Model {
 		    Block {
 		    BlockType		    Goto
 		    Name		    "Goto2"
-		    SID			    "4323"
+		    SID			    "4447"
 		    Position		    [195, -5, 295, 25]
 		    ZOrder		    365
 		    ForegroundColor	    "green"
@@ -26156,7 +26439,7 @@ Model {
 		    Block {
 		    BlockType		    Goto
 		    Name		    "Goto4"
-		    SID			    "4324"
+		    SID			    "4448"
 		    Position		    [1385, -80, 1460, -50]
 		    ZOrder		    462
 		    GotoTag		    "prev_torque"
@@ -26164,7 +26447,7 @@ Model {
 		    Block {
 		    BlockType		    SubSystem
 		    Name		    "MATLAB Function"
-		    SID			    "4325"
+		    SID			    "4449"
 		    Ports		    [2, 1]
 		    Position		    [30, -46, 170, 61]
 		    ZOrder		    364
@@ -26198,14 +26481,14 @@ Model {
 		    Block {
 		    BlockType		    Inport
 		    Name		    "e_int"
-		    SID			    "4325::25"
+		    SID			    "4449::25"
 		    Position		    [20, 101, 40, 119]
 		    ZOrder		    16
 		    }
 		    Block {
 		    BlockType		    Inport
 		    Name		    "current_state"
-		    SID			    "4325::1"
+		    SID			    "4449::1"
 		    Position		    [20, 136, 40, 154]
 		    ZOrder		    -1
 		    Port		    "2"
@@ -26213,7 +26496,7 @@ Model {
 		    Block {
 		    BlockType		    Demux
 		    Name		    " Demux "
-		    SID			    "4325::23"
+		    SID			    "4449::23"
 		    Ports		    [1, 1]
 		    Position		    [270, 230, 320, 270]
 		    ZOrder		    14
@@ -26222,7 +26505,7 @@ Model {
 		    Block {
 		    BlockType		    S-Function
 		    Name		    " SFunction "
-		    SID			    "4325::22"
+		    SID			    "4449::22"
 		    Tag			    "Stateflow S-Function 11"
 		    Ports		    [2, 2]
 		    Position		    [180, 100, 230, 160]
@@ -26241,14 +26524,14 @@ Model {
 		    Block {
 		    BlockType		    Terminator
 		    Name		    " Terminator "
-		    SID			    "4325::24"
+		    SID			    "4449::24"
 		    Position		    [460, 241, 480, 259]
 		    ZOrder		    15
 		    }
 		    Block {
 		    BlockType		    Outport
 		    Name		    "ocp_state"
-		    SID			    "4325::5"
+		    SID			    "4449::5"
 		    Position		    [460, 101, 480, 119]
 		    ZOrder		    -5
 		    }
@@ -26294,7 +26577,7 @@ Model {
 		    Block {
 		    BlockType		    MATLABSystem
 		    Name		    "MATLAB System"
-		    SID			    "4326"
+		    SID			    "4450"
 		    Ports		    [2, 4]
 		    Position		    [735, -122, 950, 232]
 		    ZOrder		    465
@@ -26307,11 +26590,27 @@ Model {
 		    ny			    "3"
 		    N			    "N"
 		    SimulateUsing	    "Interpreted execution"
+		    Port {
+		    PortNumber		    3
+		    Name		    "mpc_exitflag"
+		    }
+		    }
+		    Block {
+		    BlockType		    Selector
+		    Name		    "Selector"
+		    SID			    "4451"
+		    Ports		    [1, 1]
+		    Position		    [995, -99, 1035, -61]
+		    ZOrder		    467
+		    InputPortWidth	    "N"
+		    IndexOptions	    "Index vector (dialog)"
+		    Indices		    "1"
+		    OutputSizes		    "1"
 		    }
 		    Block {
 		    BlockType		    Selector
 		    Name		    "Selector3"
-		    SID			    "4327"
+		    SID			    "4452"
 		    Ports		    [1, 1]
 		    Position		    [455, -99, 495, -61]
 		    ZOrder		    428
@@ -26323,7 +26622,7 @@ Model {
 		    Block {
 		    BlockType		    Selector
 		    Name		    "Selector4"
-		    SID			    "4328"
+		    SID			    "4453"
 		    Ports		    [1, 1]
 		    Position		    [455, -49, 495, -11]
 		    ZOrder		    432
@@ -26335,28 +26634,28 @@ Model {
 		    Block {
 		    BlockType		    Terminator
 		    Name		    "Terminator"
-		    SID			    "4329"
+		    SID			    "4454"
 		    Position		    [-350, 120, -330, 140]
 		    ZOrder		    464
 		    }
 		    Block {
 		    BlockType		    Terminator
 		    Name		    "Terminator3"
-		    SID			    "4330"
+		    SID			    "4455"
 		    Position		    [970, 0, 990, 20]
 		    ZOrder		    452
 		    }
 		    Block {
 		    BlockType		    Terminator
 		    Name		    "Terminator6"
-		    SID			    "4331"
+		    SID			    "4456"
 		    Position		    [1100, 180, 1120, 200]
 		    ZOrder		    461
 		    }
 		    Block {
 		    BlockType		    Concatenate
 		    Name		    "Vector\nConcatenate1"
-		    SID			    "4332"
+		    SID			    "4457"
 		    Ports		    [3, 1]
 		    Position		    [695, -107, 705, 47]
 		    ZOrder		    431
@@ -26365,7 +26664,7 @@ Model {
 		    Block {
 		    BlockType		    SubSystem
 		    Name		    "e_int_dot"
-		    SID			    "4333"
+		    SID			    "4458"
 		    Ports		    [1, 1]
 		    Position		    [-335, -86, -205, -24]
 		    ZOrder		    373
@@ -26404,14 +26703,14 @@ Model {
 		    Block {
 		    BlockType		    Inport
 		    Name		    "current_state"
-		    SID			    "4333::1"
+		    SID			    "4458::1"
 		    Position		    [20, 101, 40, 119]
 		    ZOrder		    -1
 		    }
 		    Block {
 		    BlockType		    Demux
 		    Name		    " Demux "
-		    SID			    "4333::23"
+		    SID			    "4458::23"
 		    Ports		    [1, 1]
 		    Position		    [270, 230, 320, 270]
 		    ZOrder		    14
@@ -26420,7 +26719,7 @@ Model {
 		    Block {
 		    BlockType		    S-Function
 		    Name		    " SFunction "
-		    SID			    "4333::22"
+		    SID			    "4458::22"
 		    Tag			    "Stateflow S-Function 19"
 		    Ports		    [1, 2]
 		    Position		    [180, 100, 230, 160]
@@ -26439,14 +26738,14 @@ Model {
 		    Block {
 		    BlockType		    Terminator
 		    Name		    " Terminator "
-		    SID			    "4333::24"
+		    SID			    "4458::24"
 		    Position		    [460, 241, 480, 259]
 		    ZOrder		    15
 		    }
 		    Block {
 		    BlockType		    Outport
 		    Name		    "e_int_dot"
-		    SID			    "4333::5"
+		    SID			    "4458::5"
 		    Position		    [460, 101, 480, 119]
 		    ZOrder		    -5
 		    }
@@ -26485,7 +26784,7 @@ Model {
 		    Block {
 		    BlockType		    SubSystem
 		    Name		    "int_w_AW"
-		    SID			    "4334"
+		    SID			    "4459"
 		    Ports		    [3, 1]
 		    Position		    [-95, -71, -5, 31]
 		    ZOrder		    415
@@ -26517,14 +26816,14 @@ Model {
 		    Block {
 		    BlockType		    Inport
 		    Name		    "e_int_dot"
-		    SID			    "4335"
+		    SID			    "4460"
 		    Position		    [-30, 53, 0, 67]
 		    ZOrder		    408
 		    }
 		    Block {
 		    BlockType		    Inport
 		    Name		    "prev_torque"
-		    SID			    "4336"
+		    SID			    "4461"
 		    Position		    [-275, 28, -245, 42]
 		    ZOrder		    410
 		    Port		    "2"
@@ -26532,7 +26831,7 @@ Model {
 		    Block {
 		    BlockType		    Inport
 		    Name		    "max_torque"
-		    SID			    "4337"
+		    SID			    "4462"
 		    Position		    [-275, 58, -245, 72]
 		    ZOrder		    411
 		    Port		    "3"
@@ -26540,7 +26839,7 @@ Model {
 		    Block {
 		    BlockType		    Abs
 		    Name		    "Abs"
-		    SID			    "4338"
+		    SID			    "4463"
 		    Position		    [-150, 20, -120, 50]
 		    ZOrder		    417
 		    SaturateOnIntegerOverflow off
@@ -26548,7 +26847,7 @@ Model {
 		    Block {
 		    BlockType		    Reference
 		    Name		    "Compare\nTo Constant"
-		    SID			    "4339"
+		    SID			    "4464"
 		    Ports		    [1, 1]
 		    Position		    [-95, 20, -65, 50]
 		    ZOrder		    419
@@ -26574,7 +26873,7 @@ Model {
 		    Block {
 		    BlockType		    Constant
 		    Name		    "Constant"
-		    SID			    "4340"
+		    SID			    "4465"
 		    Position		    [-30, -5, 0, 25]
 		    ZOrder		    414
 		    Value		    "0"
@@ -26583,7 +26882,7 @@ Model {
 		    Block {
 		    BlockType		    DiscreteIntegrator
 		    Name		    "Discrete-Time\nIntegrator"
-		    SID			    "4341"
+		    SID			    "4466"
 		    Ports		    [1, 1]
 		    Position		    [100, 17, 135, 53]
 		    ZOrder		    407
@@ -26597,7 +26896,7 @@ Model {
 		    Block {
 		    BlockType		    Sum
 		    Name		    "Sum"
-		    SID			    "4342"
+		    SID			    "4467"
 		    Ports		    [2, 1]
 		    Position		    [-210, -8, -190, 78]
 		    ZOrder		    415
@@ -26612,7 +26911,7 @@ Model {
 		    Block {
 		    BlockType		    Switch
 		    Name		    "Switch"
-		    SID			    "4343"
+		    SID			    "4468"
 		    Position		    [25, 0, 75, 70]
 		    ZOrder		    412
 		    Criteria		    "u2 > Threshold"
@@ -26622,7 +26921,7 @@ Model {
 		    Block {
 		    BlockType		    Outport
 		    Name		    "e_int"
-		    SID			    "4344"
+		    SID			    "4469"
 		    Position		    [160, 28, 190, 42]
 		    ZOrder		    409
 		    }
@@ -26698,7 +26997,7 @@ Model {
 		    Block {
 		    BlockType		    MATLABFcn
 		    Name		    "lift"
-		    SID			    "4345"
+		    SID			    "4470"
 		    Ports		    [1, 1]
 		    Position		    [605, -95, 675, -65]
 		    ZOrder		    440
@@ -26707,7 +27006,7 @@ Model {
 		    Block {
 		    BlockType		    MATLABFcn
 		    Name		    "normalize_input"
-		    SID			    "4346"
+		    SID			    "4471"
 		    Ports		    [1, 1]
 		    Position		    [645, 130, 715, 160]
 		    ZOrder		    451
@@ -26716,7 +27015,7 @@ Model {
 		    Block {
 		    BlockType		    MATLABFcn
 		    Name		    "normalize_state"
-		    SID			    "4347"
+		    SID			    "4472"
 		    Ports		    [1, 1]
 		    Position		    [515, -95, 585, -65]
 		    ZOrder		    439
@@ -26725,7 +27024,7 @@ Model {
 		    Block {
 		    BlockType		    Gain
 		    Name		    "s2ms"
-		    SID			    "4348"
+		    SID			    "4473"
 		    Position		    [985, 180, 1010, 200]
 		    ZOrder		    460
 		    Gain		    "1e3"
@@ -26737,7 +27036,7 @@ Model {
 		    Block {
 		    BlockType		    Switch
 		    Name		    "safety_switch"
-		    SID			    "4349"
+		    SID			    "4474"
 		    Position		    [1265, -88, 1305, 78]
 		    ZOrder		    457
 		    Criteria		    "u2 > Threshold"
@@ -26747,7 +27046,7 @@ Model {
 		    Block {
 		    BlockType		    MATLABFcn
 		    Name		    "unnormalize"
-		    SID			    "4350"
+		    SID			    "4475"
 		    Ports		    [1, 1]
 		    Position		    [1125, -75, 1195, -45]
 		    ZOrder		    447
@@ -26760,7 +27059,7 @@ Model {
 		    Block {
 		    BlockType		    Outport
 		    Name		    "torque_output"
-		    SID			    "4351"
+		    SID			    "4476"
 		    Position		    [1380, -13, 1410, 3]
 		    ZOrder		    459
 		    }
@@ -26902,8 +27201,7 @@ Model {
 		    ZOrder		    21
 		    SrcBlock		    "MATLAB System"
 		    SrcPort		    1
-		    Points		    [83, 0; 0, 20]
-		    DstBlock		    "unnormalize"
+		    DstBlock		    "Selector"
 		    DstPort		    1
 		    }
 		    Line {
@@ -26937,16 +27235,16 @@ Model {
 		    DstPort		    1
 		    }
 		    Line {
-		    Name		    "mpc_exitflag"
 		    ZOrder		    26
-		    Labels		    [1, 1]
 		    SrcBlock		    "Compare\nTo Constant1"
 		    SrcPort		    1
 		    DstBlock		    "safety_switch"
 		    DstPort		    2
 		    }
 		    Line {
+		    Name		    "mpc_exitflag"
 		    ZOrder		    27
+		    Labels		    [3, 1]
 		    SrcBlock		    "MATLAB System"
 		    SrcPort		    3
 		    Points		    [73, 0; 0, -105]
@@ -26991,6 +27289,14 @@ Model {
 		    SrcBlock		    "Delay2"
 		    SrcPort		    1
 		    DstBlock		    "Goto4"
+		    DstPort		    1
+		    }
+		    Line {
+		    ZOrder		    34
+		    SrcBlock		    "Selector"
+		    SrcPort		    1
+		    Points		    [40, 0; 0, 20]
+		    DstBlock		    "unnormalize"
 		    DstPort		    1
 		    }
 		  }
@@ -28402,7 +28708,7 @@ Model {
 		    SFcnIsStateOwnerBlock   off
 		    Object {
 		    $PropName		    "MaskObject"
-		    $ObjectID		    108
+		    $ObjectID		    109
 		    $ClassName		    "Simulink.Mask"
 		    Type		    "nmpc_simulinkBlock"
 		    Description		    " ---- Simulink block encapsulating your customized solver nmpc ---- \n\nnmpc : A fast customiz"
@@ -32938,7 +33244,7 @@ Model {
 		    SFcnIsStateOwnerBlock   off
 		    Object {
 		    $PropName		    "MaskObject"
-		    $ObjectID		    109
+		    $ObjectID		    110
 		    $ClassName		    "Simulink.Mask"
 		    Type		    "nmpc_simulinkBlock"
 		    Description		    " ---- Simulink block encapsulating your customized solver nmpc ---- \n\nnmpc : A fast customiz"
@@ -36276,7 +36582,7 @@ Model {
       RequestExecContextInheritance off
       Object {
 	$PropName		"MaskObject"
-	$ObjectID		110
+	$ObjectID		111
 	$ClassName		"Simulink.Mask"
 	Display			"image(imread('CarMakerGUI.png'));"
       }
@@ -36358,7 +36664,7 @@ Stateflow {
     id			    1
     name		    "generic"
     sfVersion		    80000037
-    firstTarget		    271
+    firstTarget		    281
   }
   chart {
     id			    2
@@ -41715,8 +42021,214 @@ Stateflow {
     name		    "CarMaker/Traction control/ControllerFL/KMPC/MATLAB Function5"
     chart		    262
   }
-  target {
+  chart {
     id			    271
+    machine		    1
+    name		    "CarMaker/Traction control/ControllerFL/KMPC_yalmip/MATLAB Function1"
+    windowPosition	    [422 539.941 189 413]
+    viewLimits		    [0 156.75 0 153.75]
+    screen		    [1 1 3600 1200 1.180555555555556]
+    treeNode		    [0 272 0 0]
+    viewObj		    271
+    visible		    1
+    subviewS {
+    }
+    ssIdHighWaterMark	    10
+    decomposition	    CLUSTER_CHART
+    type		    EML_CHART
+    chartFileNumber	    30
+    disableImplicitCasting  1
+    eml {
+      name		      "fcn"
+    }
+    firstData		    273
+    firstTransition	    279
+    firstJunction	    278
+  }
+  state {
+    id			    272
+    labelString		    "eML_blk_kernel()"
+    position		    [18 64.5 118 66]
+    fontSize		    12
+    chart		    271
+    treeNode		    [271 0 0 0]
+    superState		    SUBCHART
+    subviewer		    271
+    ssIdNumber		    1
+    type		    FUNC_STATE
+    decomposition	    CLUSTER_STATE
+    eml {
+      isEML		      1
+      script		      "function fcn(uopt,yopt,z0,T_ref,PU)\nyopt = reshape(yopt,3,5);\n\n% slip\nsubplot(3,1,1)\nplot(yo"
+      "pt(1,:))\nylabel('Slip [-]')\n\n% integral state\nsubplot(3,1,2)\nplot(yopt(2,:))\nylabel('Integral state [-]')\n"
+      "\n% motor torque\nsubplot(3,1,3)\nplot(mapstd_custom('reverse',uopt,PU))\nylabel('Torque [Nm]')"
+      editorLayout	      "100 M4x1[10 5 700 500]"
+    }
+  }
+  data {
+    id			    273
+    ssIdNumber		    4
+    name		    "uopt"
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      unit {
+	name			"inherit"
+      }
+    }
+    dataType		    "Inherit: Same as Simulink"
+    linkNode		    [271 0 274]
+  }
+  data {
+    id			    274
+    ssIdNumber		    6
+    name		    "yopt"
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_INHERITED
+      unit {
+	name			"inherit"
+      }
+    }
+    dataType		    "Inherit: Same as Simulink"
+    linkNode		    [271 273 275]
+  }
+  data {
+    id			    275
+    ssIdNumber		    9
+    name		    "z0"
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_INHERITED
+      unit {
+	name			"inherit"
+      }
+    }
+    dataType		    "Inherit: Same as Simulink"
+    linkNode		    [271 274 276]
+  }
+  data {
+    id			    276
+    ssIdNumber		    10
+    name		    "T_ref"
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_INHERITED
+      unit {
+	name			"inherit"
+      }
+    }
+    dataType		    "Inherit: Same as Simulink"
+    linkNode		    [271 275 277]
+  }
+  data {
+    id			    277
+    ssIdNumber		    8
+    name		    "PU"
+    scope		    PARAMETER_DATA
+    isNonTunable	    1
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_INHERITED
+      unit {
+	name			"inherit"
+      }
+    }
+    dataType		    "Inherit: Same as Simulink"
+    linkNode		    [271 276 0]
+  }
+  junction {
+    id			    278
+    position		    [23.5747 49.5747 7]
+    chart		    271
+    subviewer		    271
+    ssIdNumber		    3
+    type		    CONNECTIVE_JUNCTION
+    linkNode		    [271 0 0]
+  }
+  transition {
+    id			    279
+    labelString		    "{eML_blk_kernel();}"
+    labelPosition	    [28.125 13.875 102.544 14.964]
+    fontSize		    12
+    src {
+      intersection	      [0 0 1 0 23.5747 14.625 0 0]
+    }
+    dst {
+      id		      278
+      intersection	      [1 0 -1 0 23.5747 42.5747 0 0]
+    }
+    midPoint		    [23.5747 24.9468]
+    chart		    271
+    dataLimits		    [21.175 25.975 14.625 42.575]
+    subviewer		    271
+    drawStyle		    SMART
+    slide {
+      sticky		      BOTH_STICK
+    }
+    executionOrder	    1
+    ssIdNumber		    2
+    linkNode		    [271 0 0]
+  }
+  instance {
+    id			    280
+    machine		    1
+    name		    "CarMaker/Traction control/ControllerFL/KMPC_yalmip/MATLAB Function1"
+    chart		    271
+  }
+  target {
+    id			    281
     machine		    1
     name		    "sfun"
     description		    "Default Simulink S-Function Target."

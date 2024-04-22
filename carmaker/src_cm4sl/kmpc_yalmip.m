@@ -33,7 +33,7 @@ classdef kmpc_yalmip < matlab.System & matlab.system.mixin.Propagates
             % Implement algorithm. Calculate y as a function of input u and
             % discrete states.
             [solution,exitflag,~,~,~,info] = obj.controller({z0,T_ref});
-            uopt = solution{1}(:,1);
+            uopt = solution{1};
             yopt = solution{2};
             solvetime = info.solvertime;
         end
@@ -46,7 +46,7 @@ classdef kmpc_yalmip < matlab.System & matlab.system.mixin.Propagates
             %sts = createSampleTime(obj,'Type','Fixed In Minor Step');
         end
         
-        function resetImpl(obj)
+        function resetImpl(~)
             % Initialize / reset discrete-state properties
         end
         
@@ -62,14 +62,15 @@ classdef kmpc_yalmip < matlab.System & matlab.system.mixin.Propagates
             dt3 = 'double';
             dt4 = 'double';
         end
-        function dt1 = getInputDataTypeImpl(~)
+        function [dt1,dt2] = getInputDataTypeImpl(~)
         	dt1 = 'double';
+            dt2 = 'double';
         end
         function [sz1,sz2,sz3,sz4] = getOutputSizeImpl(obj)
-        	sz1 = [1,1];            % uopt
+            sz1 = [1,obj.N];        % uopt
             sz2 = [obj.ny*obj.N,1]; % predictions
-            sz3 = [1,1];
-            sz4 = [1,1];
+            sz3 = [1,1];            % exitflag
+            sz4 = [1,1];            % solve time
         end
         function sz1 = getInputSizeImpl(~)
         	sz1 = [1,1];
