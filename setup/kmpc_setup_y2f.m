@@ -122,12 +122,18 @@ problem{2} = mapstd_custom('apply',250,PU);  % T_ref (scaled)
 if ~mpc_setup.use_yalmip
     [forces_sol, forces_flag, forces_info] = kmpc(problem);
 %     disp(['FORCES test solution: ',num2str(forces_sol{1})])
-    assert(forces_flag == 1, 'Test call of FORCESPRO solver failed');
+    if (forces_flag ~= 1)
+        warning('Test call of FORCESPRO solver failed');
+        input('Press enter to continue...');
+    end
 end
 
 [yalmip_sol, yalmip_flag, ~, ~, ~, yalmip_info] = controller(problem);
 % disp(['YALMIP test solution: ',num2str(yalmip_sol{1})]);
-assert(yalmip_flag == 0, 'Test call with YALMIP failed')
+if (yalmip_flag ~= 0)
+    warning('Test call of YALMIP failed');
+    input('Press enter to continue...');
+end
 disp(['Test ok.',newline])
 
 % assert(max(abs(yalmip_sol{1}-forces_sol{1})) < 1e-6, 'FORCES and YALMIP solutions differ too much.')

@@ -18,14 +18,15 @@ w0 = v0/3.6/R;      % [rad/s] initial wheel speed
 
 %% Controller setup
 % 0 - off
-% 1 - NMPC
-% 2 - KMPC
+% 1 - NMPC FORCES high-level interface
+% 2 - KMPC FORCES low-level interface
 % 3 - PID
 % 4 - PID + random (data collection)
 % 5 - KMPC YALMIP
 % 6 - KMPC YALMIP adaptive
 % 7 - open-loop random inputs (data collection)
-controller_type = 5;
+% 8 - KMPC FORCES Y2F interface
+controller_type = 8;
 N = 5;                      % prediction horizon length
 compile_for_simulink = 1;   % create the S-function block?
 use_yalmip = controller_type == 5 || controller_type == 6;
@@ -70,6 +71,9 @@ switch controller_type
         T_rand = 0.5 * T_max * rand(1,Nsim);  % uniform distribution
         time_vector = 0:Ts_rand:(Nsim-1)*Ts_rand;
         sim_input = [time_vector' T_rand'];
+    case 8
+        kmpc_setup_y2f(mpc_setup);
+        load ../../models/kmpc_data.mat PX PU Alift % for state and input scaling
     otherwise
         warning('controller type not recognized, running without control')
         controller_type = 0;

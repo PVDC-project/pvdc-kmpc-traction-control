@@ -32,7 +32,7 @@ change_friction = 1;    % test the controller on different surfaces
 % 5 - KMPC FORCES Y2F interface
 % 6 - adaptive KMPC FORCES Y2F (prediction model changes with vehicle speed)
 % 7 - adaptive KMPC YALMIP (quadprog, DAQP or OSQP)
-controller_type = 7;
+controller_type = 4;
 N = 5;                      % prediction horizon length
 compile_for_simulink = 0;   % create the S-function block?
 use_yalmip = controller_type == 4 || controller_type == 7;
@@ -228,6 +228,7 @@ for ii=1:N_sim
         case 7  % adaptive KMPC YALMIP
             v = x_sim(1,ii)*3.6;                    % [km/h]
             ctrl_id = find(speed_limits > v, 1);    % find which controller to use
+            if isempty(ctrl_id); ctrl_id = length(speed_limits); end
             tic
             state_to_lift = mapstd_custom('apply',x_ocp(1:2,ii),kmpc_datas{ctrl_id}.PX);  % don't scale e_int
             problem{1} = [lifting_function(state_to_lift,kmpc_datas{ctrl_id}); x_ocp(3,ii); kappa_ref];
