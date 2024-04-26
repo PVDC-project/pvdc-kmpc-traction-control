@@ -5,6 +5,6 @@ mu = get_sim_data(sigsOut,'mu');
 vx = get_sim_data(sigsOut,'vx');
 tc_torque = get_sim_data(sigsOut,'tc_torque');
 
-save('../../data/collected_data.mat','w','mu','vx','tc_torque')
+save('../../data/collected_data.mat','w','mu','vx','tc_torque','sigsOut')
 disp('Simulation output saved to data/collected_data.mat')
 end

@@ -1,5 +1,6 @@
 %% ------ Traction control using MPC and Carmaker ------
 %% Environment setup
+cd C:\Projects_Josip\tc\carmaker\src_cm4sl
 clear;clc;close all;
 addpath('../../models')             % prediction and simulation models
 addpath('../../setup')              % controller and simulation setup
@@ -22,20 +23,25 @@ w0 = v0/3.6/R;      % [rad/s] initial wheel speed
 % 3 - PID
 % 4 - PID + random (data collection)
 % 5 - KMPC YALMIP
+% 6 - KMPC YALMIP adaptive
+% 7 - open-loop random inputs (data collection)
 controller_type = 5;
 N = 5;                      % prediction horizon length
 compile_for_simulink = 1;   % create the S-function block?
-use_yalmip = controller_type == 5;
+use_yalmip = controller_type == 5 || controller_type == 6;
 
 mpc_setup = struct('N',N,'Ts',Ts,'R',R,'kappa_ref',kappa_ref',...
                    'compile_for_simulink',compile_for_simulink,...
                    'use_yalmip',use_yalmip);
 
 % cost function weights
-mpc_setup.w_p = 1e4;      % slip tracking error weight
-mpc_setup.w_i = 1e3;      % integral state weight
-mpc_setup.w_u = 1e-7;     % torque reduction weight
+mpc_setup.w_p = 1e5;      % slip tracking error weight
+mpc_setup.w_i = 1e4;      % integral state weight
+mpc_setup.w_u = 1e-6;     % torque reduction weight
 
+%w_p = 1e4;     % slip tracking error weight
+%w_i = 1e3;      % integral state weight
+%w_u = 1e-7;     % torque reduction weight
 switch controller_type
     case 1
         nmpc_setup(mpc_setup);
@@ -52,9 +58,20 @@ switch controller_type
 %       loading/saving with optimizer doesn't always work
 %       https://groups.google.com/g/yalmip/c/qK_uFt942Yo/m/IoD234uC22oJ
         save ../../data/kmpc_yalmip.mat mpc_setup   % for KMPC setup within the MATLAB System block
-        load ../../models/kmpc_data.mat PX PU       % for state and input scaling
+        load ../../models/kmpc_data.mat PX PU Alift % for state and input scaling
+    case 6
+        save ../../data/kmpc_yalmip.mat mpc_setup
+    case 7
+        Ts_rand = 50*Ts;    % how often to change the random input torque
+        rng(42)             % fix the seed for reproducibility
+        Tsim = 100;         % sim time max. 100 s
+        Nsim = Tsim/Ts_rand;% number of random inputs
+        T_max = 250;        % [Nm]
+        T_rand = 0.5 * T_max * rand(1,Nsim);  % uniform distribution
+        time_vector = 0:Ts_rand:(Nsim-1)*Ts_rand;
+        sim_input = [time_vector' T_rand'];
     otherwise
-        disp('controller type not recognized, running without control')
+        warning('controller type not recognized, running without control')
         controller_type = 0;
 end
 

@@ -1,3 +1,4 @@
+% https://en.wikipedia.org/wiki/Radial_basis_function
 % X: nxN
 % C: rbf center(s) - nx1 or nxK, if C is n x K, then the result is STACKED
 % over the centers K, i.e., of dimension K x N

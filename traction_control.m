@@ -32,7 +32,7 @@ change_friction = 1;    % test the controller on different surfaces
 % 5 - KMPC FORCES Y2F interface
 % 6 - adaptive KMPC FORCES Y2F (prediction model changes with vehicle speed)
 % 7 - adaptive KMPC YALMIP (quadprog, DAQP or OSQP)
-controller_type = 2;
+controller_type = 7;
 N = 5;                      % prediction horizon length
 compile_for_simulink = 0;   % create the S-function block?
 use_yalmip = controller_type == 4 || controller_type == 7;
@@ -61,11 +61,8 @@ switch controller_type
         load models/kmpc_data.mat PX PU  % for state and input scaling
     case {6,7}
         controllers = kmpc_setup_y2f_adaptive(mpc_setup);
-        d10 = load('models/kmpc_data10.mat');
-        d20 = load('models/kmpc_data20.mat');
-        d30 = load('models/kmpc_data30.mat');
-        d40 = load('models/kmpc_data40.mat');
-        warning('remove vid?')
+        load models/kmpc_data_adaptive.mat vx kmpc_datas
+        speed_limits = vx;  % to avoid name clashes later
     otherwise
         disp('controller type not recognized, running without control')
         controller_type = 0;
@@ -211,11 +208,7 @@ for ii=1:N_sim
                 output.u0 = mapstd_custom('reverse',forces_output{1}(:,1),PU);  % unscale the input
             end
         case 6  % adaptive KMPC Y2F
-            v = x_sim(1,ii)*3.6;  % [km/h]
-            PX = d10.PX; PU = d10.PU; vid(ii) = 1;
-            if v >= 10 && v < 20; PX = d20.PX; PU = d20.PU; vid(ii) = 2; end
-            if v >= 20 && v < 30; PX = d30.PX; PU = d30.PU; vid(ii) = 3; end
-            if v >= 30; PX = d40.PX; PU = d40.PU; vid(ii) = 4; end
+            error('not implemented correctly')
             tic
             state_to_lift = mapstd_custom('apply',x_ocp(1:2,ii),PX);  % don't scale e_int
             problem{1} = [lifting_function(state_to_lift); x_ocp(3,ii); kappa_ref];
@@ -233,19 +226,13 @@ for ii=1:N_sim
                 output.u0 = mapstd_custom('reverse',forces_output{1}(:,1),PU);  % unscale the input
             end
         case 7  % adaptive KMPC YALMIP
-            v = x_sim(1,ii)*3.6;  % [km/h]
-            PX = d10.PX; PU = d10.PU; vid(ii) = 1;
-            if v >= 10 && v < 20; PX = d20.PX; PU = d20.PU; vid(ii) = 2; end
-            if v >= 20 && v < 30; PX = d30.PX; PU = d30.PU; vid(ii) = 3; end
-            if v >= 30; PX = d40.PX; PU = d40.PU; vid(ii) = 4; end
+            v = x_sim(1,ii)*3.6;                    % [km/h]
+            ctrl_id = find(speed_limits > v, 1);    % find which controller to use
             tic
-            state_to_lift = mapstd_custom('apply',x_ocp(1:2,ii),PX);  % don't scale e_int
-            problem{1} = [lifting_function(state_to_lift); x_ocp(3,ii); kappa_ref];
-            problem{2} = mapstd_custom('apply',T_ref(ii),PU);
-            if v < 10; controller = controllers{1}; end
-            if v >= 10 && v < 20; controller = controllers{2}; end
-            if v >= 20 && v < 30; controller = controllers{3}; end
-            if v >= 30; controller = controllers{4}; end
+            state_to_lift = mapstd_custom('apply',x_ocp(1:2,ii),kmpc_datas{ctrl_id}.PX);  % don't scale e_int
+            problem{1} = [lifting_function(state_to_lift,kmpc_datas{ctrl_id}); x_ocp(3,ii); kappa_ref];
+            problem{2} = mapstd_custom('apply',T_ref(ii),kmpc_datas{ctrl_id}.PU);
+            controller = controllers{ctrl_id};
             [yalmip_output, exitflag, a, b, c, info] = controller(problem);
             info.totaltime = toc;
             if isfield(info.solveroutput,'output')
@@ -264,7 +251,7 @@ for ii=1:N_sim
                 warning(['solver failed with flag ',num2str(exitflag),' - ', a{1}])
                 output.u0 = T_ref(ii);
             else
-                output.u0 = mapstd_custom('reverse',yalmip_output{1}(:,1),PU);
+                output.u0 = mapstd_custom('reverse',yalmip_output{1}(:,1),kmpc_datas{ctrl_id}.PU);
             end
     end
 

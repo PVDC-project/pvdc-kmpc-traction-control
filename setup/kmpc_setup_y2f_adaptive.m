@@ -2,11 +2,15 @@
 function controllers = kmpc_setup_y2f_adaptive(mpc_setup)
 N = mpc_setup.N; Ts = mpc_setup.Ts;
 
-speeds = [10 20 30 40];
+load kmpc_data_adaptive.mat vx kmpc_datas
+speeds = vx;
 controllers = cell(size(speeds));
 for speed_idx = 1:length(speeds)
     speed = speeds(speed_idx);
-    load(['kmpc_data',num2str(speed),'.mat'],'Alift','Blift','PX','PU')
+    kmpc_data = kmpc_datas{speed_idx};
+    Alift = kmpc_data.Alift;
+    Blift = kmpc_data.Blift;
+    PU = kmpc_data.PU;
 
     % add the integral state (e_int_dot = kappa_ref - kappa) using Euler method
     % also add kappa_ref to states (for easier problem formulation)
@@ -116,6 +120,7 @@ for speed_idx = 1:length(speeds)
     controllers{speed_idx} = optimizer(constraints, objective, options, params, outputs);
 end
 
+disp([num2str(length(speeds)),' controllers created.'])
     %% test call
 %     disp([newline,'Testing the generated solver...'])
 %     state_to_lift = mapstd_custom('apply',[0;10],PX);

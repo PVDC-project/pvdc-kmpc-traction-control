@@ -4,7 +4,8 @@ function [y,settings] = mapstd_custom(x,varargin)
 % use cases:
 %   I) one input: initial scaling, get mean and std, scale, return settings
 %   II) multiple inputs: scale with the provided settings (mean and std)
-% the function operates on the rows
+% the function operates on the rows and matches MATLAB's "mapstd" function
+% interface
 
 % I) get mean and std, scale, return settings too
 if nargin == 1
@@ -17,9 +18,9 @@ if nargin == 1
 end
 
 % II) 'apply' or 'reverse' with already calculated settings
-if ischar(x) && nargin == 3  % third input are the settings
-    operation = x;      % apply or reverse
-    x = varargin{1};    % data is the second input
+if ischar(x) && nargin == 3     % third input are the settings
+    operation = x;              % apply or reverse
+    x = varargin{1};            % data is the second input
     settings = varargin{2};
     if strcmp(operation,'apply')
         y = (x-settings.xmean) ./ settings.xstd;

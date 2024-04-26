@@ -44,10 +44,11 @@ end
 % w_p = 1e-2; w_i = 1e-2; w_u = 1e2;  % test input reference tracking
 
 %% define problem using YALMIP
-u = sdpvar(nu,N,'full');
-z0 = sdpvar(nz,1,'full');
-T_ref = sdpvar;         % for online torque limiting (should be scaled)
-Y = F*z0 + Phi*u(:);    % dense-form prediction
+u = sdpvar(nu,N,'full');    % control inputs
+z0 = sdpvar(nz,1,'full');   % lifted state
+T_ref = sdpvar;             % for online torque limiting (should be scaled)
+Y = F*z0 + Phi*u(:);        % dense-form prediction of relevant outputs
+% s = sdpvar(1,N);            % slack variable for slip constraints
 
 umin = mapstd_custom('apply',0,PU);  % scale minimum motor torque
 
@@ -56,11 +57,13 @@ objective = 0;
 
 for k = 1:N
     y = Y((k-1)*ny+1:k*ny);                             % output from k-th prediction step
-
     objective = objective + w_p * (y(3)-y(1))^2;        % slip tracking cost
     objective = objective + w_i * y(2)^2;               % integral state cost
     objective = objective + w_u * (T_ref-u(k))^2;       % input torque reduction cost
     constraints = [constraints, umin <= u(k) <= T_ref]; % input constraint
+%     constraints = [constraints, y(1) + s(k) <= y(3)];   % try to keep the slip below the reference
+%     constraints = [constraints, s(k) >= 0];             % slack variables are positive
+%     objective = objective + 1e4 * s(k)^2;               % slack penalty
 end
 
 %% solver settings
@@ -111,19 +114,19 @@ options = sdpsettings('solver','quadprog','savesolverinput',1,'savesolveroutput'
 controller = optimizer(constraints, objective, options, params, outputs);
 
 %% test call
-disp([newline,'Testing the generated solver...'])
+disp([newline,'Testing the generated controller...'])
 state_to_lift = mapstd_custom('apply',[0;10],PX);
 problem{1} = [lifting_function(state_to_lift); 0; 0.1];  % lift, e_int, kappa_ref
 problem{2} = mapstd_custom('apply',250,PU);  % T_ref (scaled)
 
 if ~mpc_setup.use_yalmip
     [forces_sol, forces_flag, forces_info] = kmpc(problem);
-    disp(['FORCES test solution: ',num2str(forces_sol{1})])
+%     disp(['FORCES test solution: ',num2str(forces_sol{1})])
     assert(forces_flag == 1, 'Test call of FORCESPRO solver failed');
 end
 
 [yalmip_sol, yalmip_flag, ~, ~, ~, yalmip_info] = controller(problem);
-disp(['YALMIP test solution: ',num2str(yalmip_sol{1})]);
+% disp(['YALMIP test solution: ',num2str(yalmip_sol{1})]);
 assert(yalmip_flag == 0, 'Test call with YALMIP failed')
 disp(['Test ok.',newline])
 
