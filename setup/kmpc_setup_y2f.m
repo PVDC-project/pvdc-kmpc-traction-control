@@ -110,7 +110,7 @@ end
 cd('../');
 
 % YALMIP for comparison
-options = sdpsettings('solver','quadprog','savesolverinput',1,'savesolveroutput',1);
+options = sdpsettings('solver','osqp','savesolverinput',1,'savesolveroutput',1);
 controller = optimizer(constraints, objective, options, params, outputs);
 
 %% test call

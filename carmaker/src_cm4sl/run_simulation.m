@@ -26,7 +26,7 @@ w0 = v0/3.6/R;      % [rad/s] initial wheel speed
 % 6 - KMPC YALMIP adaptive
 % 7 - open-loop random inputs (data collection)
 % 8 - KMPC FORCES Y2F interface
-controller_type = 8;
+controller_type = 5;
 N = 5;                      % prediction horizon length
 compile_for_simulink = 1;   % create the S-function block?
 use_yalmip = controller_type == 5 || controller_type == 6;
@@ -36,8 +36,9 @@ mpc_setup = struct('N',N,'Ts',Ts,'R',R,'kappa_ref',kappa_ref',...
                    'use_yalmip',use_yalmip);
 
 % cost function weights
-mpc_setup.w_p = 1e5;      % slip tracking error weight
-mpc_setup.w_i = 1e4;      % integral state weight
+k = 0.001;
+mpc_setup.w_p = k*750;    % slip tracking error weight
+mpc_setup.w_i = k*500000; % integral state weight
 mpc_setup.w_u = 1e-6;     % torque reduction weight
 
 %w_p = 1e4;     % slip tracking error weight

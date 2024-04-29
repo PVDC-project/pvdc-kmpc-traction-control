@@ -34,9 +34,9 @@ U_offset = 50;  % [Nm]
 
 % basis function selection
 nrbf = 30;                  % number of basis functions
-rbf_type = 'thinplate';     % polynomial, thinplate, gauss, invquad, invmultquad, polyharmonic
+rbf_type = 'polynomial';     % polynomial, thinplate, gauss, invquad, invmultquad, polyharmonic
 if strcmp(rbf_type,'polynomial')
-    order = 5;  % maximum order for the polynomial
+    order = 4;  % maximum order for the polynomial
     nx = 2;     % original state size
     [~,nrbf] = create_poly_basis(nx,order,true);  % last input creates an .m file
 end
