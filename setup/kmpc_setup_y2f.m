@@ -69,7 +69,7 @@ end
 %% solver settings
 algorithm = 'PDIP';  % https://forces.embotech.com/Documentation/solver_options/index.html#solve-methods
 codeoptions = ForcesGetDefaultOptions('kmpc',algorithm,'double');
-codeoptions.printlevel = 0;  % summary line after each solve
+codeoptions.printlevel = 0; % summary line after each solve
 codeoptions.overwrite = 1;  % always overwrite the solver
 
 codeoptions.init = 1;  % centered start
