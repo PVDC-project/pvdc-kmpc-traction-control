@@ -5,11 +5,12 @@ codegen/
 dig/
 {*}/
 
-# data and testing
+# data, testing, figures
 data/
 *.mat
 examples/
 test/
+figures/
 
 # auxiliaries
 slprj/

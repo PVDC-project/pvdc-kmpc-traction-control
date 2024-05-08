@@ -7,6 +7,9 @@ addpath('../../setup')              % controller and simulation setup
 addpath('../../functions')          % utility functions
 addpath('../../postprocessing/')    % plotting
 
+% if not empty, simout will be saved in data/<save_filename>.mat
+save_filename = 'nmpc_2';
+
 %% Simulation setup
 Ts = 2e-3;          % [s] sampling time
 VEHICLE = vehicle_parameters();
@@ -26,7 +29,7 @@ w0 = v0/3.6/R;      % [rad/s] initial wheel speed
 % 6 - KMPC YALMIP adaptive
 % 7 - open-loop random inputs (data collection)
 % 8 - KMPC FORCES Y2F interface
-controller_type = 5;
+controller_type = 1;
 N = 5;                      % prediction horizon length
 compile_for_simulink = 1;   % create the S-function block?
 use_yalmip = controller_type == 5 || controller_type == 6;
@@ -90,4 +93,10 @@ disp('Simulation done.')
 
 if controller_type == 4
     save_collected_data(sigsOut);
+end
+
+if ~isempty(save_filename)
+    save_filename = ['../../data/',save_filename,'.mat'];
+    save(save_filename,'sigsOut')
+    disp(['Data saved in ',save_filename])
 end

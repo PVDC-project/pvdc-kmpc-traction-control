@@ -163,17 +163,6 @@ for k = 1:length(vx_lows)
 
     disp('Data scaled.')
     
-    %% dodano
-%     if vx_low*3.6 > 9
-%         save('collected_data_fast.mat')
-%     end
-%     if vx_high*3.6 < 11
-%         save('collected_data_slow.mat')
-%     end
-%     if vx_high*3.6 > 11 && vx_low*3.6 < 2
-%         save('collected_data_full.mat')
-%     end
-    
     %% Koopman operator approximation (EDMD)
     cent = rand(nx,nrbf)*2 - 1; % RBF centers, uniform in [-1,1]
     kmpc_data = struct('PX',PX,'PU',PU,'cent',cent,'rbf_type',rbf_type);
@@ -290,24 +279,16 @@ for k = 1:length(vx_lows)
         
         % compare the true slip ratio and predictions
         MSE(jj) = mse(X_true(1,:)./R./X_true(2,:),X_koop(1,:)./R./X_koop(2,:));
-    
-%         %% Samo za snimanje podataka
-%         eval(['X_true_' num2str(jj) '= X_true;'])
-%         eval(['U_' num2str(jj) '= U;'])
         
+        % save the approximation data for later plotting
+        if (vx0 == (vx_low + vx_high)/2)
+            kappa_true = X_true(1,:)./R./X_true(2,:);
+            kappa_koop = X_koop(1,:)./R./X_koop(2,:);
+            save ../data/sysid.mat kappa_true kappa_koop vx0
+            disp(['Saved the approximation data for vx0 = ',num2str(vx0*3.6),' km/h in data/sysid.mat'])
+        end
     end
     
-    %% dodano
-%     if vx_low*3.6 > 9
-%         save('Validation_fast.mat', 'X_true_1', 'X_true_2', 'X_true_3', 'U_1', 'U_2', 'U_3', 'vx0s')
-%     end
-%     if vx_high*3.6 < 11
-%         save('Validation_slow.mat', 'X_true_1', 'X_true_2', 'X_true_3', 'U_1', 'U_2', 'U_3', 'vx0s')
-%     end
-%     if vx_high*3.6 > 11 && vx_low*3.6 < 2     
-%         save('Validation_full.mat', 'X_true_1', 'X_true_2', 'X_true_3', 'U_1', 'U_2', 'U_3', 'vx0s')
-%     end
-    %% 
     disp(['MSE: ', num2str(sum(MSE)),newline]);
 
     % maximize the created figure (requires MATLAB R2018a)
