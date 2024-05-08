@@ -7,9 +7,9 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "4.416"
+    ComputedModelVersion    "4.417"
     NumModelReferences	    0
-    NumTestPointedSignals   39
+    NumTestPointedSignals   41
     TestPointedSignal {
       SignalName	      "kappa_ref"
       FullBlockPath	      "generic/CarMaker/Traction control/Constant"
@@ -95,6 +95,13 @@ Model {
       Decimation	      2
     }
     TestPointedSignal {
+      SignalName	      "mpc_in_z0"
+      FullBlockPath	      "generic/CarMaker/Traction control/ControllerFL/KMPC_Y2F/Vector Concatenate1"
+      LogSignal		      1
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
       SignalName	      "e_int_dot"
       FullBlockPath	      "generic/CarMaker/Traction control/ControllerFL/KMPC_Y2F/e_int_dot"
       LogSignal		      1
@@ -112,6 +119,13 @@ Model {
       SignalName	      "mpc_exitflag"
       FullBlockPath	      "generic/CarMaker/Traction control/ControllerFL/KMPC_Y2F/kmpc"
       PortIndex		      3
+      LogSignal		      1
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      "mpc_in_T_ref"
+      FullBlockPath	      "generic/CarMaker/Traction control/ControllerFL/KMPC_Y2F/normalize_input"
       LogSignal		      1
       MaxPoints		      5000
       Decimation	      2
@@ -638,11 +652,11 @@ Model {
 	  IsActive		  [1]
 	  IsTabbed		  [1]
 	  ViewObjType		  "SimulinkSubsys"
-	  LoadSaveID		  "2351"
+	  LoadSaveID		  "2406"
 	  Extents		  [920.0, 805.0]
-	  ZoomFactor		  [0.54343387228047468]
-	  Offset		  [9.2378958800449027, -245.37477916299639]
-	  SceneRectInView	  [9.2378958800449027, -245.37477916299639, 1692.9382707399102, 1481.3209868974213]
+	  ZoomFactor		  [0.955719557195572]
+	  Offset		  [-239.15258506274131, -6.6486486486486456]
+	  SceneRectInView	  [-239.15258506274131, -6.6486486486486456, 962.62548262548262, 842.29729729729729]
 	}
 	Object {
 	  $ObjectID		  10
@@ -659,23 +673,23 @@ Model {
 	  $ObjectID		  11
 	  IsActive		  [0]
 	  IsTabbed		  [0]
+	  ViewObjType		  "SimulinkSubsys"
+	  LoadSaveID		  "2351"
+	  Extents		  [920.0, 805.0]
+	  ZoomFactor		  [1.25]
+	  Offset		  [629.03260813714519, 168.2989456127882]
+	  SceneRectInView	  [629.03260813714519, 168.2989456127882, 736.0, 644.0]
+	}
+	Object {
+	  $ObjectID		  12
+	  IsActive		  [0]
+	  IsTabbed		  [0]
 	  ViewObjType		  "SimulinkTopLevel"
 	  LoadSaveID		  "0"
 	  Extents		  [920.0, 805.0]
 	  ZoomFactor		  [2.0]
 	  Offset		  [-44.795736406950681, -42.093730731502262]
 	  SceneRectInView	  [-44.795736406950681, -42.093730731502262, 460.0, 402.5]
-	}
-	Object {
-	  $ObjectID		  12
-	  IsActive		  [0]
-	  IsTabbed		  [0]
-	  ViewObjType		  "SimulinkSubsys"
-	  LoadSaveID		  "2406"
-	  Extents		  [920.0, 805.0]
-	  ZoomFactor		  [0.955719557195572]
-	  Offset		  [-239.15258506274131, -6.6486486486486456]
-	  SceneRectInView	  [-239.15258506274131, -6.6486486486486456, 962.62548262548262, 842.29729729729729]
 	}
 	Object {
 	  $ObjectID		  13
@@ -706,9 +720,9 @@ Model {
 	  ViewObjType		  "SimulinkSubsys"
 	  LoadSaveID		  "5209"
 	  Extents		  [920.0, 805.0]
-	  ZoomFactor		  [0.47259451807578]
-	  Offset		  [-457.07682875560545, -799.18148297365474]
-	  SceneRectInView	  [-457.07682875560545, -799.18148297365474, 1946.7005325112109, 1703.3629659473095]
+	  ZoomFactor		  [1.0]
+	  Offset		  [286.17195403559407, -502.15883623278347]
+	  SceneRectInView	  [286.17195403559407, -502.15883623278347, 920.0, 805.0]
 	}
 	Object {
 	  $ObjectID		  16
@@ -728,9 +742,9 @@ Model {
 	  ViewObjType		  "SimulinkSubsys"
 	  LoadSaveID		  "2410"
 	  Extents		  [920.0, 805.0]
-	  ZoomFactor		  [1.0]
-	  Offset		  [252.15808990916048, -297.47207886521278]
-	  SceneRectInView	  [252.15808990916048, -297.47207886521278, 920.0, 805.0]
+	  ZoomFactor		  [1.5]
+	  Offset		  [271.641057081465, -120.56842360332584]
+	  SceneRectInView	  [271.641057081465, -120.56842360332584, 613.33333333333337, 536.66666666666663]
 	}
 	Object {
 	  $ObjectID		  18
@@ -1629,9 +1643,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "LAMES Workstation"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Apr 30 13:29:44 2024"
-  RTWModifiedTimeStamp	  636384581
-  ModelVersionFormat	  "%<AutoIncrement:4.416>"
+  LastModifiedDate	  "Wed May 08 15:46:41 2024"
+  RTWModifiedTimeStamp	  637083995
+  ModelVersionFormat	  "%<AutoIncrement:4.417>"
   SampleTimeColors	  on
   SampleTimeAnnotations	  off
   LibraryLinkDisplay	  "none"
@@ -1710,7 +1724,7 @@ Model {
     $ClassName		    "Simulink.HMI.InstrumentedSignals"
     Array {
       Type		      "Struct"
-      Dimension		      38
+      Dimension		      40
       MATStruct {
 	UUID			"810f8bd4-100e-49cb-9b00-5708f9234f64"
 	BlockPath_		"CarMaker/Traction control/Vector Concatenate"
@@ -2607,6 +2621,54 @@ Model {
 	OutputPortIndex_	[3.0]
 	LogicalPortIndex_	[0.0]
 	SignalName_		"mpc_exitflag"
+	SubSysPath_		""
+	Decimation_		[1.0]
+	MaxPoints_		[1024.0]
+	TargetBufferedStreaming_ [0.0]
+	IsFrameBased_		[0.0]
+	HideInSDI_		[0.0]
+	DomainType_		""
+	Array {
+	  Type			  "Struct"
+	  Dimension		  1
+	  MATStruct {
+	  }
+	  PropName		  "DomainParams_"
+	}
+	VisualType_		""
+      }
+      MATStruct {
+	UUID			"e09b7230-bece-48aa-88cd-d2a0e763e720"
+	BlockPath_		"CarMaker/Traction control/ControllerFL/KMPC_Y2F/Vector Concatenate1"
+	SID_			"5236"
+	SubPath_		""
+	OutputPortIndex_	[1.0]
+	LogicalPortIndex_	[0.0]
+	SignalName_		"mpc_in_z0"
+	SubSysPath_		""
+	Decimation_		[1.0]
+	MaxPoints_		[1024.0]
+	TargetBufferedStreaming_ [0.0]
+	IsFrameBased_		[0.0]
+	HideInSDI_		[0.0]
+	DomainType_		""
+	Array {
+	  Type			  "Struct"
+	  Dimension		  1
+	  MATStruct {
+	  }
+	  PropName		  "DomainParams_"
+	}
+	VisualType_		""
+      }
+      MATStruct {
+	UUID			"ff663f90-bddc-4e5b-b614-0fcc61931dc9"
+	BlockPath_		"CarMaker/Traction control/ControllerFL/KMPC_Y2F/normalize_input"
+	SID_			"5250"
+	SubPath_		""
+	OutputPortIndex_	[1.0]
+	LogicalPortIndex_	[0.0]
+	SignalName_		"mpc_in_T_ref"
 	SubSysPath_		""
 	Decimation_		[1.0]
 	MaxPoints_		[1024.0]
@@ -19492,7 +19554,7 @@ Model {
 	    Name		    "Traction control"
 	    Location		    [953, 0, 1927, 1047]
 	    SystemRect		    [0.000000, 0.000000, 0.000000, 0.000000]
-	    Open		    on
+	    Open		    off
 	    PortBlocksUseCompactNotation off
 	    SetExecutionDomain	    off
 	    ExecutionDomainType	    "Deduce"
@@ -19506,7 +19568,7 @@ Model {
 	    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
 	    TiledPageScale	    1
 	    ShowPageBoundaries	    off
-	    ZoomFactor		    "54"
+	    ZoomFactor		    "125"
 	    SimulinkSubDomain	    "Simulink"
 	    Block {
 	      BlockType		      Constant
@@ -19535,7 +19597,7 @@ Model {
 		Name			"ControllerFL"
 		Location		[953, 0, 1927, 1047]
 		SystemRect		[0.000000, 0.000000, 0.000000, 0.000000]
-		Open			off
+		Open			on
 		PortBlocksUseCompactNotation off
 		SetExecutionDomain	off
 		ExecutionDomainType	"Deduce"
@@ -20926,7 +20988,7 @@ Model {
 		    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
 		    TiledPageScale	    1
 		    ShowPageBoundaries	    off
-		    ZoomFactor		    "47"
+		    ZoomFactor		    "100"
 		    SimulinkSubDomain	    "Simulink"
 		    Block {
 		    BlockType		    Inport
@@ -20978,7 +21040,7 @@ Model {
 		    BlockType		    Constant
 		    Name		    "Constant"
 		    SID			    "5214"
-		    Position		    [455, 7, 550, 33]
+		    Position		    [415, 7, 510, 33]
 		    ZOrder		    433
 		    Value		    "kappa_ref"
 		    SampleTime		    "Ts"
@@ -21024,7 +21086,7 @@ Model {
 		    BlockType		    From
 		    Name		    "From8"
 		    SID			    "5219"
-		    Position		    [335, -95, 435, -65]
+		    Position		    [295, -95, 395, -65]
 		    ZOrder		    429
 		    ForegroundColor	    "green"
 		    GotoTag		    "current_ocp_state"
@@ -21033,7 +21095,7 @@ Model {
 		    BlockType		    From
 		    Name		    "From9"
 		    SID			    "5220"
-		    Position		    [515, 117, 620, 153]
+		    Position		    [450, 117, 555, 153]
 		    ZOrder		    443
 		    GotoTag		    "torque_reference"
 		    }
@@ -21209,7 +21271,7 @@ Model {
 		    Name		    "Selector3"
 		    SID			    "5231"
 		    Ports		    [1, 1]
-		    Position		    [455, -99, 495, -61]
+		    Position		    [415, -99, 455, -61]
 		    ZOrder		    428
 		    InputPortWidth	    "3"
 		    IndexOptions	    "Index vector (dialog)"
@@ -21221,7 +21283,7 @@ Model {
 		    Name		    "Selector4"
 		    SID			    "5232"
 		    Ports		    [1, 1]
-		    Position		    [455, -49, 495, -11]
+		    Position		    [415, -49, 455, -11]
 		    ZOrder		    432
 		    InputPortWidth	    "3"
 		    IndexOptions	    "Index vector (dialog)"
@@ -21268,9 +21330,13 @@ Model {
 		    Name		    "Vector\nConcatenate1"
 		    SID			    "5236"
 		    Ports		    [3, 1]
-		    Position		    [695, -107, 705, 47]
+		    Position		    [655, -107, 665, 47]
 		    ZOrder		    431
 		    NumInputs		    "3"
+		    Port {
+		    PortNumber		    1
+		    Name		    "mpc_in_z0"
+		    }
 		    }
 		    Block {
 		    BlockType		    SubSystem
@@ -21626,7 +21692,7 @@ Model {
 		    Name		    "lift"
 		    SID			    "5249"
 		    Ports		    [1, 1]
-		    Position		    [605, -95, 675, -65]
+		    Position		    [565, -95, 635, -65]
 		    ZOrder		    440
 		    MATLABFcn		    "lifting_function(u)"
 		    }
@@ -21635,16 +21701,20 @@ Model {
 		    Name		    "normalize_input"
 		    SID			    "5250"
 		    Ports		    [1, 1]
-		    Position		    [645, 120, 715, 150]
+		    Position		    [580, 120, 650, 150]
 		    ZOrder		    451
 		    MATLABFcn		    "mapstd_custom('apply',u,PU)"
+		    Port {
+		    PortNumber		    1
+		    Name		    "mpc_in_T_ref"
+		    }
 		    }
 		    Block {
 		    BlockType		    MATLABFcn
 		    Name		    "normalize_state"
 		    SID			    "5251"
 		    Ports		    [1, 1]
-		    Position		    [515, -95, 585, -65]
+		    Position		    [475, -95, 545, -65]
 		    ZOrder		    439
 		    MATLABFcn		    "mapstd_custom('apply',u,PX)"
 		    }
@@ -21812,7 +21882,9 @@ Model {
 		    DstPort		    1
 		    }
 		    Line {
+		    Name		    "mpc_in_z0"
 		    ZOrder		    19
+		    Labels		    [1, 1]
 		    SrcBlock		    "Vector\nConcatenate1"
 		    SrcPort		    1
 		    DstBlock		    "kmpc"
@@ -21914,7 +21986,9 @@ Model {
 		    DstPort		    1
 		    }
 		    Line {
+		    Name		    "mpc_in_T_ref"
 		    ZOrder		    45
+		    Labels		    [1, 1]
 		    SrcBlock		    "normalize_input"
 		    SrcPort		    1
 		    DstBlock		    "kmpc"
@@ -24148,7 +24222,7 @@ Model {
 		    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
 		    TiledPageScale	    1
 		    ShowPageBoundaries	    off
-		    ZoomFactor		    "100"
+		    ZoomFactor		    "150"
 		    SimulinkSubDomain	    "Simulink"
 		    Block {
 		    BlockType		    Inport
