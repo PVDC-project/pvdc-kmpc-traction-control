@@ -20,11 +20,11 @@ model.E = [zeros(3,1), eye(3)]; % selection matrix
 
 model.xinitidx = 2:4;  % indices affected by initial condition
 
-model.ineq = @eval_const;  % handle to nonlinear constraints
-model.hlidx = 1;  % only the input is constrained
+model.ineq = @eval_const;   % handle to nonlinear constraints
+model.hlidx = 1;            % only the input is constrained
 model.huidx = 1;  
-model.hu = [];  % set to T_ref at runtime
-model.hl = [];  % set to 0 at runtime
+model.hu = [];              % set to T_ref at runtime
+model.hl = [];              % set to 0 at runtime
 
 algorithm = 'PDIP_NLP';  % https://forces.embotech.com/Documentation/solver_options/index.html#solve-methods
 codeoptions = ForcesGetDefaultOptions('nmpc',algorithm,'double');
@@ -56,9 +56,9 @@ codeoptions.showinfo = 1;  % https://forces.embotech.com/Documentation/solver_op
 
 % Codegen options
 if compile_for_dspace
-    codeoptions.platform = 'dSPACE-MicroLabBox';  % to specify the platform
-    codeoptions.printlevel = 0;  % on some platforms printing is not supported
-    codeoptions.cleanup = 0;  % to keep necessary files for target compile    
+    codeoptions.platform = 'dSPACE-MicroLabBox';    % to specify the platform
+    codeoptions.printlevel = 0;                     % on some platforms printing is not supported
+    codeoptions.cleanup = 0;                        % to keep necessary files for target compile    
     codeoptions.timing = 1;
     codeoptions.embedded_timing = 1;    
     
@@ -78,14 +78,14 @@ end
 addpath(solver_dir);
 cd(solver_dir);
 
-% output = newOutput('u0', 1, 1);  % return only the first input
-output = newOutput('zopt');  % return the full solution vector
+% output = newOutput('u0', 1, 1);   % return only the first input
+output = newOutput('zopt');         % return the full solution vector
 FORCES_NLP(model, codeoptions, output);
 
 cd('../');
 
 %% Test call
-problem.xinit = [1; 10; 0];  % initial state
+problem.xinit = [1; 10; 0];                     % initial state
 problem.x0 = repmat([250;1;10;0], model.N, 1);  % solver initial guess
 problem.hu = repmat(250, model.N, 1);
 problem.hl = zeros(model.N, 1);
