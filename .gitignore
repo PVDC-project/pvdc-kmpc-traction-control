@@ -20,7 +20,6 @@ slprj/
 *.json
 *.bak
 stdout_temp
-functions/poly_basis.m
 postprocessing/compare_carmaker_and_nonlinear_model.m
 
 
