@@ -120,6 +120,8 @@ disp(['NMPC max: ',num2str(max(nmpc_2_t))])
 disp(['KMPC mean: ',num2str(mean(kmpc_2_t))])
 disp(['KMPC max: ',num2str(max(kmpc_2_t))])
 
+disp(' ')
+
 %% sysid
 sysid = load('../data/sysid.mat');
 t = 0:2e-3:(length(sysid.kappa_true)-1)*2e-3;
@@ -132,3 +134,16 @@ plot(t,sysid.kappa_koop,'linewidth', lw)
 xlabel('Time [ms]')
 ylabel('$\kappa$ [-]')
 legend({'True','Koopman'})
+
+%% dspace
+nmpc_dspace = load('../data/nmpc_dspace');
+kmpc_dspace = load('../data/kmpc_dspace');
+
+nmpc_t = nmpc_dspace.nmpc.Y(2).Data;
+kmpc_t = kmpc_dspace.kmpc.Y(2).Data;
+
+disp('dSPACE timing:')
+disp(['NMPC mean: ',num2str(mean(nmpc_t))])
+disp(['NMPC max: ',num2str(max(nmpc_t))])
+disp(['KMPC mean: ',num2str(mean(kmpc_t))])
+disp(['KMPC max: ',num2str(max(kmpc_t))])
