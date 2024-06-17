@@ -1,6 +1,6 @@
 #INFOFILE1.1 - Do not remove this line!
 FileIdent = Scenario-Config 2.0
-FileCreator = CarMaker for Simulink 11.0
+FileCreator = CarMaker 11.0
 Import.HDLM.ImportByRoute = 0
 Import.HDLM.LatCoord0 =
 Import.HDLM.LonCoord0 =

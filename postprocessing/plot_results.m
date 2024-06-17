@@ -68,7 +68,11 @@ toolbar_height = 40;    % Windows
 header_height = 85;     % MATLAB
 
 monitors = get(0, 'MonitorPositions');
-monitor = monitors(2, :);
+if size(monitors,1) > 1
+    monitor = monitors(2, :);
+else
+    monitor = monitors;
+end
 x = monitor(1);
 y = monitor(2);
 w = monitor(3);

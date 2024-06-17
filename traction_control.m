@@ -1,5 +1,5 @@
 %% Traction control using NMPC and KMPC
-clear;close all;clc;
+clear all;close all;clc;
 
 %% Environment setup
 addpath('./models')             % prediction and simulation models
@@ -32,9 +32,10 @@ change_friction = 1;    % test the controller on different surfaces
 % 5 - KMPC FORCES Y2F interface
 % 6 - adaptive KMPC FORCES Y2F (prediction model changes with vehicle speed)
 % 7 - adaptive KMPC YALMIP (quadprog, DAQP or OSQP)
-controller_type = 4;
+% 8 - KMPC acados
+controller_type = 8;
 N = 5;                      % prediction horizon length
-compile_for_simulink = 0;   % create the S-function block?
+compile_for_simulink = 1;   % create the S-function block?
 use_yalmip = controller_type == 4 || controller_type == 7;
 is_adaptive = controller_type == 6 || 7;
 mpc_setup = struct('N',N,'Ts',Ts,'R',R,'kappa_ref',kappa_ref',...
@@ -63,6 +64,9 @@ switch controller_type
         controllers = kmpc_setup_y2f_adaptive(mpc_setup);
         load models/kmpc_data_adaptive.mat vx kmpc_datas
         speed_limits = vx;  % to avoid name clashes later
+    case 8
+        controller = kmpc_setup_acados(mpc_setup);
+        load models/kmpc_data.mat PX PU  % for state and input scaling
     otherwise
         disp('controller type not recognized, running without control')
         controller_type = 0;
@@ -93,6 +97,7 @@ u_sim = nan(ocp_nu, N_sim);    % control input log
 % MPC performance logging
 solve_time_log = nan(1,N_sim);
 status_log = nan(1,N_sim);
+solver_time_log = nan(1,N_sim);
 
 % motor torque reference
 T_ref = torque_ramp(0.1,0.6,0,T_max,Ts,T_sim);
@@ -185,6 +190,7 @@ for ii=1:N_sim
             end
             info.solvetime = info.solvertime;   % FORCES stats
             info.fevalstime = 0;                % FORCES stats
+            solver_time_log(ii) = info.solvertime;
 
             if exitflag  % with YALMIP 0 means OK
                 warning(['solver failed with flag ',num2str(exitflag),' - ', a{1}])
@@ -254,6 +260,27 @@ for ii=1:N_sim
             else
                 output.u0 = mapstd_custom('reverse',yalmip_output{1}(:,1),kmpc_datas{ctrl_id}.PU);
             end
+        case 8  % KMPC acados
+            tic
+            state_to_lift = mapstd_custom('apply',x_ocp(1:2,ii),PX);  % don't scale e_int
+            z0 = [lifting_function(state_to_lift); x_ocp(3,ii); kappa_ref];
+            T = mapstd_custom('apply',T_ref(ii),PU);
+            controller.set('p',[z0;T]);
+            controller.solve();
+            info.totaltime = toc;
+            
+            exitflag = controller.get('status');
+            if exitflag ~= 0
+                warning(['acados solver failed with status ',num2str(exitflag)]);
+                output.u0 = T_ref(ii);
+            else
+                Uopt = controller.get('u', 0);
+                output.u0 = mapstd_custom('reverse',Uopt(1),PU);  % unscale the input
+            end
+            % TODO: fix
+            info.it = 0;
+            info.solvetime = 0;
+            info.fevalstime = 0;
     end
 
     % check for failure and display some statistics

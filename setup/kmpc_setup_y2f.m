@@ -12,11 +12,11 @@ e_int_row(3) = -Ts;         % slip is the third state
 e_int_row(end-1) = 1;       % integral state is second-to-last
 e_int_row(end) = Ts;        % slip reference is the last state
 A = [Alift, zeros(nz,2);
-    e_int_row;
-    zeros(1,nz+1), 1];      % slip reference has no dynamics
+     e_int_row;
+     zeros(1,nz+1), 1];      % slip reference has no dynamics
 
 B = [Blift;
-    zeros(2,size(Blift,2))];
+     zeros(2,size(Blift,2))];
 
 % kappa, e_int and kappa_ref are needed to form the cost
 C = zeros(3,nz+2);
