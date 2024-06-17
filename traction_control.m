@@ -109,10 +109,8 @@ e_int = 0;      % for the integral state calculation
 distance = 0;   % compare final distances
 mu_x_log = nan(1,N_sim);
 
-e = [];
-
 vid = zeros(1,N_sim);
-
+disp([newline,'Starting the closed-loop simulation...'])
 for ii=1:N_sim
     if change_friction  % varying friction coefficient
         if distance >= 0; mu_x = 0.3; end

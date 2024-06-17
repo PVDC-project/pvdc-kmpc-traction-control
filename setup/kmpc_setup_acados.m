@@ -54,7 +54,7 @@ ocp_opts.set('param_scheme_N', 1);
 ocp_opts.set('parameter_values', ones(size(prediction_model.sym_p)));  % initialize with zero, change later
 
 % QP solver
-qp_solver = 'partial_condensing_osqp';
+qp_solver = 'partial_condensing_hpipm';
 ocp_opts.set('qp_solver', qp_solver);
 % full_condensing_hpipm
 % partial_condensing_hpipm
@@ -76,10 +76,14 @@ end
 
 ocp_opts.set('sim_method', 'discrete');
 
+
 %% Simulink block settings
+% https://github.com/acados/acados/blob/master/interfaces/acados_template/acados_template/simulink_default_opts.json
 simulink_opts = get_acados_simulink_opts;
 
-% inputs
+% inputs (only the parameter vector - size (nz+1)*2 - is needed)
+simulink_opts.inputs.lbx_0 = 0;
+simulink_opts.inputs.ubx_0 = 0;
 simulink_opts.inputs.y_ref_0 = 0;
 simulink_opts.inputs.y_ref = 0;
 simulink_opts.inputs.y_ref_e = 0;
@@ -91,6 +95,8 @@ simulink_opts.inputs.lbu = 0;
 simulink_opts.inputs.ubu = 0;
 simulink_opts.inputs.lg = 0;
 simulink_opts.inputs.ug = 0;
+simulink_opts.inputs.lh_0 = 0;
+simulink_opts.inputs.uh_0 = 0;
 simulink_opts.inputs.lh = 0;
 simulink_opts.inputs.uh = 0;
 simulink_opts.inputs.lh_e = 0;
@@ -98,25 +104,27 @@ simulink_opts.inputs.uh_e = 0;
 % simulink_opts.inputs.x_init = 1;  ?
 % simulink_opts.inputs.reset_solver = 1;  ?
 
-% outputs
-% simulink_opts.outputs.utraj = 1;
-% simulink_opts.outputs.xtraj = 1;
+% outputs (u0, status, cost, timing)
+% simulink_opts.outputs.utraj = 1;  % to get full vectors
+% simulink_opts.outputs.xtraj = 1;  % to get full vectors
 simulink_opts.outputs.cost_value = 1;
 simulink_opts.outputs.KKT_residual = 0;
-% simulink_opts.outputs.KKT_residuals = 1;  ?
 simulink_opts.outputs.x1 = 0;  % ?
 simulink_opts.outputs.sqp_iter = 0;
+simulink_opts.outputs.CPU_time = 1;
 
 simulink_opts.samplingtime = 't0';
     % 't0' (default) - use time step between shooting node 0 and 1
     % '-1' - inherit sampling time from other parts of simulink model
 
 %% Create the OCP solver
+% ocp = acados_ocp(ocp_model, ocp_opts);  % use default simulink options
 ocp = acados_ocp(ocp_model, ocp_opts, simulink_opts);
 disp(['Created the OCP solver.',newline,newline])
 
 %% Compile for Simulink if needed
-% if mpc_setup.compile_for_simulink
-%     cd setup/c_generated_code
-%     make_sfun;
-% end
+if mpc_setup.compile_for_simulink
+    cd c_generated_code
+    make_sfun;
+    cd ..
+end
