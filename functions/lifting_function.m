@@ -22,6 +22,7 @@ slip = s.*w*R ./ ((w*R).^2 + e0);
 
 if strcmp(kmpc_data.rbf_type,'polynomial')
     basis = poly_basis(original_state);
+%     basis = basis(3:end,:);  % TODO: poly already contains the original state
 else
     basis = rbf(original_state,kmpc_data.cent,kmpc_data.rbf_type);
 end

@@ -34,7 +34,7 @@ U_offset = 50;  % [Nm]
 
 % basis function selection
 nrbf = 30;                  % number of basis functions
-rbf_type = 'polynomial';     % polynomial, thinplate, gauss, invquad, invmultquad, polyharmonic
+rbf_type = 'polynomial';    % polynomial, thinplate, gauss, invquad, invmultquad, polyharmonic
 if strcmp(rbf_type,'polynomial')
     order = 4;  % maximum order for the polynomial
     nx = 2;     % original state size

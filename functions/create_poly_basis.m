@@ -19,7 +19,7 @@ function [psi,npsi] = create_poly_basis(nx, nd, toFile)
     % create function file
     if(toFile)
         fid = fopen('../functions/poly_basis.m','wt');
-        fprintf(fid, 'function z = basis(x)\n\t');
+        fprintf(fid, 'function z = poly_basis(x)\n\t');
         fprintf(fid, strcat(['z = ', basis_str,';\n']));
         fprintf(fid, 'end');
         fclose(fid);
