@@ -35,7 +35,7 @@ change_friction = 1;    % test the controller on different surfaces
 % 8 - KMPC acados
 controller_type = 8;
 N = 5;                      % prediction horizon length
-compile_for_simulink = 1;   % create the S-function block?
+compile_for_simulink = 0;   % create the S-function block?
 use_yalmip = controller_type == 4 || controller_type == 7;
 is_adaptive = controller_type == 6 || 7;
 mpc_setup = struct('N',N,'Ts',Ts,'R',R,'kappa_ref',kappa_ref',...
@@ -295,19 +295,6 @@ for ii=1:N_sim
     u_sim(:,ii) = output.u0;
 	x_sim(:,ii+1) = simulation(x_sim(:,ii),u_sim(:,ii),mu_x);
 
-%     % simulate using the Koopman model
-%     u = mapstd_custom('apply',output.u0,PU);  % scale input
-%     x = [x_sim(2,ii)*R - x_sim(1,ii); x_sim(2,ii)];  % [w*R-v;w]
-%     x = mapstd_custom('apply',x,PX);  % scale state
-%     x = lifting_function(x);  % lift state
-%     xnext = Alift*x + Blift*u;  % simulate one step
-%     xnext = xnext(1:2);  % get [s;w]
-%     xnext = mapstd_custom('reverse',xnext,PX);  % reverse scaling
-%     xnext = [xnext(2)*R-xnext(1); xnext(2)];  % get [v;w]
-%     x_sim(:,ii+1) = xnext;
-
-%     e = [e x_sim(:,ii+1)-xnext];
-
     % get new controller state
     v = x_sim(1,ii+1);
     w = x_sim(2,ii+1);
@@ -325,11 +312,6 @@ for ii=1:N_sim
 end
 
 disp([newline,'Simulation done.'])
-disp(['Covered distance: ',num2str(distance),' m'])
-disp(['Average solve time: ',num2str(1e3*mean(solve_time_log)),' ms'])
-disp(['Maximum solve time: ',num2str(1e3*max(solve_time_log)),' ms'])
-disp(['Solver error rate: ',num2str(round(100*sum(status_log~=(~exist('controller','var')))/N_sim)),'%'])
-disp(['Real time feasible: ',num2str(round(100*sum(solve_time_log<Ts)/N_sim)),'%'])
 
 %% plot the results
 plot_results;

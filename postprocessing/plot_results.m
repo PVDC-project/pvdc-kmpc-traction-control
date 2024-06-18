@@ -1,3 +1,11 @@
+%% Print some statistics
+disp(['Covered distance: ',num2str(distance),' m'])
+disp(['Average solve time: ',num2str(1e3*mean(solve_time_log)),' ms'])
+disp(['Maximum solve time: ',num2str(1e3*max(solve_time_log)),' ms'])
+disp(['Solver error rate: ',num2str(round(100*sum(status_log~=(~exist('controller','var')))/N_sim)),'%'])
+disp(['Real time feasible: ',num2str(round(100*sum(solve_time_log<Ts)/N_sim)),'%'])
+
+%% Plot the figures
 t_sim = 0:Ts:N_sim*Ts;  % time vector for plotting
 
 % controller internal states

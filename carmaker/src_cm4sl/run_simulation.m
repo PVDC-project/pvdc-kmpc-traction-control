@@ -1,7 +1,7 @@
 %% ------ Traction control using MPC and Carmaker ------
 %% Environment setup
 cd C:\Projects_Josip\tc\carmaker\src_cm4sl
-clear;clc;close all;
+clear all;clc;close all;
 addpath('../../models')             % prediction and simulation models
 addpath('../../setup')              % controller and simulation setup
 addpath('../../functions')          % utility functions
@@ -29,7 +29,8 @@ w0 = v0/3.6/R;      % [rad/s] initial wheel speed
 % 6 - KMPC YALMIP adaptive
 % 7 - open-loop random inputs (data collection)
 % 8 - KMPC FORCES Y2F interface
-controller_type = 8;
+% 9 - KMPC acados
+controller_type = 9;
 N = 5;                      % prediction horizon length
 compile_for_simulink = 1;   % create the S-function block?
 use_yalmip = controller_type == 5 || controller_type == 6;
@@ -39,12 +40,11 @@ mpc_setup = struct('N',N,'Ts',Ts,'R',R,'kappa_ref',kappa_ref',...
                    'use_yalmip',use_yalmip);
 
 % cost function weights
-k = 0.001;
-mpc_setup.w_p = k*750;    % slip tracking error weight
-mpc_setup.w_i = k*500000; % integral state weight
-mpc_setup.w_u = 1e-6;     % torque reduction weight
+mpc_setup.w_p = 0.75;   % slip tracking error weight
+mpc_setup.w_i = 500;    % integral state weight
+mpc_setup.w_u = 1e-6;   % torque reduction weight
 
-%w_p = 1e4;     % slip tracking error weight
+%w_p = 1e4;      % slip tracking error weight
 %w_i = 1e3;      % integral state weight
 %w_u = 1e-7;     % torque reduction weight
 switch controller_type
@@ -78,6 +78,9 @@ switch controller_type
     case 8
         kmpc_setup_y2f(mpc_setup);
         load ../../models/kmpc_data.mat PX PU Alift % for state and input scaling
+    case 9
+        kmpc_setup_acados(mpc_setup);
+        load ../../models/kmpc_data.mat PX PU Alift % for state and input scaling
     otherwise
         warning('controller type not recognized, running without control')
         controller_type = 0;
@@ -90,7 +93,6 @@ disp('Simulation done.')
 %% Postprocessing
 % TODO: plot the results
 % get_mpc_inputs(sigsOut);
-
 if controller_type == 4
     save_collected_data(sigsOut);
 end
