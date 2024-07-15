@@ -35,7 +35,7 @@ stairs(t,Tm_kmpc_1(1:k_end,1),'linewidth', lw)
 plot(t,Tm_ref(1:k_end),'k--','linewidth', lw)
 ylabel('$T_m$ [Nm]')
 grid on
-
+legend({'NMPC','KMPC'},'Location','southeast')
 xlabel('Time [s]')
 
 %% varying mu
@@ -85,7 +85,7 @@ for idx = idxs'
 end
 ylabel('$T_m$ [Nm]')
 grid on
-
+legend({'NMPC','KMPC'},'Location','southwest')
 xlabel('Time [s]')
 
 %% execution time
