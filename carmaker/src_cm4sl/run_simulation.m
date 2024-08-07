@@ -30,7 +30,7 @@ w0 = v0/3.6/R;      % [rad/s] initial wheel speed
 % 7 - open-loop random inputs (data collection)
 % 8 - KMPC FORCES Y2F interface
 % 9 - KMPC acados
-controller_type = 9;
+controller_type = 1;
 N = 5;                      % prediction horizon length
 compile_for_simulink = 1;   % create the S-function block?
 use_yalmip = controller_type == 5 || controller_type == 6;
