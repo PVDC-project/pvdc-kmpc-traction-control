@@ -291,9 +291,9 @@ for ii=1:N_sim
         fprintf('status = %d, num_iter = %d, time_tot = %f [ms]\n',exitflag, num_iter, time_tot*1e3);
     end
 
-	% simulate one closed-loop timestep
-	u_sim(:,ii) = output.u0;
-	x_sim(:,ii+1) = simulation(x_sim(:,ii),u_sim(:,ii),mu_x);
+    % simulate one closed-loop timestep
+    u_sim(:,ii) = output.u0;
+    x_sim(:,ii+1) = simulation(x_sim(:,ii),u_sim(:,ii),mu_x);
 
     % get new controller state
     v = x_sim(1,ii+1);
