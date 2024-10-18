@@ -1,6 +1,5 @@
 %% Koopman operator identification for traction control
 clear;clc;close all;
-cd C:\Projects_Josip\tc\setup
 
 addpath('../models')
 addpath('../functions')

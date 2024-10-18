@@ -1,13 +1,15 @@
 %% Koopman operator identification for traction control using EDMD
 %% Environment setup
 clear all;clc;close all;
-cd C:\Projects_Josip\tc\setup
 
 addpath('../models')
 addpath('../functions')
-addpath('../data')
+if ~exist('../data', 'dir')
+   mkdir('../data')
+   addpath('../data')
+end
 
-rng(42)  % fix  the seed for reproducibility
+rng(42)  % fix the seed for reproducibility
 
 %% SYSID setup
 % set the vehicle speed limits for data collection
@@ -159,8 +161,6 @@ for k = 1:length(vx_lows)
     Ys = XY(:,Nsim*Ntraj+1:end);
 
     [Us,PU] = mapstd_custom(Us);    % scale the input
-
-
     disp('Data scaled.')
     
     %% Koopman operator approximation (EDMD)

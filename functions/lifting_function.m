@@ -1,8 +1,13 @@
 function lifted_state = lifting_function(original_state,varargin)
 % load parameters once for faster evaluation
 persistent kmpc_data vehicle_params R
+
 if isempty(kmpc_data)
-    kmpc_data = load('kmpc_data.mat');
+    try
+        kmpc_data = load('kmpc_data.mat');
+    catch
+        warning('kmpc_data.mat not found, continuing anyway...')
+    end
     vehicle_params = vehicle_parameters();
     R = vehicle_params.WHEEL_RADIUS;
 end
